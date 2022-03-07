@@ -4,6 +4,8 @@ package args
 import (
 	"fmt"
 	"os"
+
+	"github.com/m-kru/go-hdl/internal/utils"
 )
 
 const Version string = "0.0.0"
@@ -17,5 +19,17 @@ func Parse() {
 	argsLen := len(os.Args)
 	if argsLen == 1 {
 		printHelp()
+		os.Exit(1)
+	}
+
+	cmd := os.Args[1]
+	if !utils.IsValidCommand(cmd) {
+		printHelp()
+		os.Exit(1)
+	}
+
+	if cmd == "version" {
+		fmt.Printf("hdl version %s\n", Version)
+		os.Exit(0)
 	}
 }
