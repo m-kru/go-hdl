@@ -31,5 +31,15 @@ func Parse() {
 	if cmd == "version" {
 		fmt.Printf("hdl version %s\n", Version)
 		os.Exit(0)
+	} else if cmd == "help" {
+		if argsLen < 3 {
+			printHelp()
+		} else if !utils.IsValidCommand(os.Args[2]) {
+			printHelp()
+			os.Exit(1)
+		} else if os.Args[2] == "check" {
+			fmt.Printf(checkHelpMsg)
+		}
+		os.Exit(0)
 	}
 }

@@ -14,9 +14,8 @@ The commands are:
   check     check for extremely dumb mistakes
   doc       show or generate documentation
   generate  generate HDL files by processing sources
+  help      print more information about a specific command
   version   print hdl version
-
-Use "hdl help <command>" for more information about a command.
 `
 
 func printHelp() {

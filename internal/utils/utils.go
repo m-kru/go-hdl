@@ -10,7 +10,7 @@ import (
 
 func IsValidCommand(cmd string) bool {
 	validCommands := [...]string{
-		"check", "doc", "generate", "version",
+		"check", "doc", "generate", "help", "version",
 	}
 
 	for i, _ := range validCommands {
