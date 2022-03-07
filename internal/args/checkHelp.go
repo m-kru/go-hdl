@@ -3,6 +3,15 @@ package args
 var checkHelpMsg string = `Check command
 =============
 
+Usage
+-----
+
+hdl check
+
+
+Description
+-----------
+
 The check command checks for extremely dumb mistakes such as stucking resets
 to constant reset value. The check internally consists of independent,
 orthogonal scopes. Name of each scope reflects the functional scope that

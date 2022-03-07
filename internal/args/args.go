@@ -15,7 +15,9 @@ func printVersion() {
 	os.Exit(0)
 }
 
-func Parse() {
+func Parse() map[string]string {
+	args := map[string]string{}
+
 	argsLen := len(os.Args)
 	if argsLen == 1 {
 		printHelp()
@@ -27,6 +29,7 @@ func Parse() {
 		printHelp()
 		os.Exit(1)
 	}
+	args["command"] = os.Args[1]
 
 	if cmd == "version" {
 		fmt.Printf("hdl version %s\n", Version)
@@ -42,4 +45,6 @@ func Parse() {
 		}
 		os.Exit(0)
 	}
+
+	return args
 }

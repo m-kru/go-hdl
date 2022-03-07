@@ -4,7 +4,6 @@ package utils
 import (
 	"fmt"
 	"io/fs"
-	"os"
 	"path/filepath"
 )
 
@@ -22,15 +21,10 @@ func IsValidCommand(cmd string) bool {
 	return false
 }
 
-func GetFilePathsByExtension(ext string) ([]string, error) {
+func GetFilePathsByExtension(ext string, workDir string) ([]string, error) {
 	files := []string{}
 
-	workDir, err := os.Getwd()
-	if err != nil {
-		return files, fmt.Errorf("get file paths by '%s' extension: %v", ext, err)
-	}
-
-	err = filepath.Walk(workDir, func(path string, info fs.FileInfo, err error) error {
+	err := filepath.Walk(workDir, func(path string, info fs.FileInfo, err error) error {
 		if filepath.Ext(path) == ext {
 			files = append(files, path)
 		}
