@@ -20,9 +20,9 @@ The clock scope is capable of checking following mistakes:
   Mismatched frequency value in port and signal.
     Examples:
       clk_10=>clk_20,
-      clk_40_i => clk_160)
+      clock_40_i => clk_160)
       clk70 => clk_80
-      clk_70 => clk80_i
+      clk_70 => clock80_i
       clk70 => clk120
       clk70_i => clk120_i,
 
