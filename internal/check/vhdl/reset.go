@@ -5,15 +5,24 @@ import (
 	"strings"
 )
 
+var positiveReset string = `re?se?t((p)|(p_i)|(_p)|(_i)|(_p_i)|(_i_p))?\b`
+var negativeReset string = `re?se?t((n)|(n_i)|(_n)|(_n_i)|(_i_n))\b`
+
 var startsWithWhenRegexp *regexp.Regexp = regexp.MustCompile(`^\s*when\b`)
 
-var positiveResetPortMapRegexp *regexp.Regexp = regexp.MustCompile(`re?se?t((p)|(p_i)|(_p)|(_i)|(_p_i)|(_i_p))?\s*=>\s*(.+)`)
-var positiveResetRegexp *regexp.Regexp = regexp.MustCompile(`re?se?t((p)|(p_i)|(_p)|(_i)|(_p_i)|(_i_p))?\b`)
+var positiveResetPortMapRegexp *regexp.Regexp = regexp.MustCompile(positiveReset + `\s*=>\s*(.+)`)
+var positiveResetRegexp *regexp.Regexp = regexp.MustCompile(positiveReset)
 
-var negativeResetPortMapRegexp *regexp.Regexp = regexp.MustCompile(`re?se?t((n)|(n_i)|(_n)|(_n_i)|(_i_n))\s*=>\s*(.+)`)
-var negativeResetRegexp *regexp.Regexp = regexp.MustCompile(`re?se?t((n)|(n_i)|(_n)|(_n_i)|(_i_n))\b`)
+var negativeResetPortMapRegexp *regexp.Regexp = regexp.MustCompile(negativeReset + `\s*=>\s*(.+)`)
+var negativeResetRegexp *regexp.Regexp = regexp.MustCompile(negativeReset)
 
 var startsWithNotRegexp *regexp.Regexp = regexp.MustCompile(`^not((\s+)|(\s*\())`)
+
+var positiveResetInvalidIfConditionRegexp = regexp.MustCompile(`^\s*if((\s+)|(\s*\(\s*))` + positiveReset + `\s*=\s*'0'((\s*)|(\s*\)\s*))then`)
+var positiveResetInvalidIfConditionNoRHSRegexp = regexp.MustCompile(`^\s*if\s+not(\s+|(\s*\(\s*))` + positiveReset + `(\s*|(\s*\)\s*))then`)
+
+var negativeResetInvalidIfConditionRegexp = regexp.MustCompile(`^\s*if((\s+)|(\s*\(\s*))` + negativeReset + `\s*=\s*'1'((\s*)|(\s*\)\s*))then`)
+var negativeResetInvalidIfConditionNoRHSRegexp = regexp.MustCompile(`^\s*if((\s+)|(\s*\(\s*))` + negativeReset + `((\s+)|(\s*\)\s*))then`)
 
 func checkResetPortMapping(line string) (string, bool) {
 	if len(startsWithWhenRegexp.FindStringIndex(line)) > 0 {
@@ -86,6 +95,46 @@ func checkNegativeResetPortMapping(matches []string) (string, bool) {
 		return "negative reset mapped to positive reset", false
 	} else if reset == "negative" && negated {
 		return "negative reset mapped to negated negative reset", false
+	}
+
+	return "", true
+}
+
+func checkResetIfCondition(line string) (string, bool) {
+	if msg, ok := checkPositiveResetIfCondition(line); !ok {
+		return msg, ok
+	}
+
+	if msg, ok := checkNegativeResetIfCondition(line); !ok {
+		return msg, ok
+	}
+
+	return "", true
+}
+
+func checkPositiveResetIfCondition(line string) (string, bool) {
+	msg := "invalid positive reset condition"
+
+	if len(positiveResetInvalidIfConditionRegexp.FindStringIndex(line)) > 0 {
+		return msg, false
+	}
+
+	if len(positiveResetInvalidIfConditionNoRHSRegexp.FindStringIndex(line)) > 0 {
+		return msg, false
+	}
+
+	return "", true
+}
+
+func checkNegativeResetIfCondition(line string) (string, bool) {
+	msg := "invalid negative reset condition"
+
+	if len(negativeResetInvalidIfConditionRegexp.FindStringIndex(line)) > 0 {
+		return msg, false
+	}
+
+	if len(negativeResetInvalidIfConditionNoRHSRegexp.FindStringIndex(line)) > 0 {
+		return msg, false
 	}
 
 	return "", true

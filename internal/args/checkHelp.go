@@ -95,7 +95,7 @@ The reset scope is capable of checking following mistakes:
 
   Positive reset mapped to negated positive reset.
     Examples:
-      rst_p => not rst_p_i,
+      arst_p => not rst_p_i,
       reset => not(rst_p),
       rst_i => not wb_resetp,
 
@@ -103,7 +103,7 @@ The reset scope is capable of checking following mistakes:
     Examples:
       rst_n => '0',
       rst_n=>'0',
-      rstn => '0'
+      arstn => '0'
       reset_n_i=>'0',
       reset_n => '0',
       reset_n_i => '0',
@@ -127,4 +127,18 @@ The reset scope is capable of checking following mistakes:
       resetn => not(rst_n),
       rst_i_n => not wb_resetn,
       reset_n_i => not rstn);
+
+  Invalid positive reset if condition.
+    Examples:
+      if rst='0' then
+      if (reset='0') then
+      if not rst_p then
+      if not ( reset_i ) then
+
+  Invalid negative reset if condition.
+    Examples:
+      if rst_n ='1' then
+      if (rst_n ='1') then
+      if rst_n then
+      if  ( reset_n ) then
 `

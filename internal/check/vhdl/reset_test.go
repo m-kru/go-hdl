@@ -103,3 +103,69 @@ func TestNegativeResetMappedToPositiveReset(t *testing.T) {
 		}
 	}
 }
+
+func TestPositiveResetIfCondition(t *testing.T) {
+	var tests = []struct {
+		line string
+		msg  string
+		ok   bool
+	}{
+		// Invalid mappings
+		{line: "if rst='0' then", msg: "invalid positive reset condition", ok: false},
+		{line: "if(rst='0')then", msg: "invalid positive reset condition", ok: false},
+		{line: "   if rst_i = '0'  then ", msg: "invalid positive reset condition", ok: false},
+		{line: "	if  resetp_i ='0'  then ", msg: "invalid positive reset condition", ok: false},
+		{line: "if reset_p = '0'then", msg: "invalid positive reset condition", ok: false},
+		{line: "if rst_i_p = '0'then", msg: "invalid positive reset condition", ok: false},
+		{line: "if not rst then", msg: "invalid positive reset condition", ok: false},
+		{line: "if not(rst_i) then", msg: "invalid positive reset condition", ok: false},
+		{line: "if not ( reset ) then", msg: "invalid positive reset condition", ok: false},
+		// Valid mappings
+		{line: "if reset_p = '1' then", msg: "", ok: true},
+		{line: "if (reset_p = '1') then", msg: "", ok: true},
+		{line: "if rst_i = '1' then", msg: "", ok: true},
+		{line: "   if reset ='1' then ", msg: "", ok: true},
+		{line: "if reset then ", msg: "", ok: true},
+		{line: "   if  rst_p_i  then ", msg: "", ok: true},
+	}
+
+	for i, test := range tests {
+		msg, ok := checkPositiveResetIfCondition(test.line)
+		if msg != test.msg || ok != test.ok {
+			t.Errorf("[%d]: got (%v, %v); want (%v, %v)", i, msg, ok, test.msg, test.ok)
+		}
+	}
+}
+
+func TestNegativeResetIfCondition(t *testing.T) {
+	var tests = []struct {
+		line string
+		msg  string
+		ok   bool
+	}{
+		// Invalid mappings
+		{line: "if rst_n ='1' then", msg: "invalid negative reset condition", ok: false},
+		{line: "if (rst_n ='1') then", msg: "invalid negative reset condition", ok: false},
+		{line: "if(rst_n ='1')then", msg: "invalid negative reset condition", ok: false},
+		{line: "   if rst_i_n = '1'  then ", msg: "invalid negative reset condition", ok: false},
+		{line: "	if  resetn_i ='1'  then ", msg: "invalid negative reset condition", ok: false},
+		{line: "if reset_n = '1'then", msg: "invalid negative reset condition", ok: false},
+		{line: "if rst_i_n = '1'then", msg: "invalid negative reset condition", ok: false},
+		{line: "if rst_n then", msg: "invalid negative reset condition", ok: false},
+		{line: "if rstn_i then", msg: "invalid negative reset condition", ok: false},
+		{line: "if  ( reset_n ) then", msg: "invalid negative reset condition", ok: false},
+		// Valid mappings
+		{line: "if reset_n = '0' then", msg: "", ok: true},
+		{line: "if rst_n_i = '0' then", msg: "", ok: true},
+		{line: "   if reset_n ='0' then ", msg: "", ok: true},
+		{line: "if not(reset_n) then ", msg: "", ok: true},
+		{line: "   if not rst_n_i  then ", msg: "", ok: true},
+	}
+
+	for i, test := range tests {
+		msg, ok := checkNegativeResetIfCondition(test.line)
+		if msg != test.msg || ok != test.ok {
+			t.Errorf("[%d]: got (%v, %v); want (%v, %v)", i, msg, ok, test.msg, test.ok)
+		}
+	}
+}
