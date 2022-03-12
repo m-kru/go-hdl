@@ -56,5 +56,9 @@ func checkFile(filepath string, wg *sync.WaitGroup) {
 			fmt.Printf("%s:%d: %s\n%s\n\n", filepath, lineNum, msg, line)
 		}
 
+		if msg, ok := checkResetIfCondition(lineLower); !ok {
+			fmt.Printf("%s:%d: %s\n%s\n\n", filepath, lineNum, msg, line)
+		}
+
 	}
 }
