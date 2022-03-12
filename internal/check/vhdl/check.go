@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"time"
 )
 
 func Check(filepaths []string, wg *sync.WaitGroup) {
@@ -24,9 +25,20 @@ func Check(filepaths []string, wg *sync.WaitGroup) {
 func checkFile(filepath string, wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	f, err := os.Open(filepath)
-	if err != nil {
-		log.Fatalf("check file %s: %v", filepath, err)
+	var f *os.File
+	var err error
+
+	for {
+		f, err = os.Open(filepath)
+		if err != nil {
+			if strings.HasSuffix(err.Error(), "too many open files") {
+				time.Sleep(1e6)
+			} else {
+				log.Fatalf("check file %s: %v", filepath, err)
+			}
+		} else {
+			break
+		}
 	}
 
 	ioScanner := bufio.NewScanner(f)
