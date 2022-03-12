@@ -16,9 +16,9 @@ The check command checks for extremely dumb mistakes such as stucking resets
 to constant reset value. The check internally consists of independent,
 orthogonal scopes. Name of each scope reflects the functional scope that
 is actually checked by given scope. Currently following scopes exist:
-- clock - checks mistakes related with clock pins mappings,
+- clock - checks mistakes related with clock ports mappings,
 - process - checks mistakes related with process coding,
-- reset - checks mistakes related with reset pins mappings.
+- reset - checks mistakes related with reset ports mappings and reset if conditions.
 
 
 Clock scope
