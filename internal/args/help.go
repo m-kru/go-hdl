@@ -8,14 +8,14 @@ var helpMsg string = `Hdl is a tool for easing the work with hardware descriptio
 Version: %s
 
 Usage:
-  hdl <command> [arguments]
+  thdl <command> [arguments]
 
 The commands are:
   check     check for extremely dumb mistakes
   doc       show or generate documentation
   generate  generate HDL files by processing sources
   help      print more information about a specific command
-  version   print hdl version
+  version   print thdl version
 `
 
 func printHelp() {

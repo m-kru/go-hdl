@@ -3,8 +3,8 @@ package main
 import (
 	_ "fmt"
 
-	"github.com/m-kru/go-hdl/internal/args"
-	"github.com/m-kru/go-hdl/internal/check"
+	"github.com/m-kru/go-thdl/internal/args"
+	"github.com/m-kru/go-thdl/internal/check"
 )
 
 func main() {

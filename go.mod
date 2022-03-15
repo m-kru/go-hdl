@@ -1,3 +1,3 @@
-module github.com/m-kru/go-hdl
+module github.com/m-kru/go-thdl
 
 go 1.17

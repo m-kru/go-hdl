@@ -12,7 +12,7 @@ for dir in $(find . -maxdepth 4 -mindepth 4 -type d);
 do
 	echo "    $dir"
 	cd $dir
-	../../../../../../hdl check > stdout || true
+	../../../../../../thdl check > stdout || true
 	diff --color stdout.golden stdout
 	rm stdout
 	cd ../../../..

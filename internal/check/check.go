@@ -1,8 +1,8 @@
 package check
 
 import (
-	"github.com/m-kru/go-hdl/internal/check/vhdl"
-	"github.com/m-kru/go-hdl/internal/utils"
+	"github.com/m-kru/go-thdl/internal/check/vhdl"
+	"github.com/m-kru/go-thdl/internal/utils"
 	"log"
 	"sync"
 )

@@ -6,7 +6,7 @@ var checkHelpMsg string = `Check command
 Usage
 -----
 
-hdl check
+thdl check
 
 
 Description
@@ -56,13 +56,13 @@ The process scope is capable of checking following mistakes:
 Reset scope
 -----------
 
-Note: As hdl is solely based on the text processing and knows nothing about the semantic context,
+Note: As thdl is solely based on the text processing and knows nothing about the semantic context,
 it imposes some requirements on the port and signal names. Some may find these requirements
 stupid and unacceptable. However, they seem to be quite sane if one looks from the lexical point of view.
 For example, resets are often associated with some functionality. Let's assume we have reset signal
 for resetting some crossbar on a Wishbone bus. To indicate the functionality such signal can be named
 {functionality}_{reset} (for example 'wb_rst') or {reset}_{functionality} (for example 'rst_wb').
-The hdl reuquires from engineers to use the first form. Why is {reset}_{functionality} wrong?
+The thdl reuquires from engineers to use the first form. Why is {reset}_{functionality} wrong?
 Because in this case the "reset" part is a verb, such name would be good for procedure or function.
 In {functionality}_{reset} the "reset" part is a noun. This order is the valid choice when you realize
 that port or signal name is actually a nomina propria. The second requirement is that if 'p' or 'n'

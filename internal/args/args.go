@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/m-kru/go-hdl/internal/utils"
+	"github.com/m-kru/go-thdl/internal/utils"
 )
 
 const Version string = "0.0.0"
@@ -32,7 +32,7 @@ func Parse() map[string]string {
 	args["command"] = os.Args[1]
 
 	if cmd == "version" {
-		fmt.Printf("hdl version %s\n", Version)
+		fmt.Printf("thdl version %s\n", Version)
 		os.Exit(0)
 	} else if cmd == "help" {
 		if argsLen < 3 {

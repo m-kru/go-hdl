@@ -1,4 +1,4 @@
-PROJECT_NAME=hdl
+PROJECT_NAME=thdl
 
 default: build
 
