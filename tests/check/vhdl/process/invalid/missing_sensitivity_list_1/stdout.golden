@@ -1,0 +1,4 @@
+test.vhd: 'clk' found in the edge function, but sensitivity list is missing
+1:process is
+2:   if rising_edge(clk) then
+

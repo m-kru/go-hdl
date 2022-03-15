@@ -5,10 +5,15 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
 )
+
+var commentLineRegExp *regexp.Regexp = regexp.MustCompile(`^\s*--`)
+
+var fmtStr = "%s: %s\n%d:%s\n\n"
 
 func Check(filepaths []string, wg *sync.WaitGroup) {
 	var filesWg sync.WaitGroup
@@ -41,24 +46,34 @@ func checkFile(filepath string, wg *sync.WaitGroup) {
 		}
 	}
 
+	pCtx := processContext{sensitivityList: []string{}}
+
 	ioScanner := bufio.NewScanner(f)
-	lineNum := 0
+	lineNum := uint(0)
 	for ioScanner.Scan() {
 		lineNum += 1
 		line := ioScanner.Text()
+
+		if len(commentLineRegExp.FindStringIndex(line)) > 0 {
+			continue
+		}
+
 		lineLower := strings.ToLower(line)
 
 		if msg, ok := checkClockPortMapping(lineLower); !ok {
-			fmt.Printf("%s:%d: %s\n%s\n\n", filepath, lineNum, msg, line)
+			fmt.Printf(fmtStr, filepath, msg, lineNum, line)
 		}
 
 		if msg, ok := checkResetPortMapping(lineLower); !ok {
-			fmt.Printf("%s:%d: %s\n%s\n\n", filepath, lineNum, msg, line)
+			fmt.Printf(fmtStr, filepath, msg, lineNum, line)
 		}
 
 		if msg, ok := checkResetIfCondition(lineLower); !ok {
-			fmt.Printf("%s:%d: %s\n%s\n\n", filepath, lineNum, msg, line)
+			fmt.Printf(fmtStr, filepath, msg, lineNum, line)
 		}
 
+		if msg, ok := checkProcessSensitivityList(lineLower, lineNum, &pCtx); !ok {
+			fmt.Printf(fmtStr, filepath, msg, lineNum, line)
+		}
 	}
 }

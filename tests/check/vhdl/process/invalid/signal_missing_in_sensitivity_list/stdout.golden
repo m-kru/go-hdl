@@ -1,0 +1,4 @@
+test.vhd: 'bar' not found in the sensitivity list
+1:process (foo) is
+2:   if rising_edge(bar) then
+
