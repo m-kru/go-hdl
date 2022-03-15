@@ -8,6 +8,7 @@ import (
 
 var processRegexp *regexp.Regexp = regexp.MustCompile(`\bprocess\b`)
 var endProcessRegexp *regexp.Regexp = regexp.MustCompile(`^\s*end\s+process\b`)
+var startsWithBegin *regexp.Regexp = regexp.MustCompile(`^\s*begin\b`)
 var startsWithWait *regexp.Regexp = regexp.MustCompile(`^\s*wait\b`)
 var processWithSensitivityListRegexp *regexp.Regexp = regexp.MustCompile(`\bprocess\b\s*\((.*)\)`)
 var ingEdgeRegexp *regexp.Regexp = regexp.MustCompile(`\b(ris|fall)ing_edge\b\s*\(\s*(.*)\s*\)`)
@@ -39,6 +40,9 @@ func checkProcessSensitivityList(line string, lineNum uint, pc *processContext) 
 		pc.sensitivityList = []string{}
 		return "", true
 	} else if len(processRegexp.FindStringIndex(line)) > 0 {
+		if aux := startsWithBegin.FindStringIndex(line); len(aux) > 0 {
+			return "", true
+		}
 		pc.sensitivityListLineNum = lineNum
 		pc.sensitivityListLine = line
 		pc.sensitivityList = []string{}
