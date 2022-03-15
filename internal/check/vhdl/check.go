@@ -11,6 +11,8 @@ import (
 	"time"
 )
 
+var ignoreNextLineRegExp *regexp.Regexp = regexp.MustCompile(`^\s*--thdl:ignore`)
+var ignoreThisLineRegExp *regexp.Regexp = regexp.MustCompile(`--thdl:ignore\s*$`)
 var commentLineRegExp *regexp.Regexp = regexp.MustCompile(`^\s*--`)
 
 var fmtStr = "%s: %s\n%d:%s\n\n"
@@ -50,11 +52,20 @@ func checkFile(filepath string, wg *sync.WaitGroup) {
 
 	ioScanner := bufio.NewScanner(f)
 	lineNum := uint(0)
+	ignoreNextLine := false
 	for ioScanner.Scan() {
 		lineNum += 1
 		line := ioScanner.Text()
 
-		if len(commentLineRegExp.FindStringIndex(line)) > 0 {
+		if len(ignoreNextLineRegExp.FindStringIndex(line)) > 0 {
+			ignoreNextLine = true
+			continue
+		} else if ignoreNextLine {
+			ignoreNextLine = false
+			continue
+		} else if len(commentLineRegExp.FindStringIndex(line)) > 0 {
+			continue
+		} else if len(ignoreThisLineRegExp.FindStringIndex(line)) > 0 {
 			continue
 		}
 
