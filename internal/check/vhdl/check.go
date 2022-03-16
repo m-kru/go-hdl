@@ -2,20 +2,19 @@ package vhdl
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"os"
 	"regexp"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/m-kru/go-thdl/internal/check/rprt"
 )
 
 var ignoreNextLineRegExp *regexp.Regexp = regexp.MustCompile(`^\s*--thdl:ignore`)
 var ignoreThisLineRegExp *regexp.Regexp = regexp.MustCompile(`--thdl:ignore\s*$`)
 var commentLineRegExp *regexp.Regexp = regexp.MustCompile(`^\s*--`)
-
-var fmtStr = "%s: %s\n%d:%s\n\n"
 
 func Check(filepaths []string, wg *sync.WaitGroup) {
 	var filesWg sync.WaitGroup
@@ -72,19 +71,19 @@ func checkFile(filepath string, wg *sync.WaitGroup) {
 		lineLower := strings.ToLower(line)
 
 		if msg, ok := checkClockPortMapping(lineLower); !ok {
-			fmt.Printf(fmtStr, filepath, msg, lineNum, line)
+			rprt.Report(filepath, msg, lineNum, line)
 		}
 
 		if msg, ok := checkResetPortMapping(lineLower); !ok {
-			fmt.Printf(fmtStr, filepath, msg, lineNum, line)
+			rprt.Report(filepath, msg, lineNum, line)
 		}
 
 		if msg, ok := checkResetIfCondition(lineLower); !ok {
-			fmt.Printf(fmtStr, filepath, msg, lineNum, line)
+			rprt.Report(filepath, msg, lineNum, line)
 		}
 
 		if msg, ok := checkProcessSensitivityList(lineLower, lineNum, &pCtx); !ok {
-			fmt.Printf(fmtStr, filepath, msg, lineNum, line)
+			rprt.Report(filepath, msg, lineNum, line)
 		}
 	}
 }
