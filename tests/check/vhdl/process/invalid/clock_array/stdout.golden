@@ -1,0 +1,4 @@
+test.vhd: 'clks_i(i)' not found in the sensitivity list
+2:  sync : process(clks_i, gc_reset_async_in)
+6:    elsif rising_edge(clks_i(i)) then
+

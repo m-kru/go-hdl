@@ -11,7 +11,7 @@ var endProcessRegexp *regexp.Regexp = regexp.MustCompile(`^\s*end\s+process\b`)
 var startsWithBegin *regexp.Regexp = regexp.MustCompile(`^\s*begin\b`)
 var startsWithWait *regexp.Regexp = regexp.MustCompile(`^\s*wait\b`)
 var processWithSensitivityListRegexp *regexp.Regexp = regexp.MustCompile(`\bprocess\b\s*\((.*)\)`)
-var ingEdgeRegexp *regexp.Regexp = regexp.MustCompile(`\b(ris|fall)ing_edge\b\s*\(\s*(.*)\s*\)`)
+var ingEdgeRegexp *regexp.Regexp = regexp.MustCompile(`\(?\s*(ris|fall)ing_edge\s*\(\s*((\w*)|(\w*\s*\(\w\)))\s*\)\s*\)?`)
 
 type processContext struct {
 	sensitivityListLineNum uint
@@ -59,17 +59,6 @@ func checkProcessSensitivityList(line string, lineNum uint, pc *processContext) 
 		}
 
 		signal := matches[2]
-		// Handle some special cases that are not easy to handle with regex.
-		if strings.HasSuffix(signal, "))") {
-			signal = signal[:len(signal)-1]
-		}
-		if strings.HasSuffix(signal, ")") {
-			if strings.Contains(signal, "(") {
-				signal = strings.Split(signal, "(")[0]
-			} else {
-				signal = signal[:len(signal)-1]
-			}
-		}
 
 		if len(pc.sensitivityList) == 0 {
 			return fmt.Sprintf(

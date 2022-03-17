@@ -46,6 +46,7 @@ func checkFile(filepath string, wg *sync.WaitGroup) {
 			break
 		}
 	}
+	defer f.Close()
 
 	pCtx := processContext{sensitivityList: []string{}}
 
