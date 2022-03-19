@@ -22,7 +22,7 @@ func TestPositiveResetStuckToOne(t *testing.T) {
 	}
 
 	for i, test := range tests {
-		msg, ok := checkResetPortMapping(test.line)
+		msg, ok := checkResetPortMapping([]byte(test.line))
 		if msg != test.msg || ok != test.ok {
 			t.Errorf("[%d]: got (%v, %v); want (%v, %v)", i, msg, ok, test.msg, test.ok)
 		}
@@ -48,7 +48,7 @@ func TestPositiveResetMappedToNegativeReset(t *testing.T) {
 	}
 
 	for i, test := range tests {
-		msg, ok := checkResetPortMapping(test.line)
+		msg, ok := checkResetPortMapping([]byte(test.line))
 		if msg != test.msg || ok != test.ok {
 			t.Errorf("[%d]: got (%v, %v); want (%v, %v)", i, msg, ok, test.msg, test.ok)
 		}
@@ -72,7 +72,7 @@ func TestNegativeResetStuckToZero(t *testing.T) {
 	}
 
 	for i, test := range tests {
-		msg, ok := checkResetPortMapping(test.line)
+		msg, ok := checkResetPortMapping([]byte(test.line))
 		if msg != test.msg || ok != test.ok {
 			t.Errorf("[%d]: got (%v, %v); want (%v, %v)", i, msg, ok, test.msg, test.ok)
 		}
@@ -97,7 +97,7 @@ func TestNegativeResetMappedToPositiveReset(t *testing.T) {
 	}
 
 	for i, test := range tests {
-		msg, ok := checkResetPortMapping(test.line)
+		msg, ok := checkResetPortMapping([]byte(test.line))
 		if msg != test.msg || ok != test.ok {
 			t.Errorf("[%d]: got (%v, %v); want (%v, %v)", i, msg, ok, test.msg, test.ok)
 		}
@@ -130,7 +130,7 @@ func TestPositiveResetIfCondition(t *testing.T) {
 	}
 
 	for i, test := range tests {
-		msg, ok := checkPositiveResetIfCondition(test.line)
+		msg, ok := checkPositiveResetIfCondition([]byte(test.line))
 		if msg != test.msg || ok != test.ok {
 			t.Errorf("[%d]: got (%v, %v); want (%v, %v)", i, msg, ok, test.msg, test.ok)
 		}
@@ -163,7 +163,7 @@ func TestNegativeResetIfCondition(t *testing.T) {
 	}
 
 	for i, test := range tests {
-		msg, ok := checkNegativeResetIfCondition(test.line)
+		msg, ok := checkNegativeResetIfCondition([]byte(test.line))
 		if msg != test.msg || ok != test.ok {
 			t.Errorf("[%d]: got (%v, %v); want (%v, %v)", i, msg, ok, test.msg, test.ok)
 		}

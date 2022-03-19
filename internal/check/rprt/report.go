@@ -14,8 +14,8 @@ func ViolationCount() uint32 {
 
 var fmtStr = "%s: %s\n%d:%s\n\n"
 
-func Report(filepath string, msg string, lineNum uint, line string) {
+func Report(filepath string, msg string, lineNum uint, line []byte) {
 	atomic.AddUint32(&violationCounter, 1)
 
-	fmt.Printf(fmtStr, filepath, msg, lineNum, line)
+	fmt.Printf(fmtStr, filepath, msg, lineNum, string(line))
 }

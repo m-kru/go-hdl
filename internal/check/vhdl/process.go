@@ -1,9 +1,10 @@
 package vhdl
 
 import (
+	"bytes"
 	"fmt"
 	"regexp"
-	"strings"
+	_ "strings"
 )
 
 var processRegexp *regexp.Regexp = regexp.MustCompile(`\bprocess\b`)
@@ -29,32 +30,32 @@ func (pc processContext) inSensitivityList(s string) bool {
 	return false
 }
 
-func checkProcessSensitivityList(line string, lineNum uint, pc *processContext) (string, bool) {
-	if matches := processWithSensitivityListRegexp.FindStringSubmatch(line); len(matches) > 0 {
+func checkProcessSensitivityList(line []byte, lineNum uint, pc *processContext) (string, bool) {
+	if matches := processWithSensitivityListRegexp.FindSubmatch(line); len(matches) > 0 {
 		pc.sensitivityListLineNum = lineNum
-		pc.sensitivityListLine = line
+		pc.sensitivityListLine = string(line)
 		pc.sensitivityList = parseSensitivityList(matches[1])
-	} else if len(endProcessRegexp.FindStringIndex(line)) > 0 {
+	} else if len(endProcessRegexp.FindIndex(line)) > 0 {
 		pc.sensitivityListLineNum = 0
 		pc.sensitivityListLine = ""
 		pc.sensitivityList = []string{}
 		return "", true
-	} else if len(processRegexp.FindStringIndex(line)) > 0 {
-		if aux := startsWithBegin.FindStringIndex(line); len(aux) > 0 {
+	} else if len(processRegexp.FindIndex(line)) > 0 {
+		if aux := startsWithBegin.FindIndex(line); len(aux) > 0 {
 			return "", true
 		}
 		pc.sensitivityListLineNum = lineNum
-		pc.sensitivityListLine = line
+		pc.sensitivityListLine = string(line)
 		pc.sensitivityList = []string{}
 	}
 
-	if matches := ingEdgeRegexp.FindStringSubmatch(line); len(matches) > 0 {
+	if matches := ingEdgeRegexp.FindSubmatch(line); len(matches) > 0 {
 		// Ignore typical test bench use cases.
-		if aux := startsWithWait.FindStringIndex(line); len(aux) > 0 {
+		if aux := startsWithWait.FindIndex(line); len(aux) > 0 {
 			return "", true
 		}
 		// Ignore some rare, but synthesizable constructs.
-		if strings.Contains(line, "<=") && strings.Contains(line, "when") {
+		if bytes.Contains(line, []byte("<=")) && bytes.Contains(line, []byte("when")) {
 			return "", true
 		}
 
@@ -68,7 +69,7 @@ func checkProcessSensitivityList(line string, lineNum uint, pc *processContext) 
 				false
 		}
 
-		if !pc.inSensitivityList(signal) {
+		if !pc.inSensitivityList(string(signal)) {
 			return fmt.Sprintf(
 					"'%s' not found in the sensitivity list\n%d:%s",
 					signal, pc.sensitivityListLineNum, pc.sensitivityListLine,
@@ -80,12 +81,12 @@ func checkProcessSensitivityList(line string, lineNum uint, pc *processContext) 
 	return "", true
 }
 
-func parseSensitivityList(s string) []string {
+func parseSensitivityList(s []byte) []string {
 	list := []string{}
-	elems := strings.Split(s, ",")
+	elems := bytes.Split(s, []byte(","))
 	for _, e := range elems {
-		if e != "" {
-			list = append(list, strings.Trim(e, " \t"))
+		if !bytes.Equal(e, []byte("")) {
+			list = append(list, string(bytes.Trim(e, " \t")))
 		}
 	}
 	return list

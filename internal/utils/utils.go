@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/fs"
 	"path/filepath"
+	"strings"
 )
 
 func IsValidCommand(cmd string) bool {
@@ -35,4 +36,15 @@ func GetFilePathsByExtension(ext string, workDir string) ([]string, error) {
 	}
 
 	return files, nil
+}
+
+// IsIgnoredVHDLFile returns true if given file should be ignored.
+// For example, it may be a Xilinx encrypted file.
+// In such case there is no point in analyzing its content.
+func IsIgnoredVHDLFile(filepath string) bool {
+	// Ignore Xilinx encrypted files.
+	if strings.HasSuffix(filepath, "_rfs.vhd") {
+		return true
+	}
+	return false
 }

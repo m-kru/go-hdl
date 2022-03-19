@@ -25,7 +25,7 @@ func TestCheckClockPortMapping(t *testing.T) {
 	}
 
 	for i, test := range tests {
-		msg, ok := checkClockPortMapping(test.line)
+		msg, ok := checkClockPortMapping([]byte(test.line))
 		if msg != test.msg || ok != test.ok {
 			t.Errorf("[%d]: got (%v, %v); want (%v, %v)", i, msg, ok, test.msg, test.ok)
 		}

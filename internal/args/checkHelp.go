@@ -20,6 +20,10 @@ is actually checked by given scope. Currently following scopes exist:
 - process - checks mistakes related with process coding,
 - reset - checks mistakes related with reset ports mappings and reset if conditions.
 
+Thdl by default ignores some files, as checking them makes no sense.
+If the file path matches one of the ignored patterns, then it won't be checked.
+Ignored file paths:
+- *_rfs.vhd - Xilinx VHDL encrypted files.
 
 Clock scope
 -----------

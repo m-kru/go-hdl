@@ -1,8 +1,9 @@
 package vhdl
 
 import (
+	"bytes"
 	"regexp"
-	"strings"
+	_ "strings"
 )
 
 var positiveReset string = `re?se?t((p)|(p_i)|(_p)|(_i)|(_p_i)|(_i_p))?\b`
@@ -24,16 +25,16 @@ var positiveResetInvalidIfConditionNoRHSRegexp = regexp.MustCompile(`^\s*if\s+no
 var negativeResetInvalidIfConditionRegexp = regexp.MustCompile(`^\s*if((\s+)|(\s*\(\s*))` + negativeReset + `\s*=\s*'1'((\s*)|(\s*\)\s*))then`)
 var negativeResetInvalidIfConditionNoRHSRegexp = regexp.MustCompile(`^\s*if((\s+)|(\s*\(\s*))` + negativeReset + `((\s+)|(\s*\)\s*))then`)
 
-func checkResetPortMapping(line string) (string, bool) {
-	if len(startsWithWhenRegexp.FindStringIndex(line)) > 0 {
+func checkResetPortMapping(line []byte) (string, bool) {
+	if len(startsWithWhenRegexp.FindIndex(line)) > 0 {
 		return "", true
 	}
 
-	if matches := positiveResetPortMapRegexp.FindStringSubmatch(line); len(matches) > 0 {
+	if matches := positiveResetPortMapRegexp.FindSubmatch(line); len(matches) > 0 {
 		if msg, ok := checkPositiveResetPortMapping(matches); !ok {
 			return msg, ok
 		}
-	} else if matches := negativeResetPortMapRegexp.FindStringSubmatch(line); len(matches) > 0 {
+	} else if matches := negativeResetPortMapRegexp.FindSubmatch(line); len(matches) > 0 {
 		if msg, ok := checkNegativeResetPortMapping(matches); !ok {
 			return msg, ok
 		}
@@ -42,23 +43,23 @@ func checkResetPortMapping(line string) (string, bool) {
 	return "", true
 }
 
-func checkPositiveResetPortMapping(matches []string) (string, bool) {
+func checkPositiveResetPortMapping(matches [][]byte) (string, bool) {
 	assignee := matches[len(matches)-1]
 
-	if strings.HasPrefix(assignee, "'1'") {
+	if bytes.HasPrefix(assignee, []byte("'1'")) {
 		return "positive reset stuck to '1'", false
 	}
 
 	negated := false
-	if len(startsWithNotRegexp.FindStringIndex(assignee)) > 0 {
+	if len(startsWithNotRegexp.FindIndex(assignee)) > 0 {
 		negated = true
 	}
 
 	reset := ""
 
-	if len(negativeResetRegexp.FindStringIndex(assignee)) > 0 {
+	if len(negativeResetRegexp.FindIndex(assignee)) > 0 {
 		reset = "negative"
-	} else if len(positiveResetRegexp.FindStringIndex(assignee)) > 0 {
+	} else if len(positiveResetRegexp.FindIndex(assignee)) > 0 {
 		reset = "positive"
 	}
 
@@ -71,23 +72,23 @@ func checkPositiveResetPortMapping(matches []string) (string, bool) {
 	return "", true
 }
 
-func checkNegativeResetPortMapping(matches []string) (string, bool) {
+func checkNegativeResetPortMapping(matches [][]byte) (string, bool) {
 	assignee := matches[len(matches)-1]
 
-	if strings.HasPrefix(assignee, "'0'") {
+	if bytes.HasPrefix(assignee, []byte("'0'")) {
 		return "negative reset stuck to '0'", false
 	}
 
 	negated := false
-	if len(startsWithNotRegexp.FindStringIndex(assignee)) > 0 {
+	if len(startsWithNotRegexp.FindIndex(assignee)) > 0 {
 		negated = true
 	}
 
 	reset := ""
 
-	if len(negativeResetRegexp.FindStringIndex(assignee)) > 0 {
+	if len(negativeResetRegexp.FindIndex(assignee)) > 0 {
 		reset = "negative"
-	} else if len(positiveResetRegexp.FindStringIndex(assignee)) > 0 {
+	} else if len(positiveResetRegexp.FindIndex(assignee)) > 0 {
 		reset = "positive"
 	}
 
@@ -100,7 +101,7 @@ func checkNegativeResetPortMapping(matches []string) (string, bool) {
 	return "", true
 }
 
-func checkResetIfCondition(line string) (string, bool) {
+func checkResetIfCondition(line []byte) (string, bool) {
 	if msg, ok := checkPositiveResetIfCondition(line); !ok {
 		return msg, ok
 	}
@@ -112,28 +113,28 @@ func checkResetIfCondition(line string) (string, bool) {
 	return "", true
 }
 
-func checkPositiveResetIfCondition(line string) (string, bool) {
+func checkPositiveResetIfCondition(line []byte) (string, bool) {
 	msg := "invalid positive reset condition"
 
-	if len(positiveResetInvalidIfConditionRegexp.FindStringIndex(line)) > 0 {
+	if len(positiveResetInvalidIfConditionRegexp.FindIndex(line)) > 0 {
 		return msg, false
 	}
 
-	if len(positiveResetInvalidIfConditionNoRHSRegexp.FindStringIndex(line)) > 0 {
+	if len(positiveResetInvalidIfConditionNoRHSRegexp.FindIndex(line)) > 0 {
 		return msg, false
 	}
 
 	return "", true
 }
 
-func checkNegativeResetIfCondition(line string) (string, bool) {
+func checkNegativeResetIfCondition(line []byte) (string, bool) {
 	msg := "invalid negative reset condition"
 
-	if len(negativeResetInvalidIfConditionRegexp.FindStringIndex(line)) > 0 {
+	if len(negativeResetInvalidIfConditionRegexp.FindIndex(line)) > 0 {
 		return msg, false
 	}
 
-	if len(negativeResetInvalidIfConditionNoRHSRegexp.FindStringIndex(line)) > 0 {
+	if len(negativeResetInvalidIfConditionNoRHSRegexp.FindIndex(line)) > 0 {
 		return msg, false
 	}
 
