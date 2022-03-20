@@ -42,8 +42,17 @@ func Parse() map[string]string {
 			os.Exit(1)
 		} else if os.Args[2] == "check" {
 			fmt.Printf(checkHelpMsg)
+		} else if os.Args[2] == "doc" {
+			fmt.Printf(docHelpMsg)
 		}
 		os.Exit(0)
+	} else if cmd == "doc" {
+		if argsLen < 3 {
+			fmt.Printf("missing symbol path\n")
+			os.Exit(1)
+		}
+		// Path to symbol is always the last argument.
+		args["symbolPath"] = os.Args[argsLen-1]
 	}
 
 	return args

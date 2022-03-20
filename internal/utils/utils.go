@@ -22,6 +22,22 @@ func IsValidCommand(cmd string) bool {
 	return false
 }
 
+var validLangs [1]string = [...]string{"vhdl"}
+
+func ValidLangs() [1]string {
+	return validLangs
+}
+
+func IsValidLang(lang string) bool {
+	for i, _ := range validLangs {
+		if lang == validLangs[i] {
+			return true
+		}
+	}
+
+	return false
+}
+
 func GetFilePathsByExtension(ext string, workDir string) ([]string, error) {
 	files := []string{}
 
