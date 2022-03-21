@@ -7,4 +7,5 @@ type Symbol interface {
 	GetSymbol(name string) (Symbol, bool) // Get inner symbol.
 	Doc() string
 	Code() string
+	DocAndCode() string
 }

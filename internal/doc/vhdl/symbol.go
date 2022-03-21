@@ -43,3 +43,17 @@ func (s Symbol) Code() string {
 
 	return string(f[s.codeStart:s.codeEnd])
 }
+
+func (s Symbol) DocAndCode() string {
+	f, err := os.ReadFile(s.filepath)
+	if err != nil {
+		log.Fatalf("reading '%s' entity code: error reading file %s: %v",
+			s.name, s.filepath, err,
+		)
+	}
+
+	doc := string(f[s.docStart:s.docEnd])
+	code := string(f[s.codeStart:s.codeEnd])
+
+	return doc + code
+}

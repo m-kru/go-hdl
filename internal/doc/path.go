@@ -15,6 +15,14 @@ type symbolPath struct {
 }
 
 func (sp symbolPath) String() string {
+	if sp.secondary == "" {
+		return fmt.Sprintf("%s:%s.%s", sp.language, sp.library, sp.primary)
+	}
+
+	return fmt.Sprintf("%s:%s.%s.%s", sp.language, sp.library, sp.primary, sp.secondary)
+}
+
+func (sp symbolPath) DebugString() string {
 	return fmt.Sprintf(
 		"Symbol path:\n  Language:  %s\n  Library:   %s\n  Primary:   %s\n  Secondary: %s\n",
 		sp.language, sp.library, sp.primary, sp.secondary,
