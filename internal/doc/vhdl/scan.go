@@ -100,9 +100,11 @@ func scanFile(filepath string, wg *sync.WaitGroup) {
 
 func scanEntityDeclaration(filepath string, name string, sc *scanContext) (symbol.Symbol, error) {
 	ent := Entity{
-		filepath:  filepath,
-		name:      name,
-		codeStart: sc.startIdx,
+		Symbol{
+			filepath:  filepath,
+			name:      name,
+			codeStart: sc.startIdx,
+		},
 	}
 
 	if sc.docPresent {
