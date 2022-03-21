@@ -34,6 +34,9 @@ func Doc(args args.DocArgs) uint8 {
 			fmt.Printf("%s\n\n", sym.Filepath())
 			doc, code := sym.DocCode()
 			fmt.Printf(doc)
+			if !args.NoBold {
+				code = utils.BoldCodeTerminal(path.language, code)
+			}
 			fmt.Printf(code)
 		}
 	} else {

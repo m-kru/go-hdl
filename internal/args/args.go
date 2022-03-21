@@ -69,6 +69,8 @@ func Parse() Args {
 			switch arg {
 			case "--fusesoc":
 				docArgs.Fusesoc = true
+			case "--no-bold":
+				docArgs.NoBold = true
 			default:
 				fmt.Printf("invalid doc command flag '%s'\n", arg)
 				os.Exit(1)
