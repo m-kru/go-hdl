@@ -13,15 +13,15 @@ import (
 func main() {
 	log.SetFlags(0)
 
-	cmdLineArgs := args.Parse()
+	args := args.Parse()
 
-	if cmdLineArgs["command"] == "check" {
-		check.Check(cmdLineArgs)
+	if args.Cmd == "check" {
+		check.Check(args.CheckArgs)
 		if rprt.ViolationCount() > 0 {
 			os.Exit(1)
 		}
-	} else if cmdLineArgs["command"] == "doc" {
-		if doc.Doc(cmdLineArgs) > 0 {
+	} else if args.Cmd == "doc" {
+		if doc.Doc(args.DocArgs) > 0 {
 			os.Exit(1)
 		}
 	}

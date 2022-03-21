@@ -8,20 +8,6 @@ import (
 	"strings"
 )
 
-func IsValidCommand(cmd string) bool {
-	validCommands := [...]string{
-		"check", "doc", "generate", "help", "version",
-	}
-
-	for i, _ := range validCommands {
-		if cmd == validCommands[i] {
-			return true
-		}
-	}
-
-	return false
-}
-
 var validLangs [1]string = [...]string{"vhdl"}
 
 func ValidLangs() [1]string {

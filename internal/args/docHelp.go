@@ -6,7 +6,11 @@ var docHelpMsg string = `Doc command
 Usage
 -----
 
-thdl doc [<language>:][<library>.]primarySymbol[.secondarySymbol]
+thdl doc [flags] [<language>:][<library>.]<primarySymbol>[.<secondarySymbol>]
+
+Flags:
+  --no-bold  Don't print language keywords in bold.
+  --fusesoc  Infer libraries from FuseSoc .core files.
 
 Language is one of:
  - VHDL
@@ -19,6 +23,10 @@ If multiple symbols are found, then ambiguity is reported.
 
 If path to symbol consists of two words and a dot ("foo.bar"), then two scenarios
 are assumed: library.primarySymbol and primarySymbol.secondarySymbol.
+If multiple symbols are found, then ambiguity is reported.
+
+If path to symbol is a single word, then two scenarios are assumed:
+primarySymbol and secondarySymbol.
 If multiple symbols are found, then ambiguity is reported.
 
 Description

@@ -2,6 +2,7 @@ package doc
 
 import (
 	"fmt"
+	"github.com/m-kru/go-thdl/internal/args"
 	"github.com/m-kru/go-thdl/internal/doc/lib"
 	"github.com/m-kru/go-thdl/internal/doc/symbol"
 	"github.com/m-kru/go-thdl/internal/doc/vhdl"
@@ -10,14 +11,13 @@ import (
 	"sync"
 )
 
-func Doc(cmdLineArgs map[string]string) uint8 {
+func Doc(args args.DocArgs) uint8 {
 	ScanFiles()
 
-	symbolPaths := resolveSymbolPath(cmdLineArgs["symbolPath"])
+	symbolPaths := resolveSymbolPath(args.SymbolPath)
 	foundSymbols := map[symbolPath]symbol.Symbol{}
 
 	for _, sp := range symbolPaths {
-		//fmt.Printf("looking for symbol\n%v", sp)
 		paths, syms := findSymbol(sp)
 		for i, _ := range paths {
 			foundSymbols[paths[i]] = syms[i]
@@ -27,12 +27,14 @@ func Doc(cmdLineArgs map[string]string) uint8 {
 	foundCount := len(foundSymbols)
 
 	if foundCount == 0 {
-		log.Fatalf("no symbol matching path '%s' found", cmdLineArgs["symbolPath"])
+		log.Fatalf("no symbol matching path '%s' found", args.SymbolPath)
 	} else if foundCount == 1 {
 		for path, sym := range foundSymbols {
 			fmt.Printf("%s\n\n", path)
 			fmt.Printf("%s\n\n", sym.Filepath())
-			fmt.Printf(sym.DocAndCode())
+			doc, code := sym.DocCode()
+			fmt.Printf(doc)
+			fmt.Printf(code)
 		}
 	} else {
 		msg := "provided path is ambiguous, found symbols with following paths:"

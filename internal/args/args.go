@@ -4,8 +4,6 @@ package args
 import (
 	"fmt"
 	"os"
-
-	"github.com/m-kru/go-thdl/internal/utils"
 )
 
 const Version string = "0.0.0"
@@ -15,8 +13,25 @@ func printVersion() {
 	os.Exit(0)
 }
 
-func Parse() map[string]string {
-	args := map[string]string{}
+type CheckArgs struct {
+	NoConfig bool
+}
+
+type DocArgs struct {
+	Fusesoc    bool
+	NoBold     bool
+	NoConfig   bool
+	SymbolPath string
+}
+
+type Args struct {
+	Cmd       string
+	CheckArgs CheckArgs
+	DocArgs   DocArgs
+}
+
+func Parse() Args {
+	args := Args{}
 
 	argsLen := len(os.Args)
 	if argsLen == 1 {
@@ -24,20 +39,16 @@ func Parse() map[string]string {
 		os.Exit(1)
 	}
 
-	cmd := os.Args[1]
-	if !utils.IsValidCommand(cmd) {
-		printHelp()
-		os.Exit(1)
-	}
-	args["command"] = os.Args[1]
+	args.Cmd = os.Args[1]
 
-	if cmd == "version" {
+	switch args.Cmd {
+	case "version":
 		fmt.Printf("thdl version %s\n", Version)
 		os.Exit(0)
-	} else if cmd == "help" {
+	case "help":
 		if argsLen < 3 {
 			printHelp()
-		} else if !utils.IsValidCommand(os.Args[2]) {
+		} else if !isValidCommand(os.Args[2]) {
 			printHelp()
 			os.Exit(1)
 		} else if os.Args[2] == "check" {
@@ -46,13 +57,40 @@ func Parse() map[string]string {
 			fmt.Printf(docHelpMsg)
 		}
 		os.Exit(0)
-	} else if cmd == "doc" {
+	case "check":
+	case "doc":
+		docArgs := DocArgs{}
 		if argsLen < 3 {
 			fmt.Printf("missing symbol path\n")
 			os.Exit(1)
 		}
+
+		for _, arg := range os.Args[2 : argsLen-1] {
+			switch arg {
+			case "--fusesoc":
+				docArgs.Fusesoc = true
+			default:
+				fmt.Printf("invalid doc command flag '%s'\n", arg)
+				os.Exit(1)
+			}
+		}
+
 		// Path to symbol is always the last argument.
-		args["symbolPath"] = os.Args[argsLen-1]
+		symbolPath := os.Args[argsLen-1]
+		if symbolPath[0] == '-' {
+			if isValidDocFlag(symbolPath) {
+				fmt.Printf("missing symbol path\n")
+			} else {
+				fmt.Printf("invalid symbol path '%s'\n", symbolPath)
+			}
+			os.Exit(1)
+		}
+		docArgs.SymbolPath = symbolPath
+
+		args.DocArgs = docArgs
+	default:
+		printHelp()
+		os.Exit(1)
 	}
 
 	return args
