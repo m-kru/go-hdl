@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-var helpMsg string = `Hdl is a tool for easing the work with hardware description languages.
+var helpMsg string = `Thdl is a tool for easing the work with hardware description languages.
 Version: %s
 
 Usage:
