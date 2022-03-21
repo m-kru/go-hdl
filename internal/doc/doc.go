@@ -16,7 +16,7 @@ func Doc(cmdLineArgs map[string]string) uint8 {
 	foundSymbols := map[symbolPath]symbol.Symbol{}
 
 	for _, sp := range symbolPaths {
-		fmt.Printf("looking for symbol %v", sp)
+		//fmt.Printf("looking for symbol\n%v", sp)
 		paths, syms := findSymbol(sp)
 		for i, _ := range paths {
 			foundSymbols[paths[i]] = syms[i]
@@ -29,7 +29,10 @@ func Doc(cmdLineArgs map[string]string) uint8 {
 		log.Fatalf("no symbol matching path '%s' found", cmdLineArgs["symbolPath"])
 	} else if foundCount == 1 {
 		for _, sym := range foundSymbols {
+			//fmt.Printf("%s", path)
+			fmt.Printf("%s\n\n", sym.Filepath())
 			fmt.Printf(sym.Doc())
+			fmt.Printf(sym.Code())
 		}
 	} else {
 		msg := "provided path is ambiguous, found symbols with following paths:"

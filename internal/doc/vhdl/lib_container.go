@@ -1,13 +1,18 @@
 package vhdl
 
 import (
+	"github.com/m-kru/go-thdl/internal/doc/symbol"
 	"sync"
 )
 
 type libraryContainer map[string]*Library
 
 var libContainer libraryContainer = libraryContainer{
-	"_unknown_": &Library{name: "_unknown_"},
+	"_unknown_": &Library{
+		files:   []string{},
+		name:    "_unknown_",
+		symbols: map[string]symbol.Symbol{},
+	},
 }
 var libContainerMutex sync.Mutex
 

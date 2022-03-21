@@ -49,8 +49,8 @@ func (sc *scanContext) proceed() bool {
 
 	sc.line = bytes.ToLower(sc.scanner.Bytes())
 
-	sc.startIdx = sc.endIdx + 1
-	sc.endIdx += uint32(len(sc.line))
+	sc.startIdx = sc.endIdx
+	sc.endIdx += uint32(len(sc.line)) + 1
 
 	return true
 }
@@ -85,7 +85,7 @@ func scanFile(filepath string, wg *sync.WaitGroup) {
 			}
 		} else if submatches := entityDeclarationRegExp.FindSubmatchIndex(sCtx.line); len(submatches) > 0 {
 			ent, err := scanEntityDeclaration(
-				&filepath, string(sCtx.line[submatches[2]:submatches[3]]), &sCtx,
+				filepath, string(sCtx.line[submatches[2]:submatches[3]]), &sCtx,
 			)
 			if err != nil {
 				log.Fatalf("%s: %v", filepath, err)
@@ -98,7 +98,7 @@ func scanFile(filepath string, wg *sync.WaitGroup) {
 	}
 }
 
-func scanEntityDeclaration(filepath *string, name string, sc *scanContext) (symbol.Symbol, error) {
+func scanEntityDeclaration(filepath string, name string, sc *scanContext) (symbol.Symbol, error) {
 	ent := Entity{
 		filepath:  filepath,
 		name:      name,

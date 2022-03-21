@@ -15,7 +15,7 @@ type Library struct {
 	symbolsMutex sync.Mutex
 }
 
-func MakeLibrary(name string) Library {
+func makeLibrary(name string) Library {
 	return Library{
 		files:   []string{},
 		name:    name,
@@ -27,6 +27,10 @@ func (l *Library) AddFile(f string) {
 	l.filesMutex.Lock()
 	l.files = append(l.files, f)
 	l.filesMutex.Unlock()
+}
+
+func (l *Library) Filepath() string {
+	panic("VHDL library doesn't have filepath")
 }
 
 func (l *Library) Name() string { return l.name }

@@ -2,10 +2,12 @@ package vhdl
 
 import (
 	"github.com/m-kru/go-thdl/internal/doc/symbol"
+	"log"
+	"os"
 )
 
 type Entity struct {
-	filepath *string
+	filepath string
 	name     string
 
 	hasDoc   bool
@@ -16,14 +18,30 @@ type Entity struct {
 	codeEnd   uint32
 }
 
+func (e Entity) Filepath() string { return e.filepath }
+
 func (e Entity) Name() string { return e.name }
 
 func (e Entity) Doc() string {
-	return "VHDL Entity Doc"
+	f, err := os.ReadFile(e.filepath)
+	if err != nil {
+		log.Fatalf("reading '%s' entity code: error reading file %s: %v",
+			e.name, e.filepath, err,
+		)
+	}
+
+	return string(f[e.docStart:e.docEnd])
 }
 
 func (e Entity) Code() string {
-	return "VHDL Entity Code"
+	f, err := os.ReadFile(e.filepath)
+	if err != nil {
+		log.Fatalf("reading '%s' entity code: error reading file %s: %v",
+			e.name, e.filepath, err,
+		)
+	}
+
+	return string(f[e.codeStart:e.codeEnd])
 }
 
 func (e Entity) SymbolNames() []string {
@@ -31,5 +49,5 @@ func (e Entity) SymbolNames() []string {
 }
 
 func (e Entity) GetSymbol(name string) (symbol.Symbol, bool) {
-	panic("VHDL entity symbol isn't a symbol container")
+	return nil, false
 }
