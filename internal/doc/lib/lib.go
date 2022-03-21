@@ -1,4 +1,4 @@
-package vhdl
+package lib
 
 import (
 	"github.com/m-kru/go-thdl/internal/doc/symbol"
@@ -15,7 +15,7 @@ type Library struct {
 	symbolsMutex sync.Mutex
 }
 
-func makeLibrary(name string) Library {
+func MakeLibrary(name string) Library {
 	return Library{
 		files:   []string{},
 		name:    name,
@@ -29,19 +29,7 @@ func (l *Library) AddFile(f string) {
 	l.filesMutex.Unlock()
 }
 
-func (l *Library) Filepath() string {
-	panic("VHDL library doesn't have filepath")
-}
-
 func (l *Library) Name() string { return l.name }
-
-func (l *Library) Doc() string {
-	return "VHDL Library Doc"
-}
-
-func (l *Library) Code() string {
-	return "VHDL Library Code"
-}
 
 func (l *Library) SymbolNames() []string {
 	names := []string{}

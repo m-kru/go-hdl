@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"sync"
 
+	"github.com/m-kru/go-thdl/internal/doc/lib"
 	"github.com/m-kru/go-thdl/internal/doc/symbol"
 	"github.com/m-kru/go-thdl/internal/utils"
 )
@@ -62,7 +63,7 @@ func scanFile(filepath string, wg *sync.WaitGroup) {
 		return
 	}
 
-	lib := "_unknown_"
+	libName := "_unknown_"
 
 	f, err := os.ReadFile(filepath)
 	if err != nil {
@@ -90,10 +91,10 @@ func scanFile(filepath string, wg *sync.WaitGroup) {
 			if err != nil {
 				log.Fatalf("%s: %v", filepath, err)
 			}
-			if !libContainer.Has(lib) {
-				libContainer.Add(Library{name: lib})
+			if !libContainer.Has(libName) {
+				libContainer.Add(lib.MakeLibrary(libName))
 			}
-			libContainer[lib].AddSymbol(ent)
+			libContainer[libName].AddSymbol(ent)
 		}
 	}
 }

@@ -1,19 +1,14 @@
 package vhdl
 
 import (
-	"github.com/m-kru/go-thdl/internal/doc/symbol"
+	"github.com/m-kru/go-thdl/internal/doc/lib"
 	"sync"
 )
 
-type libraryContainer map[string]*Library
+type libraryContainer map[string]*lib.Library
 
-var libContainer libraryContainer = libraryContainer{
-	"_unknown_": &Library{
-		files:   []string{},
-		name:    "_unknown_",
-		symbols: map[string]symbol.Symbol{},
-	},
-}
+var libContainer libraryContainer = libraryContainer{}
+
 var libContainerMutex sync.Mutex
 
 func (lc libraryContainer) Has(name string) bool {
@@ -21,10 +16,10 @@ func (lc libraryContainer) Has(name string) bool {
 	return ok
 }
 
-func (lc libraryContainer) Add(lib Library) {
+func (lc libraryContainer) Add(l lib.Library) {
 	libContainerMutex.Lock()
 
-	lc[lib.name] = &lib
+	lc[l.Name()] = &l
 
 	libContainerMutex.Unlock()
 }
@@ -39,7 +34,7 @@ func LibraryNames() []string {
 	return names
 }
 
-func GetLibrary(name string) (*Library, bool) {
+func GetLibrary(name string) (*lib.Library, bool) {
 	if l, ok := libContainer[name]; ok {
 		return l, true
 	}

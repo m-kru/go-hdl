@@ -2,6 +2,7 @@ package doc
 
 import (
 	"fmt"
+	"github.com/m-kru/go-thdl/internal/doc/lib"
 	"github.com/m-kru/go-thdl/internal/doc/symbol"
 	"github.com/m-kru/go-thdl/internal/doc/vhdl"
 	"github.com/m-kru/go-thdl/internal/utils"
@@ -58,7 +59,6 @@ func ScanFiles() {
 }
 
 func findSymbol(sp symbolPath) (paths []symbolPath, syms []symbol.Symbol) {
-	var lib symbol.Symbol
 	var ok bool
 
 	libNames := []string{}
@@ -78,9 +78,11 @@ func findSymbol(sp symbolPath) (paths []symbolPath, syms []symbol.Symbol) {
 		tmpSp := sp
 		tmpSp.library = libName
 
+		var l *lib.Library
+
 		switch sp.language {
 		case "vhdl":
-			lib, ok = vhdl.GetLibrary(tmpSp.library)
+			l, ok = vhdl.GetLibrary(tmpSp.library)
 		default:
 			panic("should never happen")
 		}
@@ -91,9 +93,9 @@ func findSymbol(sp symbolPath) (paths []symbolPath, syms []symbol.Symbol) {
 		if tmpSp.primary == "" && tmpSp.secondary == "" {
 			panic("should never happen")
 		} else if tmpSp.primary == "" {
-			for _, primaryName := range lib.SymbolNames() {
+			for _, primaryName := range l.SymbolNames() {
 				tmpSp.primary = primaryName
-				pri, ok := lib.GetSymbol(tmpSp.primary)
+				pri, ok := l.GetSymbol(tmpSp.primary)
 				if !ok {
 					continue
 				}
@@ -105,7 +107,7 @@ func findSymbol(sp symbolPath) (paths []symbolPath, syms []symbol.Symbol) {
 				syms = append(syms, sec)
 			}
 		} else {
-			pri, ok := lib.GetSymbol(tmpSp.primary)
+			pri, ok := l.GetSymbol(tmpSp.primary)
 			if !ok {
 				continue
 			}
