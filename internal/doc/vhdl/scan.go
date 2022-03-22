@@ -28,8 +28,10 @@ func ScanFiles(filepaths []string, wg *sync.WaitGroup) {
 
 var commentLineRegExp *regexp.Regexp = regexp.MustCompile(`^\s*--`)
 var emptyLineRegExp *regexp.Regexp = regexp.MustCompile(`^\s*$`)
-var endRegExp *regexp.Regexp = regexp.MustCompile(`\bend\b`)
 var entityDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*entity\s+(\w*)\s+is`)
+var packageDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*package\s+(\w*)\s+is`)
+var endRegExp *regexp.Regexp = regexp.MustCompile(`^\s*end\b`)
+var endPackageRegExp *regexp.Regexp = regexp.MustCompile(`^\s*end\s+package\b`)
 
 type scanContext struct {
 	scanner *bufio.Scanner
@@ -64,6 +66,9 @@ func scanFile(filepath string, wg *sync.WaitGroup) {
 	}
 
 	libName := "_unknown_"
+	if !libContainer.Has(libName) {
+		libContainer.Add(lib.MakeLibrary(libName))
+	}
 
 	f, err := os.ReadFile(filepath)
 	if err != nil {
@@ -78,23 +83,25 @@ func scanFile(filepath string, wg *sync.WaitGroup) {
 		if len(emptyLineRegExp.FindIndex(sCtx.line)) > 0 {
 			sCtx.docPresent = false
 		} else if len(commentLineRegExp.FindIndex(sCtx.line)) > 0 {
-			if sCtx.docPresent {
-				sCtx.docEnd = sCtx.endIdx
-			} else {
+			sCtx.docEnd = sCtx.endIdx
+			if !sCtx.docPresent {
 				sCtx.docStart = sCtx.startIdx
 				sCtx.docPresent = true
 			}
 		} else if submatches := entityDeclarationRegExp.FindSubmatchIndex(sCtx.line); len(submatches) > 0 {
-			ent, err := scanEntityDeclaration(
-				filepath, string(sCtx.line[submatches[2]:submatches[3]]), &sCtx,
-			)
+			name := string(sCtx.line[submatches[2]:submatches[3]])
+			ent, err := scanEntityDeclaration(filepath, name, &sCtx)
 			if err != nil {
 				log.Fatalf("%s: %v", filepath, err)
 			}
-			if !libContainer.Has(libName) {
-				libContainer.Add(lib.MakeLibrary(libName))
-			}
 			libContainer[libName].AddSymbol(ent)
+		} else if submatches := packageDeclarationRegExp.FindSubmatchIndex(sCtx.line); len(submatches) > 0 {
+			name := string(sCtx.line[submatches[2]:submatches[3]])
+			pkg, err := scanPackageDeclaration(filepath, name, &sCtx)
+			if err != nil {
+				log.Fatalf("%s: %v", filepath, err)
+			}
+			libContainer[libName].AddSymbol(pkg)
 		}
 	}
 }
@@ -122,4 +129,30 @@ func scanEntityDeclaration(filepath string, name string, sc *scanContext) (symbo
 	}
 
 	return ent, fmt.Errorf("entity declaration end line not found")
+}
+
+func scanPackageDeclaration(filepath string, name string, sc *scanContext) (symbol.Symbol, error) {
+	pkg := Package{
+		Symbol{
+			filepath:  filepath,
+			name:      name,
+			codeStart: sc.startIdx,
+		},
+	}
+
+	if sc.docPresent {
+		pkg.hasDoc = true
+		pkg.docStart = sc.docStart
+		pkg.docEnd = sc.docEnd
+	}
+
+	for sc.proceed() {
+		if (len(endRegExp.FindIndex(sc.line)) > 0 && bytes.Contains(sc.line, []byte(name))) ||
+			(len(endPackageRegExp.FindIndex(sc.line)) > 0) {
+			pkg.codeEnd = sc.endIdx
+			return pkg, nil
+		}
+	}
+
+	return pkg, fmt.Errorf("package declaration end line not found")
 }
