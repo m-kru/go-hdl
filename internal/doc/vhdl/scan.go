@@ -67,7 +67,8 @@ func scanFile(filepath string, wg *sync.WaitGroup) {
 
 	libName := "_unknown_"
 	if !libContainer.Has(libName) {
-		libContainer.Add(lib.MakeLibrary(libName))
+		l := lib.MakeLibrary(libName)
+		libContainer.Add(&l)
 	}
 
 	f, err := os.ReadFile(filepath)

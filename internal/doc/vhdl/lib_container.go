@@ -16,10 +16,10 @@ func (lc libraryContainer) Has(name string) bool {
 	return ok
 }
 
-func (lc libraryContainer) Add(l lib.Library) {
+func (lc libraryContainer) Add(l *lib.Library) {
 	libContainerMutex.Lock()
 
-	lc[l.Name()] = &l
+	lc[l.Name()] = l
 
 	libContainerMutex.Unlock()
 }
