@@ -13,13 +13,14 @@ var VHDLKeywords map[string]bool = map[string]bool{
 	"end":      true, "entity": true,
 	"failure": true, "false": true, "function": true,
 	"generic": true,
-	"impure":  true, "in": true, "integer": true, "is": true,
+	"impure":  true, "in": true, "inout": true, "integer": true, "is": true,
 	"natural": true,
 	"out":     true,
-	"port":    true, "positive": true, "procedure": true, "pure": true,
+	"package": true, "port":    true, "positive": true, "procedure": true, "pure": true,
 	"range": true, "record": true, "report": true,
-	"severity": true, "std_logic": true, "std_logic_vector": true, "string": true,
-	"to": true, "true": true, "type": true,
+	"severity": true, "signed": true, "std_logic": true, "std_logic_vector": true, "string": true,
+	"time": true, "to": true, "true": true, "type": true,
+	"unsigned": true,
 }
 
 func VHDLTerminalBold(s string) string {
