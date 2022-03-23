@@ -22,3 +22,22 @@ The commands are:
 * `check` - check for extremely dumb mistakes,
 * `doc` - show or generate documentation (not yet supported),
 * `generate` - generate HDL files by processing sources (not yet supported).
+
+## Installation
+
+# go
+```
+go install github.com/m-kru/go-thdl/cmd/thdl@latest
+```
+
+Go installation installs to go configured path.
+
+# Manual
+
+```
+git clone https://github.com/m-kru/go-thdl.git
+make
+make install
+```
+
+Manual installation installs to `/usr/bin`.
