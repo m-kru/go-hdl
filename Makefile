@@ -23,7 +23,7 @@ help:
 all: fmt vet build
 
 build:
-	go build -v -o $(PROJECT_NAME) .
+	go build -v -o $(PROJECT_NAME) ./cmd/thdl
 
 
 # Quality targets
