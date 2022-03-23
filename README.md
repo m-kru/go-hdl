@@ -25,14 +25,14 @@ The commands are:
 
 ## Installation
 
-# go
+### go
 ```
 go install github.com/m-kru/go-thdl/cmd/thdl@latest
 ```
 
 Go installation installs to go configured path.
 
-# Manual
+### Manual
 
 ```
 git clone https://github.com/m-kru/go-thdl.git
