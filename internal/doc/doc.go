@@ -33,11 +33,11 @@ func Doc(args args.DocArgs) uint8 {
 			fmt.Printf("%s\n\n", path)
 			fmt.Printf("%s\n\n", sym.Filepath())
 			doc, code := sym.DocCode()
-			fmt.Printf(doc)
+			fmt.Printf(utils.Deindent(doc))
 			if !args.NoBold {
 				code = utils.BoldCodeTerminal(path.language, code)
 			}
-			fmt.Printf(code)
+			fmt.Printf(utils.Deindent(code))
 		}
 	} else {
 		msg := "provided path is ambiguous, found symbols with following paths:"

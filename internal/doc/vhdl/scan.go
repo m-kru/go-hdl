@@ -28,10 +28,13 @@ func ScanFiles(filepaths []string, wg *sync.WaitGroup) {
 
 var commentLineRegExp *regexp.Regexp = regexp.MustCompile(`^\s*--`)
 var emptyLineRegExp *regexp.Regexp = regexp.MustCompile(`^\s*$`)
+var constantDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*constant\b`)
 var entityDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*entity\s+(\w*)\s+is`)
+var enumTypeDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*type\s+(\w+)\s+is\s*\(`)
 var packageDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*package\s+(\w*)\s+is`)
 var endRegExp *regexp.Regexp = regexp.MustCompile(`^\s*end\b`)
 var endPackageRegExp *regexp.Regexp = regexp.MustCompile(`^\s*end\s+package\b`)
+var endsWithSemicolonRegExp *regexp.Regexp = regexp.MustCompile(`;\s*$`)
 
 type scanContext struct {
 	scanner *bufio.Scanner
@@ -46,6 +49,7 @@ type scanContext struct {
 }
 
 func (sc *scanContext) proceed() bool {
+GETLINE:
 	if ok := sc.scanner.Scan(); !ok {
 		return false
 	}
@@ -54,6 +58,17 @@ func (sc *scanContext) proceed() bool {
 
 	sc.startIdx = sc.endIdx
 	sc.endIdx += uint32(len(sc.line)) + 1
+
+	if len(emptyLineRegExp.FindIndex(sc.line)) > 0 {
+		sc.docPresent = false
+		goto GETLINE
+	} else if len(commentLineRegExp.FindIndex(sc.line)) > 0 {
+		sc.docEnd = sc.endIdx
+		if !sc.docPresent {
+			sc.docStart = sc.startIdx
+			sc.docPresent = true
+		}
+	}
 
 	return true
 }
@@ -81,15 +96,7 @@ func scanFile(filepath string, wg *sync.WaitGroup) {
 	sCtx := scanContext{scanner: scanner}
 
 	for sCtx.proceed() {
-		if len(emptyLineRegExp.FindIndex(sCtx.line)) > 0 {
-			sCtx.docPresent = false
-		} else if len(commentLineRegExp.FindIndex(sCtx.line)) > 0 {
-			sCtx.docEnd = sCtx.endIdx
-			if !sCtx.docPresent {
-				sCtx.docStart = sCtx.startIdx
-				sCtx.docPresent = true
-			}
-		} else if submatches := entityDeclarationRegExp.FindSubmatchIndex(sCtx.line); len(submatches) > 0 {
+		if submatches := entityDeclarationRegExp.FindSubmatchIndex(sCtx.line); len(submatches) > 0 {
 			name := string(sCtx.line[submatches[2]:submatches[3]])
 			ent, err := scanEntityDeclaration(filepath, name, &sCtx)
 			if err != nil {
@@ -134,11 +141,12 @@ func scanEntityDeclaration(filepath string, name string, sc *scanContext) (symbo
 
 func scanPackageDeclaration(filepath string, name string, sc *scanContext) (symbol.Symbol, error) {
 	pkg := Package{
-		Symbol{
+		Symbol: Symbol{
 			filepath:  filepath,
 			name:      name,
 			codeStart: sc.startIdx,
 		},
+		symbols: map[string]symbol.Symbol{},
 	}
 
 	if sc.docPresent {
@@ -148,7 +156,28 @@ func scanPackageDeclaration(filepath string, name string, sc *scanContext) (symb
 	}
 
 	for sc.proceed() {
-		if (len(endRegExp.FindIndex(sc.line)) > 0 && bytes.Contains(sc.line, []byte(name))) ||
+		/*
+			if idxs := constantDeclarationRegExp.FindIndex(sc.line); len(idxs) > 0 {
+				consts, err := scanConstantDeclaration(filepath, idxs[1], sc)
+				if err != nil {
+					return pkg, fmt.Errorf("package '%s': %v", name, err)
+				}
+				for _, c := range consts {
+					err  = pkg.AddSymbol(c)
+					if err != nil {
+						return pkg, fmt.Errorf("package '%s': %v", name, err)
+					}
+				}
+			}
+		*/
+		if submatches := enumTypeDeclarationRegExp.FindSubmatchIndex(sc.line); len(submatches) > 0 {
+			name := string(sc.line[submatches[2]:submatches[3]])
+			t, err := scanEnumTypeDeclaration(filepath, name, sc)
+			err = pkg.AddSymbol(t)
+			if err != nil {
+				return pkg, fmt.Errorf("package '%s': %v", name, err)
+			}
+		} else if (len(endRegExp.FindIndex(sc.line)) > 0 && bytes.Contains(sc.line, []byte(name))) ||
 			(len(endPackageRegExp.FindIndex(sc.line)) > 0) {
 			pkg.codeEnd = sc.endIdx
 			return pkg, nil
@@ -156,4 +185,51 @@ func scanPackageDeclaration(filepath string, name string, sc *scanContext) (symb
 	}
 
 	return pkg, fmt.Errorf("package declaration end line not found")
+}
+
+func scanEnumTypeDeclaration(filepath string, name string, sc *scanContext) (symbol.Symbol, error) {
+	t := Type{
+		Symbol{
+			filepath:  filepath,
+			name:      name,
+			codeStart: sc.startIdx,
+		},
+	}
+
+	if sc.docPresent {
+		t.hasDoc = true
+		t.docStart = sc.docStart
+		t.docEnd = sc.docEnd
+	}
+
+	for {
+		if len(endsWithSemicolonRegExp.FindIndex(sc.line)) > 0 {
+			t.codeEnd = sc.endIdx
+			return t, nil
+		}
+
+		sc.proceed()
+	}
+
+	return t, fmt.Errorf("enum type declaration line with ';' not found")
+}
+
+// endIdx is the index of 'constant' keyword end.
+func scanConstantDeclaration(filepath string, endidx int, sc *scanContext) ([]symbol.Symbol, error) {
+	const_ := Constant{
+		Symbol{
+			filepath:  filepath,
+			codeStart: sc.startIdx,
+		},
+	}
+
+	//names := []string
+	syms := []symbol.Symbol{}
+
+	if len(endsWithSemicolonRegExp.FindIndex(sc.line)) > 0 {
+		const_.codeEnd = sc.endIdx
+		return syms, nil
+	}
+
+	return syms, nil
 }
