@@ -43,6 +43,8 @@ var endRegExp *regexp.Regexp = regexp.MustCompile(`^\s*end\b`)
 var endWithSemicolonRegExp *regexp.Regexp = regexp.MustCompile(`^\s*end\s*;`)
 var endsWithSemicolonRegExp *regexp.Regexp = regexp.MustCompile(`;\s*$`)
 
+var packageBodyDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*package\s+body\s+\w+\s+is\b`)
+
 type scanContext struct {
 	scanner *bufio.Scanner
 	line    []byte
@@ -75,6 +77,10 @@ GETLINE:
 			sc.docStart = sc.startIdx
 			sc.docPresent = true
 		}
+	} else if len(packageBodyDeclarationRegExp.FindIndex(sc.line)) > 0 {
+		// Package body is the implementation of the items declared
+		// in the package declaration, so the scan can be stopped.
+		return false
 	}
 
 	return true
