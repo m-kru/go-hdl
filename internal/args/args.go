@@ -86,7 +86,7 @@ func Parse() Args {
 	args.Cmd = os.Args[1]
 
 	switch args.Cmd {
-	case "version":
+	case "ver":
 		fmt.Printf("thdl version %s\n", Version)
 		os.Exit(0)
 	case "help":
