@@ -26,14 +26,18 @@ func ScanFiles(filepaths []string, wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-var commentLineRegExp *regexp.Regexp = regexp.MustCompile(`^\s*--`)
 var emptyLineRegExp *regexp.Regexp = regexp.MustCompile(`^\s*$`)
-var constantDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*constant\b`)
+var commentLineRegExp *regexp.Regexp = regexp.MustCompile(`^\s*--`)
+
 var entityDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*entity\s+(\w*)\s+is`)
-var enumTypeDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*type\s+(\w+)\s+is\s*\(`)
+
 var packageDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*package\s+(\w*)\s+is`)
-var endRegExp *regexp.Regexp = regexp.MustCompile(`^\s*end\b`)
 var endPackageRegExp *regexp.Regexp = regexp.MustCompile(`^\s*end\s+package\b`)
+var arrayTypeDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*type\s+(\w+)\s+is\s+array\b`)
+var enumTypeDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*type\s+(\w+)\s+is\s*\(`)
+var constantDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*constant\b`)
+
+var endRegExp *regexp.Regexp = regexp.MustCompile(`^\s*end\b`)
 var endsWithSemicolonRegExp *regexp.Regexp = regexp.MustCompile(`;\s*$`)
 
 type scanContext struct {
@@ -170,7 +174,14 @@ func scanPackageDeclaration(filepath string, name string, sc *scanContext) (symb
 				}
 			}
 		*/
-		if submatches := enumTypeDeclarationRegExp.FindSubmatchIndex(sc.line); len(submatches) > 0 {
+		if submatches := arrayTypeDeclarationRegExp.FindSubmatchIndex(sc.line); len(submatches) > 0 {
+			name := string(sc.line[submatches[2]:submatches[3]])
+			t, err := scanArrayTypeDeclaration(filepath, name, sc)
+			err = pkg.AddSymbol(t)
+			if err != nil {
+				return pkg, fmt.Errorf("package '%s': %v", name, err)
+			}
+		} else if submatches := enumTypeDeclarationRegExp.FindSubmatchIndex(sc.line); len(submatches) > 0 {
 			name := string(sc.line[submatches[2]:submatches[3]])
 			t, err := scanEnumTypeDeclaration(filepath, name, sc)
 			err = pkg.AddSymbol(t)
@@ -212,6 +223,33 @@ func scanEnumTypeDeclaration(filepath string, name string, sc *scanContext) (sym
 	}
 
 	return t, fmt.Errorf("enum type declaration line with ';' not found")
+}
+
+func scanArrayTypeDeclaration(filepath string, name string, sc *scanContext) (symbol.Symbol, error) {
+	t := Type{
+		Symbol{
+			filepath:  filepath,
+			name:      name,
+			codeStart: sc.startIdx,
+		},
+	}
+
+	if sc.docPresent {
+		t.hasDoc = true
+		t.docStart = sc.docStart
+		t.docEnd = sc.docEnd
+	}
+
+	for {
+		if len(endsWithSemicolonRegExp.FindIndex(sc.line)) > 0 {
+			t.codeEnd = sc.endIdx
+			return t, nil
+		}
+
+		sc.proceed()
+	}
+
+	return t, fmt.Errorf("array type declaration line with ';' not found")
 }
 
 // endIdx is the index of 'constant' keyword end.
