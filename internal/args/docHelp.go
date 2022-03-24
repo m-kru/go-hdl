@@ -9,8 +9,9 @@ Usage
 thdl doc [flags] [<language>:][<library>.]<primarySymbol>[.<secondarySymbol>]
 
 Flags:
-  --no-bold  Don't print language keywords in bold.
-  --fusesoc  Infer libraries from FuseSoc .core files.
+  -no-bold    Don't print language keywords in bold.
+  -no-config  Don't read .thdl.yml config file.
+  -fusesoc    Infer libraries from FuseSoc .core files.
 
 Language is one of:
  - VHDL

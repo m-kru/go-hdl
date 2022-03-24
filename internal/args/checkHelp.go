@@ -6,7 +6,10 @@ var checkHelpMsg string = `Check command
 Usage
 -----
 
-thdl check
+thdl check [flags]
+
+Flags:
+  -no-config  Don't read .thdl.yml config file.
 
 
 Description

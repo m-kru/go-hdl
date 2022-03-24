@@ -3,7 +3,10 @@ package args
 
 import (
 	"fmt"
+	"gopkg.in/yaml.v2"
+	"log"
 	"os"
+	"strings"
 )
 
 const Version string = "0.0.0"
@@ -13,14 +16,27 @@ func printVersion() {
 	os.Exit(0)
 }
 
+type IgnoreList struct {
+	ignore []string
+}
+
+func (il IgnoreList) IsIgnored(path string) bool {
+	for _, i := range il.ignore {
+		if strings.Contains(path, i) {
+			return true
+		}
+	}
+	return false
+}
+
 type CheckArgs struct {
-	NoConfig bool
+	IgnoreList
 }
 
 type DocArgs struct {
+	IgnoreList
 	Fusesoc    bool
 	NoBold     bool
-	NoConfig   bool
 	SymbolPath string
 }
 
@@ -30,7 +46,35 @@ type Args struct {
 	DocArgs   DocArgs
 }
 
+// NoConfig returns true if '-no-config' flag is set.
+func NoConfig() bool {
+	if len(os.Args) <= 2 {
+		return true
+	} else {
+		for _, a := range os.Args[2:] {
+			if a == "-no-config" {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func Parse() Args {
+	fileCfg := FileCfg{}
+	if !NoConfig() {
+		thdlYml, err := os.ReadFile(".thdl.yml")
+		if err == nil {
+			println("HI")
+			err := yaml.UnmarshalStrict(thdlYml, &fileCfg)
+			if err != nil {
+				log.Fatalf("unmarshalling '.thdl.yml': %v", err)
+			}
+		}
+	}
+	fileCfg.propagateGlobalIgnore()
+	fmt.Printf("%v", fileCfg)
+
 	args := Args{}
 
 	argsLen := len(os.Args)
@@ -67,9 +111,9 @@ func Parse() Args {
 
 		for _, arg := range os.Args[2 : argsLen-1] {
 			switch arg {
-			case "--fusesoc":
+			case "-fusesoc":
 				docArgs.Fusesoc = true
-			case "--no-bold":
+			case "-no-bold":
 				docArgs.NoBold = true
 			default:
 				fmt.Printf("invalid doc command flag '%s'\n", arg)

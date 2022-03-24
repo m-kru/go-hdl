@@ -16,7 +16,7 @@ func isValidCommand(cmd string) bool {
 
 // IsValidDocFlag return true if given flag is valid doc command flag.
 func isValidDocFlag(f string) bool {
-	validFlags := []string{"--fusesoc", "--no-bold", "--no-config"}
+	validFlags := []string{"-fusesoc", "-no-bold", "-no-config"}
 
 	for i, _ := range validFlags {
 		if f == validFlags[i] {
