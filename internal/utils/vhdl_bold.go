@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"log"
 	"strings"
 )
 
@@ -24,37 +23,25 @@ var VHDLKeywords map[string]bool = map[string]bool{
 }
 
 func VHDLTerminalBold(s string) string {
-	var err error
-
 	b := strings.Builder{}
 
 	inWord := false
 	startIdx := 0
 	endIdx := 0
 
-	for i, _ := range s {
-		if s[i:i+1] == " " || s[i:i+1] == "\t" || s[i:i+1] == "\n" ||
-			s[i:i+1] == ":" || s[i:i+1] == ";" || s[i:i+1] == "," ||
-			s[i:i+1] == "(" || s[i:i+1] == ")" {
+	for i, r := range s {
+		if r == ' ' || r == '\t' || r == '\n' || r == '\r' ||
+			r == ':' || r == ';' || r == ',' || r == '(' || r == ')' {
 			if inWord {
 				if _, ok := VHDLKeywords[strings.ToLower(s[startIdx:endIdx])]; ok {
 					aux := "\033[1m" + s[startIdx:endIdx] + "\033[0m"
-					_, err = b.WriteString(aux)
-					if err != nil {
-						log.Fatalf("VHDLTerminalBold: %v", err)
-					}
+					_, _ = b.WriteString(aux)
 				} else {
-					_, err = b.WriteString(s[startIdx:endIdx])
-					if err != nil {
-						log.Fatalf("VHDLTerminalBold: %v", err)
-					}
+					_, _ = b.WriteString(s[startIdx:endIdx])
 				}
 			}
 			inWord = false
-			_, err = b.WriteString(s[i : i+1])
-			if err != nil {
-				log.Fatalf("VHDLTerminalBold: %v", err)
-			}
+			_, _ = b.WriteString(s[i : i+1])
 		} else {
 			if !inWord {
 				startIdx = endIdx
