@@ -229,7 +229,9 @@ func scanEnumTypeDeclaration(filepath string, name string, sc *scanContext) (sym
 			return t, nil
 		}
 
-		sc.proceed()
+		if !sc.proceed() {
+			break
+		}
 	}
 
 	return t, fmt.Errorf("enum declaration line with ';' not found")
@@ -256,7 +258,9 @@ func scanArrayTypeDeclaration(filepath string, name string, sc *scanContext) (sy
 			return t, nil
 		}
 
-		sc.proceed()
+		if !sc.proceed() {
+			break
+		}
 	}
 
 	return t, fmt.Errorf("array declaration end line not found")
@@ -284,7 +288,10 @@ func scanRecordTypeDeclaration(filepath string, name string, sc *scanContext) (s
 			t.codeEnd = sc.endIdx
 			return t, nil
 		}
-		sc.proceed()
+
+		if !sc.proceed() {
+			break
+		}
 	}
 
 	return t, fmt.Errorf("record declaration line with ';' not found")
