@@ -44,6 +44,7 @@ var endWithSemicolonRegExp *regexp.Regexp = regexp.MustCompile(`^\s*end\s*;`)
 var endsWithSemicolonRegExp *regexp.Regexp = regexp.MustCompile(`;\s*$`)
 
 var packageBodyDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*package\s+body\s+\w+\s+is\b`)
+var architectureDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*architecture\s+\w+\s+of\s*\w+\s+is\b`)
 
 type scanContext struct {
 	scanner *bufio.Scanner
@@ -57,6 +58,10 @@ type scanContext struct {
 	docEnd     uint32
 }
 
+// proceed returns false on EOF, architecture declaration or package
+// body declaration. There is no point in scanning architecture
+// declarations and package bodies, as they either contain private symbols
+// or they implement symbols declared in the package declaration.
 func (sc *scanContext) proceed() bool {
 GETLINE:
 	if ok := sc.scanner.Scan(); !ok {
@@ -77,9 +82,8 @@ GETLINE:
 			sc.docStart = sc.startIdx
 			sc.docPresent = true
 		}
-	} else if len(packageBodyDeclarationRegExp.FindIndex(sc.line)) > 0 {
-		// Package body is the implementation of the items declared
-		// in the package declaration, so the scan can be stopped.
+	} else if len(packageBodyDeclarationRegExp.FindIndex(sc.line)) > 0 ||
+		len(architectureDeclarationRegExp.FindIndex(sc.line)) > 0 {
 		return false
 	}
 
