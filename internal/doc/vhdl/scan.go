@@ -35,9 +35,12 @@ var packageDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*package\s+
 var endPackageRegExp *regexp.Regexp = regexp.MustCompile(`^\s*end\s+package\b`)
 var arrayTypeDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*type\s+(\w+)\s+is\s+array\b`)
 var enumTypeDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*type\s+(\w+)\s+is\s*\(`)
+var recordTypeDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*type\s+(\w+)\s+is\s+record\b`)
+var endRecordRegExp *regexp.Regexp = regexp.MustCompile(`^\s*end\s+record\b`)
 var constantDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*constant\b`)
 
 var endRegExp *regexp.Regexp = regexp.MustCompile(`^\s*end\b`)
+var endWithSemicolonRegExp *regexp.Regexp = regexp.MustCompile(`^\s*end\s*;`)
 var endsWithSemicolonRegExp *regexp.Regexp = regexp.MustCompile(`;\s*$`)
 
 type scanContext struct {
@@ -188,6 +191,13 @@ func scanPackageDeclaration(filepath string, name string, sc *scanContext) (symb
 			if err != nil {
 				return pkg, fmt.Errorf("package '%s': %v", name, err)
 			}
+		} else if submatches := recordTypeDeclarationRegExp.FindSubmatchIndex(sc.line); len(submatches) > 0 {
+			name := string(sc.line[submatches[2]:submatches[3]])
+			t, err := scanRecordTypeDeclaration(filepath, name, sc)
+			err = pkg.AddSymbol(t)
+			if err != nil {
+				return pkg, fmt.Errorf("package '%s': %v", name, err)
+			}
 		} else if (len(endRegExp.FindIndex(sc.line)) > 0 && bytes.Contains(sc.line, []byte(name))) ||
 			(len(endPackageRegExp.FindIndex(sc.line)) > 0) {
 			pkg.codeEnd = sc.endIdx
@@ -222,7 +232,7 @@ func scanEnumTypeDeclaration(filepath string, name string, sc *scanContext) (sym
 		sc.proceed()
 	}
 
-	return t, fmt.Errorf("enum type declaration line with ';' not found")
+	return t, fmt.Errorf("enum declaration line with ';' not found")
 }
 
 func scanArrayTypeDeclaration(filepath string, name string, sc *scanContext) (symbol.Symbol, error) {
@@ -249,7 +259,35 @@ func scanArrayTypeDeclaration(filepath string, name string, sc *scanContext) (sy
 		sc.proceed()
 	}
 
-	return t, fmt.Errorf("array type declaration line with ';' not found")
+	return t, fmt.Errorf("array declaration end line not found")
+}
+
+func scanRecordTypeDeclaration(filepath string, name string, sc *scanContext) (symbol.Symbol, error) {
+	t := Type{
+		Symbol{
+			filepath:  filepath,
+			name:      name,
+			codeStart: sc.startIdx,
+		},
+	}
+
+	if sc.docPresent {
+		t.hasDoc = true
+		t.docStart = sc.docStart
+		t.docEnd = sc.docEnd
+	}
+
+	for {
+		if (len(endRegExp.FindIndex(sc.line)) > 0 && bytes.Contains(sc.line, []byte(name))) ||
+			(len(endRecordRegExp.FindIndex(sc.line)) > 0) ||
+			(len(endWithSemicolonRegExp.FindIndex(sc.line)) > 0) {
+			t.codeEnd = sc.endIdx
+			return t, nil
+		}
+		sc.proceed()
+	}
+
+	return t, fmt.Errorf("record declaration line with ';' not found")
 }
 
 // endIdx is the index of 'constant' keyword end.
