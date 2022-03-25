@@ -21,7 +21,7 @@ Simply run `thdl help` or `thdl help {command}` to read about particular command
 The commands are:
 * `check` - check for extremely dumb mistakes,
 * `doc` - show or generate documentation (not yet supported),
-* `generate` - generate HDL files by processing sources (not yet supported).
+* `gen` - generate HDL files by processing sources (not yet supported).
 
 ## Installation
 
