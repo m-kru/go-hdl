@@ -102,7 +102,7 @@ func Parse() Args {
 		}
 	}
 	fileCfg.propagateGlobalIgnore()
-	fmt.Printf("debug: %s", fileCfg)
+	log.Printf("debug: %s", fileCfg)
 
 	args := Args{}
 	setFileCfgArgs(fileCfg, &args)
