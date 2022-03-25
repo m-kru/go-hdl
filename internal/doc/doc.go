@@ -12,7 +12,7 @@ import (
 )
 
 func Doc(args args.DocArgs) uint8 {
-	ScanFiles()
+	ScanFiles(args)
 
 	symbolPaths := resolveSymbolPath(args.SymbolPath)
 	foundSymbols := map[symbolPath]symbol.Symbol{}
@@ -50,7 +50,7 @@ func Doc(args args.DocArgs) uint8 {
 	return 0
 }
 
-func ScanFiles() {
+func ScanFiles(args args.DocArgs) {
 	var wg sync.WaitGroup
 	defer wg.Wait()
 
@@ -58,6 +58,7 @@ func ScanFiles() {
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
+	vhdlFiles = args.FilterIgnored(vhdlFiles)
 	wg.Add(1)
 	vhdl.ScanFiles(vhdlFiles, &wg)
 }

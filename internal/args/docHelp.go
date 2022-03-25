@@ -9,6 +9,7 @@ Usage
 thdl doc [flags] [<language>:][<library>.]<primarySymbol>[.<secondarySymbol>]
 
 Flags:
+  -debug      Print debug messages.
   -no-bold    Don't print language keywords in bold.
   -no-config  Don't read .thdl.yml config file.
   -fusesoc    Infer libraries from FuseSoc .core files.

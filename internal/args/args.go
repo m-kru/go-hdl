@@ -20,13 +20,24 @@ type IgnoreList struct {
 	ignore []string
 }
 
-func (il IgnoreList) IsIgnored(path string) bool {
-	for _, i := range il.ignore {
-		if strings.Contains(path, i) {
-			return true
+func (il IgnoreList) FilterIgnored(filepaths []string) []string {
+	ret := []string{}
+
+	for _, fp := range filepaths {
+		ignore := false
+		for _, i := range il.ignore {
+			if strings.Contains(fp, i) {
+				ignore = true
+				log.Printf("debug: ignoring %s\n", fp)
+				break
+			}
+		}
+		if !ignore {
+			ret = append(ret, fp)
 		}
 	}
-	return false
+
+	return ret
 }
 
 type CheckArgs struct {
@@ -40,10 +51,19 @@ type DocArgs struct {
 	SymbolPath string
 }
 
+type GenArgs struct {
+	IgnoreList
+	Fusesoc    bool
+	NoBold     bool
+	SymbolPath string
+}
+
 type Args struct {
 	Cmd       string
+	Debug     bool
 	CheckArgs CheckArgs
 	DocArgs   DocArgs
+	GenArgs   GenArgs
 }
 
 // NoConfig returns true if '-no-config' flag is set.
@@ -60,12 +80,21 @@ func NoConfig() bool {
 	return false
 }
 
+func setFileCfgArgs(fc FileCfg, args *Args) {
+	args.CheckArgs.IgnoreList.ignore = fc.Check.Ignore
+
+	args.DocArgs.IgnoreList.ignore = fc.Doc.Ignore
+	args.DocArgs.Fusesoc = fc.Doc.Fusesoc
+	args.DocArgs.NoBold = fc.Doc.NoBold
+
+	args.GenArgs.IgnoreList.ignore = fc.Gen.Ignore
+}
+
 func Parse() Args {
 	fileCfg := FileCfg{}
 	if !NoConfig() {
 		thdlYml, err := os.ReadFile(".thdl.yml")
 		if err == nil {
-			println("HI")
 			err := yaml.UnmarshalStrict(thdlYml, &fileCfg)
 			if err != nil {
 				log.Fatalf("unmarshalling '.thdl.yml': %v", err)
@@ -73,9 +102,10 @@ func Parse() Args {
 		}
 	}
 	fileCfg.propagateGlobalIgnore()
-	fmt.Printf("%v", fileCfg)
+	fmt.Printf("debug: %s", fileCfg)
 
 	args := Args{}
+	setFileCfgArgs(fileCfg, &args)
 
 	argsLen := len(os.Args)
 	if argsLen == 1 {
@@ -103,7 +133,6 @@ func Parse() Args {
 		os.Exit(0)
 	case "check":
 	case "doc":
-		docArgs := DocArgs{}
 		if argsLen < 3 {
 			fmt.Printf("missing symbol path\n")
 			os.Exit(1)
@@ -111,10 +140,12 @@ func Parse() Args {
 
 		for _, arg := range os.Args[2 : argsLen-1] {
 			switch arg {
+			case "-debug":
+				args.Debug = true
 			case "-fusesoc":
-				docArgs.Fusesoc = true
+				args.DocArgs.Fusesoc = true
 			case "-no-bold":
-				docArgs.NoBold = true
+				args.DocArgs.NoBold = true
 			default:
 				fmt.Printf("invalid doc command flag '%s'\n", arg)
 				os.Exit(1)
@@ -131,9 +162,7 @@ func Parse() Args {
 			}
 			os.Exit(1)
 		}
-		docArgs.SymbolPath = symbolPath
-
-		args.DocArgs = docArgs
+		args.DocArgs.SymbolPath = symbolPath
 	default:
 		printHelp()
 		os.Exit(1)
