@@ -11,8 +11,12 @@ import (
 	"sync"
 )
 
+var docArgs args.DocArgs
+
 func Doc(args args.DocArgs) uint8 {
-	ScanFiles(args)
+	docArgs = args
+
+	ScanFiles()
 
 	symbolPaths := resolveSymbolPath(args.SymbolPath)
 	foundSymbols := map[symbolPath]symbol.Symbol{}
@@ -50,7 +54,7 @@ func Doc(args args.DocArgs) uint8 {
 	return 0
 }
 
-func ScanFiles(args args.DocArgs) {
+func ScanFiles() {
 	var wg sync.WaitGroup
 	defer wg.Wait()
 
@@ -58,9 +62,9 @@ func ScanFiles(args args.DocArgs) {
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
-	vhdlFiles = args.FilterIgnored(vhdlFiles)
+	vhdlFiles = docArgs.FilterIgnored(vhdlFiles)
 	wg.Add(1)
-	vhdl.ScanFiles(args, vhdlFiles, &wg)
+	vhdl.ScanFiles(docArgs, vhdlFiles, &wg)
 }
 
 func findSymbol(sp symbolPath) (paths []symbolPath, syms []symbol.Symbol) {
