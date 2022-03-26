@@ -169,7 +169,10 @@ func scanPackageDeclaration(filepath string, name string, sc *scanContext) (symb
 			name:      name,
 			codeStart: sc.startIdx,
 		},
-		symbols: map[string]symbol.Symbol{},
+		Consts: map[string]symbol.Symbol{},
+		Funcs:  map[string]symbol.Symbol{},
+		Procs:  map[string]symbol.Symbol{},
+		Types:  map[string]symbol.Symbol{},
 	}
 
 	if sc.docPresent {
