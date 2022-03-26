@@ -15,14 +15,22 @@ type Package struct {
 
 func (p Package) AddSymbol(s symbol.Symbol) error {
 	switch s.(type) {
-	case Type:
+	case Constant:
 		if _, ok := p.Consts[s.Name()]; ok {
+			return fmt.Errorf(
+				"constant '%s' defined at least twice in package '%s'",
+				s.Name(), p.Name(),
+			)
+		}
+		p.Consts[s.Name()] = s
+	case Type:
+		if _, ok := p.Types[s.Name()]; ok {
 			return fmt.Errorf(
 				"type '%s' defined at least twice in package '%s'",
 				s.Name(), p.Name(),
 			)
 		}
-		p.Consts[s.Name()] = s
+		p.Types[s.Name()] = s
 	default:
 		panic("should never happen")
 	}

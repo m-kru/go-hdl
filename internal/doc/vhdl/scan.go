@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"strings"
 	"sync"
 
 	"github.com/m-kru/go-thdl/internal/args"
@@ -42,7 +43,7 @@ var arrayTypeDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*type\s+(
 var enumTypeDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*type\s+(\w+)\s+is\s*\(`)
 var recordTypeDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*type\s+(\w+)\s+is\s+record\b`)
 var endRecordRegExp *regexp.Regexp = regexp.MustCompile(`^\s*end\s+record\b`)
-var constantDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*constant\b`)
+var constantDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*constant\s+(\w+)\s*(,\s*\w+)?\s*(,\s*\w+)?`)
 
 var endRegExp *regexp.Regexp = regexp.MustCompile(`^\s*end\b`)
 var endWithSemicolonRegExp *regexp.Regexp = regexp.MustCompile(`^\s*end\s*;`)
@@ -182,21 +183,29 @@ func scanPackageDeclaration(filepath string, name string, sc *scanContext) (symb
 	}
 
 	for sc.proceed() {
-		/*
-			if idxs := constantDeclarationRegExp.FindIndex(sc.line); len(idxs) > 0 {
-				consts, err := scanConstantDeclaration(filepath, idxs[1], sc)
+		if submatches := constantDeclarationRegExp.FindSubmatchIndex(sc.line); len(submatches) > 0 {
+			names := []string{}
+			for i := 1; i < len(submatches)/2; i++ {
+				if submatches[2*i] < 0 {
+					continue
+				}
+				name := string(sc.line[submatches[2*i]:submatches[2*i+1]])
+				if name[0] == ',' {
+					name = strings.TrimSpace(name[1:])
+				}
+				names = append(names, name)
+			}
+			consts, err := scanConstantDeclaration(filepath, names, sc)
+			if err != nil {
+				return pkg, fmt.Errorf("package '%s': %v", name, err)
+			}
+			for _, c := range consts {
+				err = pkg.AddSymbol(c)
 				if err != nil {
 					return pkg, fmt.Errorf("package '%s': %v", name, err)
 				}
-				for _, c := range consts {
-					err  = pkg.AddSymbol(c)
-					if err != nil {
-						return pkg, fmt.Errorf("package '%s': %v", name, err)
-					}
-				}
 			}
-		*/
-		if submatches := arrayTypeDeclarationRegExp.FindSubmatchIndex(sc.line); len(submatches) > 0 {
+		} else if submatches := arrayTypeDeclarationRegExp.FindSubmatchIndex(sc.line); len(submatches) > 0 {
 			name := string(sc.line[submatches[2]:submatches[3]])
 			t, err := scanArrayTypeDeclaration(filepath, name, sc)
 			err = pkg.AddSymbol(t)
@@ -316,8 +325,7 @@ func scanRecordTypeDeclaration(filepath string, name string, sc *scanContext) (s
 	return t, fmt.Errorf("record declaration line with ';' not found")
 }
 
-// endIdx is the index of 'constant' keyword end.
-func scanConstantDeclaration(filepath string, endidx int, sc *scanContext) ([]symbol.Symbol, error) {
+func scanConstantDeclaration(filepath string, names []string, sc *scanContext) ([]symbol.Symbol, error) {
 	const_ := Constant{
 		Symbol{
 			filepath:  filepath,
@@ -325,13 +333,18 @@ func scanConstantDeclaration(filepath string, endidx int, sc *scanContext) ([]sy
 		},
 	}
 
-	//names := []string
 	syms := []symbol.Symbol{}
 
 	if len(endsWithSemicolonRegExp.FindIndex(sc.line)) > 0 {
 		const_.codeEnd = sc.endIdx
+
+		for _, n := range names {
+			const_.name = n
+			syms = append(syms, const_)
+		}
+
 		return syms, nil
 	}
 
-	return syms, nil
+	return syms, fmt.Errorf("constant declaration line with ';' not found")
 }
