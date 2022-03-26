@@ -60,7 +60,7 @@ func ScanFiles(args args.DocArgs) {
 	}
 	vhdlFiles = args.FilterIgnored(vhdlFiles)
 	wg.Add(1)
-	vhdl.ScanFiles(vhdlFiles, &wg)
+	vhdl.ScanFiles(args, vhdlFiles, &wg)
 }
 
 func findSymbol(sp symbolPath) (paths []symbolPath, syms []symbol.Symbol) {

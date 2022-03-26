@@ -2,6 +2,7 @@ package vhdl
 
 import (
 	"github.com/m-kru/go-thdl/internal/doc/lib"
+	"github.com/m-kru/go-thdl/internal/doc/symbol"
 	"sync"
 )
 
@@ -11,16 +12,19 @@ var libContainer libraryContainer = libraryContainer{}
 
 var libContainerMutex sync.Mutex
 
-func (lc libraryContainer) Has(name string) bool {
-	_, ok := lc[name]
-	return ok
-}
-
+// Add adds library in atomic way. If library with given name
+// already exists, then it is not overwritten.
 func (lc libraryContainer) Add(l *lib.Library) {
 	libContainerMutex.Lock()
+	if _, ok := lc[l.Name()]; !ok {
+		lc[l.Name()] = l
+	}
+	libContainerMutex.Unlock()
+}
 
-	lc[l.Name()] = l
-
+func (lc libraryContainer) AddSymbol(libName string, s symbol.Symbol) {
+	libContainerMutex.Lock()
+	lc[libName].AddSymbol(s)
 	libContainerMutex.Unlock()
 }
 

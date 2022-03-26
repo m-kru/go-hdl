@@ -9,12 +9,17 @@ import (
 	"regexp"
 	"sync"
 
+	"github.com/m-kru/go-thdl/internal/args"
 	"github.com/m-kru/go-thdl/internal/doc/lib"
 	"github.com/m-kru/go-thdl/internal/doc/symbol"
 	"github.com/m-kru/go-thdl/internal/utils"
 )
 
-func ScanFiles(filepaths []string, wg *sync.WaitGroup) {
+var docArgs args.DocArgs
+
+func ScanFiles(args args.DocArgs, filepaths []string, wg *sync.WaitGroup) {
+	docArgs = args
+
 	var filesWg sync.WaitGroup
 
 	for _, fp := range filepaths {
@@ -97,11 +102,12 @@ func scanFile(filepath string, wg *sync.WaitGroup) {
 		return
 	}
 
-	libName := "_unknown_"
-	if !libContainer.Has(libName) {
-		l := lib.MakeLibrary(libName)
-		libContainer.Add(&l)
+	libName := docArgs.Lib(filepath)
+	if libName == "" {
+		libName = "work"
 	}
+	l := lib.MakeLibrary(libName)
+	libContainer.Add(&l)
 
 	f, err := os.ReadFile(filepath)
 	if err != nil {
@@ -119,14 +125,14 @@ func scanFile(filepath string, wg *sync.WaitGroup) {
 			if err != nil {
 				log.Fatalf("%s: %v", filepath, err)
 			}
-			libContainer[libName].AddSymbol(ent)
+			libContainer.AddSymbol(libName, ent)
 		} else if submatches := packageDeclarationRegExp.FindSubmatchIndex(sCtx.line); len(submatches) > 0 {
 			name := string(sCtx.line[submatches[2]:submatches[3]])
 			pkg, err := scanPackageDeclaration(filepath, name, &sCtx)
 			if err != nil {
 				log.Fatalf("%s: %v", filepath, err)
 			}
-			libContainer[libName].AddSymbol(pkg)
+			libContainer.AddSymbol(libName, pkg)
 		}
 	}
 }
