@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"regexp"
 	"strings"
 	"sync"
 
@@ -31,33 +30,6 @@ func ScanFiles(args args.DocArgs, filepaths []string, wg *sync.WaitGroup) {
 	filesWg.Wait()
 	wg.Done()
 }
-
-var emptyLineRegExp *regexp.Regexp = regexp.MustCompile(`^\s*$`)
-var commentLineRegExp *regexp.Regexp = regexp.MustCompile(`^\s*--`)
-
-var constantDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*constant\s+(\w+)\s*(,\s*\w+)?\s*(,\s*\w+)?`)
-
-var entityDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*entity\s+(\w*)\s+is`)
-
-var functionDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*(pure\b|impure\b)?\s*function\s+(\w+)`)
-var returnRegExp *regexp.Regexp = regexp.MustCompile(`\breturn\s+\w+\s*;`)
-
-var packageDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*package\s+(\w*)\s+is`)
-var endPackageRegExp *regexp.Regexp = regexp.MustCompile(`^\s*end\s+package\b`)
-
-var arrayTypeDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*type\s+(\w+)\s+is\s+array\b`)
-
-var enumTypeDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*type\s+(\w+)\s+is\s*\(`)
-
-var recordTypeDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*type\s+(\w+)\s+is\s+record\b`)
-var endRecordRegExp *regexp.Regexp = regexp.MustCompile(`^\s*end\s+record\b`)
-
-var endRegExp *regexp.Regexp = regexp.MustCompile(`^\s*end\b`)
-var endWithSemicolonRegExp *regexp.Regexp = regexp.MustCompile(`^\s*end\s*;`)
-var endsWithSemicolonRegExp *regexp.Regexp = regexp.MustCompile(`;\s*($|--)`)
-
-var packageBodyDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*package\s+body\s+\w+\s+is\b`)
-var architectureDeclarationRegExp *regexp.Regexp = regexp.MustCompile(`^\s*architecture\s+\w+\s+of\s*\w+\s+is\b`)
 
 type scanContext struct {
 	scanner *bufio.Scanner
@@ -88,17 +60,17 @@ GETLINE:
 	sc.startIdx = sc.endIdx
 	sc.endIdx += uint32(len(sc.line)) + 1
 
-	if len(emptyLineRegExp.FindIndex(sc.line)) > 0 {
+	if len(emptyLine.FindIndex(sc.line)) > 0 {
 		sc.docPresent = false
 		goto GETLINE
-	} else if len(commentLineRegExp.FindIndex(sc.line)) > 0 {
+	} else if len(commentLine.FindIndex(sc.line)) > 0 {
 		sc.docEnd = sc.endIdx
 		if !sc.docPresent {
 			sc.docStart = sc.startIdx
 			sc.docPresent = true
 		}
-	} else if len(packageBodyDeclarationRegExp.FindIndex(sc.line)) > 0 ||
-		len(architectureDeclarationRegExp.FindIndex(sc.line)) > 0 {
+	} else if len(packageBodyDeclaration.FindIndex(sc.line)) > 0 ||
+		len(architectureDeclaration.FindIndex(sc.line)) > 0 {
 		return false
 	}
 
@@ -129,14 +101,14 @@ func scanFile(filepath string, wg *sync.WaitGroup) {
 	sCtx := scanContext{scanner: scanner}
 
 	for sCtx.proceed() {
-		if submatches := entityDeclarationRegExp.FindSubmatchIndex(sCtx.line); len(submatches) > 0 {
+		if submatches := entityDeclaration.FindSubmatchIndex(sCtx.line); len(submatches) > 0 {
 			name := string(sCtx.line[submatches[2]:submatches[3]])
 			ent, err := scanEntityDeclaration(filepath, name, &sCtx)
 			if err != nil {
 				log.Fatalf("%s: %v", filepath, err)
 			}
 			libContainer.AddSymbol(libName, ent)
-		} else if submatches := packageDeclarationRegExp.FindSubmatchIndex(sCtx.line); len(submatches) > 0 {
+		} else if submatches := packageDeclaration.FindSubmatchIndex(sCtx.line); len(submatches) > 0 {
 			name := string(sCtx.line[submatches[2]:submatches[3]])
 			pkg, err := scanPackageDeclaration(filepath, name, &sCtx)
 			if err != nil {
@@ -162,7 +134,7 @@ func scanEntityDeclaration(filepath string, name string, sc *scanContext) (symbo
 	}
 
 	for sc.proceed() {
-		if len(endRegExp.FindIndex(sc.line)) > 0 {
+		if len(end.FindIndex(sc.line)) > 0 {
 			e.codeEnd = sc.endIdx
 			return e, nil
 		}
@@ -190,7 +162,7 @@ func scanPackageDeclaration(filepath string, name string, sc *scanContext) (symb
 	}
 
 	for sc.proceed() {
-		if submatches := constantDeclarationRegExp.FindSubmatchIndex(sc.line); len(submatches) > 0 {
+		if submatches := constantDeclaration.FindSubmatchIndex(sc.line); len(submatches) > 0 {
 			names := []string{}
 			for i := 1; i < len(submatches)/2; i++ {
 				if submatches[2*i] < 0 {
@@ -212,36 +184,36 @@ func scanPackageDeclaration(filepath string, name string, sc *scanContext) (symb
 					return pkg, fmt.Errorf("package '%s': %v", name, err)
 				}
 			}
-		} else if submatches := arrayTypeDeclarationRegExp.FindSubmatchIndex(sc.line); len(submatches) > 0 {
+		} else if submatches := arrayTypeDeclaration.FindSubmatchIndex(sc.line); len(submatches) > 0 {
 			name := string(sc.line[submatches[2]:submatches[3]])
 			t, err := scanArrayTypeDeclaration(filepath, name, sc)
 			err = pkg.AddSymbol(t)
 			if err != nil {
 				return pkg, fmt.Errorf("package '%s': %v", name, err)
 			}
-		} else if submatches := enumTypeDeclarationRegExp.FindSubmatchIndex(sc.line); len(submatches) > 0 {
+		} else if submatches := enumTypeDeclaration.FindSubmatchIndex(sc.line); len(submatches) > 0 {
 			name := string(sc.line[submatches[2]:submatches[3]])
 			t, err := scanEnumTypeDeclaration(filepath, name, sc)
 			err = pkg.AddSymbol(t)
 			if err != nil {
 				return pkg, fmt.Errorf("package '%s': %v", name, err)
 			}
-		} else if submatches := functionDeclarationRegExp.FindSubmatchIndex(sc.line); len(submatches) > 0 {
+		} else if submatches := functionDeclaration.FindSubmatchIndex(sc.line); len(submatches) > 0 {
 			name := string(sc.line[submatches[4]:submatches[5]])
 			f, err := scanFunctionDeclaration(filepath, name, sc)
 			err = pkg.AddSymbol(f)
 			if err != nil {
 				return pkg, fmt.Errorf("package '%s': %v", name, err)
 			}
-		} else if submatches := recordTypeDeclarationRegExp.FindSubmatchIndex(sc.line); len(submatches) > 0 {
+		} else if submatches := recordTypeDeclaration.FindSubmatchIndex(sc.line); len(submatches) > 0 {
 			name := string(sc.line[submatches[2]:submatches[3]])
 			t, err := scanRecordTypeDeclaration(filepath, name, sc)
 			err = pkg.AddSymbol(t)
 			if err != nil {
 				return pkg, fmt.Errorf("package '%s': %v", name, err)
 			}
-		} else if (len(endRegExp.FindIndex(sc.line)) > 0 && bytes.Contains(sc.line, []byte(name))) ||
-			(len(endPackageRegExp.FindIndex(sc.line)) > 0) {
+		} else if (len(end.FindIndex(sc.line)) > 0 && bytes.Contains(sc.line, []byte(name))) ||
+			(len(endPackage.FindIndex(sc.line)) > 0) {
 			pkg.codeEnd = sc.endIdx
 			return pkg, nil
 		}
@@ -266,7 +238,7 @@ func scanEnumTypeDeclaration(filepath string, name string, sc *scanContext) (sym
 	}
 
 	for {
-		if len(endsWithSemicolonRegExp.FindIndex(sc.line)) > 0 {
+		if len(endsWithSemicolon.FindIndex(sc.line)) > 0 {
 			t.codeEnd = sc.endIdx
 			return t, nil
 		}
@@ -295,7 +267,7 @@ func scanArrayTypeDeclaration(filepath string, name string, sc *scanContext) (sy
 	}
 
 	for {
-		if len(endsWithSemicolonRegExp.FindIndex(sc.line)) > 0 {
+		if len(endsWithSemicolon.FindIndex(sc.line)) > 0 {
 			t.codeEnd = sc.endIdx
 			return t, nil
 		}
@@ -324,9 +296,9 @@ func scanRecordTypeDeclaration(filepath string, name string, sc *scanContext) (s
 	}
 
 	for {
-		if (len(endRegExp.FindIndex(sc.line)) > 0 && bytes.Contains(sc.line, []byte(name))) ||
-			(len(endRecordRegExp.FindIndex(sc.line)) > 0) ||
-			(len(endWithSemicolonRegExp.FindIndex(sc.line)) > 0) {
+		if (len(end.FindIndex(sc.line)) > 0 && bytes.Contains(sc.line, []byte(name))) ||
+			(len(endRecord.FindIndex(sc.line)) > 0) ||
+			(len(endWithSemicolon.FindIndex(sc.line)) > 0) {
 			t.codeEnd = sc.endIdx
 			return t, nil
 		}
@@ -355,7 +327,7 @@ func scanConstantDeclaration(filepath string, names []string, sc *scanContext) (
 	syms := []symbol.Symbol{}
 
 	for {
-		if len(endsWithSemicolonRegExp.FindIndex(sc.line)) > 0 {
+		if len(endsWithSemicolon.FindIndex(sc.line)) > 0 {
 			c.codeEnd = sc.endIdx
 			for _, n := range names {
 				c.name = n
@@ -387,7 +359,7 @@ func scanFunctionDeclaration(filepath string, name string, sc *scanContext) (sym
 	}
 
 	for {
-		if len(returnRegExp.FindIndex(sc.line)) > 0 {
+		if len(endsWithReturn.FindIndex(sc.line)) > 0 {
 			f.codeEnd = sc.endIdx
 			return f, nil
 		}
