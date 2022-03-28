@@ -11,7 +11,6 @@ type Symbol struct {
 	name     string
 	lineNum  uint32
 
-	hasDoc   bool
 	docStart uint32
 	docEnd   uint32
 

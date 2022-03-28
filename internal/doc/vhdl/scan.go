@@ -148,7 +148,7 @@ func scanFile(filepath string, wg *sync.WaitGroup) {
 }
 
 func scanEntityDeclaration(filepath string, name string, sc *scanContext) (symbol.Symbol, error) {
-	ent := Entity{
+	e := Entity{
 		Symbol{
 			filepath:  filepath,
 			name:      name,
@@ -157,19 +157,18 @@ func scanEntityDeclaration(filepath string, name string, sc *scanContext) (symbo
 	}
 
 	if sc.docPresent {
-		ent.hasDoc = true
-		ent.docStart = sc.docStart
-		ent.docEnd = sc.docEnd
+		e.docStart = sc.docStart
+		e.docEnd = sc.docEnd
 	}
 
 	for sc.proceed() {
 		if len(endRegExp.FindIndex(sc.line)) > 0 {
-			ent.codeEnd = sc.endIdx
-			return ent, nil
+			e.codeEnd = sc.endIdx
+			return e, nil
 		}
 	}
 
-	return ent, fmt.Errorf("entity declaration end line not found")
+	return e, fmt.Errorf("entity declaration end line not found")
 }
 
 func scanPackageDeclaration(filepath string, name string, sc *scanContext) (symbol.Symbol, error) {
@@ -186,7 +185,6 @@ func scanPackageDeclaration(filepath string, name string, sc *scanContext) (symb
 	}
 
 	if sc.docPresent {
-		pkg.hasDoc = true
 		pkg.docStart = sc.docStart
 		pkg.docEnd = sc.docEnd
 	}
@@ -263,7 +261,6 @@ func scanEnumTypeDeclaration(filepath string, name string, sc *scanContext) (sym
 	}
 
 	if sc.docPresent {
-		t.hasDoc = true
 		t.docStart = sc.docStart
 		t.docEnd = sc.docEnd
 	}
@@ -293,7 +290,6 @@ func scanArrayTypeDeclaration(filepath string, name string, sc *scanContext) (sy
 	}
 
 	if sc.docPresent {
-		t.hasDoc = true
 		t.docStart = sc.docStart
 		t.docEnd = sc.docEnd
 	}
@@ -323,7 +319,6 @@ func scanRecordTypeDeclaration(filepath string, name string, sc *scanContext) (s
 	}
 
 	if sc.docPresent {
-		t.hasDoc = true
 		t.docStart = sc.docStart
 		t.docEnd = sc.docEnd
 	}
@@ -344,7 +339,7 @@ func scanRecordTypeDeclaration(filepath string, name string, sc *scanContext) (s
 }
 
 func scanConstantDeclaration(filepath string, names []string, sc *scanContext) ([]symbol.Symbol, error) {
-	const_ := Constant{
+	c := Constant{
 		Symbol{
 			filepath:  filepath,
 			lineNum:   sc.lineNum,
@@ -353,19 +348,18 @@ func scanConstantDeclaration(filepath string, names []string, sc *scanContext) (
 	}
 
 	if sc.docPresent {
-		const_.hasDoc = true
-		const_.docStart = sc.docStart
-		const_.docEnd = sc.docEnd
+		c.docStart = sc.docStart
+		c.docEnd = sc.docEnd
 	}
 
 	syms := []symbol.Symbol{}
 
 	for {
 		if len(endsWithSemicolonRegExp.FindIndex(sc.line)) > 0 {
-			const_.codeEnd = sc.endIdx
+			c.codeEnd = sc.endIdx
 			for _, n := range names {
-				const_.name = n
-				syms = append(syms, const_)
+				c.name = n
+				syms = append(syms, c)
 			}
 			return syms, nil
 		}
@@ -388,7 +382,6 @@ func scanFunctionDeclaration(filepath string, name string, sc *scanContext) (sym
 	}
 
 	if sc.docPresent {
-		f.hasDoc = true
 		f.docStart = sc.docStart
 		f.docEnd = sc.docEnd
 	}
