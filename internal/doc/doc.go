@@ -24,7 +24,7 @@ func Doc(args args.DocArgs) uint8 {
 	for _, sp := range symbolPaths {
 		paths, syms := findSymbol(sp)
 		for i, _ := range paths {
-			foundSymbols[paths[i]] = append(foundSymbols[paths[i]], syms[i])
+			foundSymbols[paths[i]] = syms[i]
 		}
 	}
 
@@ -71,7 +71,7 @@ func ScanFiles() {
 	vhdl.ScanFiles(docArgs, vhdlFiles, &wg)
 }
 
-func findSymbol(sp symbolPath) (paths []symbolPath, syms []symbol.Symbol) {
+func findSymbol(sp symbolPath) (paths []symbolPath, syms [][]symbol.Symbol) {
 	var ok bool
 
 	libNames := []string{}
@@ -116,10 +116,8 @@ func findSymbol(sp symbolPath) (paths []symbolPath, syms []symbol.Symbol) {
 				if len(sec) == 0 {
 					continue
 				}
-				for _, s := range sec {
-					paths = append(paths, tmpSp)
-					syms = append(syms, s)
-				}
+				paths = append(paths, tmpSp)
+				syms = append(syms, sec)
 			}
 		} else {
 			pri, ok := l.GetSymbol(tmpSp.primary)
@@ -128,16 +126,14 @@ func findSymbol(sp symbolPath) (paths []symbolPath, syms []symbol.Symbol) {
 			}
 			if tmpSp.secondary == "" {
 				paths = append(paths, tmpSp)
-				syms = append(syms, pri)
+				syms = append(syms, []symbol.Symbol{pri})
 			} else {
 				sec := pri.GetSymbol(tmpSp.secondary)
 				if len(sec) == 0 {
 					continue
 				}
-				for _, s := range sec {
-					paths = append(paths, tmpSp)
-					syms = append(syms, s)
-				}
+				paths = append(paths, tmpSp)
+				syms = append(syms, sec)
 			}
 		}
 	}
