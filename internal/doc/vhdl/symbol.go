@@ -9,6 +9,7 @@ import (
 type Symbol struct {
 	filepath string
 	name     string
+	lineNum  uint32
 
 	hasDoc   bool
 	docStart uint32
@@ -21,6 +22,8 @@ type Symbol struct {
 func (s Symbol) Filepath() string { return s.filepath }
 
 func (s Symbol) Name() string { return s.name }
+
+func (s Symbol) LineNum() uint32 { return s.lineNum }
 
 func (s Symbol) Doc() string {
 	f, err := os.ReadFile(s.filepath)

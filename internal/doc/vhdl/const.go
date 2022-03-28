@@ -12,6 +12,6 @@ func (c Constant) SymbolNames() []string {
 	return []string{}
 }
 
-func (c Constant) GetSymbol(name string) (symbol.Symbol, bool) {
-	return nil, false
+func (c Constant) GetSymbol(name string) []symbol.Symbol {
+	return nil
 }

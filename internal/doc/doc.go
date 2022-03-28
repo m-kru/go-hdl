@@ -19,12 +19,12 @@ func Doc(args args.DocArgs) uint8 {
 	ScanFiles()
 
 	symbolPaths := resolveSymbolPath(args.SymbolPath)
-	foundSymbols := map[symbolPath]symbol.Symbol{}
+	foundSymbols := map[symbolPath][]symbol.Symbol{}
 
 	for _, sp := range symbolPaths {
 		paths, syms := findSymbol(sp)
 		for i, _ := range paths {
-			foundSymbols[paths[i]] = syms[i]
+			foundSymbols[paths[i]] = append(foundSymbols[paths[i]], syms[i])
 		}
 	}
 
@@ -33,15 +33,19 @@ func Doc(args args.DocArgs) uint8 {
 	if foundCount == 0 {
 		log.Fatalf("no symbol matching path '%s' found", args.SymbolPath)
 	} else if foundCount == 1 {
-		for path, sym := range foundSymbols {
+		for path, syms := range foundSymbols {
 			fmt.Printf("%s\n\n", path)
-			fmt.Printf("%s\n\n", sym.Filepath())
-			doc, code := sym.DocCode()
-			fmt.Printf(utils.Deindent(doc))
-			if !args.NoBold {
-				code = utils.BoldCodeTerminal(path.language, code)
+			fmt.Printf("%s\n", syms[0].Filepath())
+			symbol.SortByLineNum(syms)
+			for _, sym := range syms {
+				fmt.Printf("\n")
+				doc, code := sym.DocCode()
+				fmt.Printf(utils.Deindent(doc))
+				if !args.NoBold {
+					code = utils.BoldCodeTerminal(path.language, code)
+				}
+				fmt.Printf(utils.Deindent(code))
 			}
-			fmt.Printf(utils.Deindent(code))
 		}
 	} else {
 		msg := "provided path is ambiguous, found symbols with following paths:"
@@ -108,12 +112,14 @@ func findSymbol(sp symbolPath) (paths []symbolPath, syms []symbol.Symbol) {
 				if !ok {
 					continue
 				}
-				sec, ok := pri.GetSymbol(tmpSp.secondary)
-				if !ok {
+				sec := pri.GetSymbol(tmpSp.secondary)
+				if len(sec) == 0 {
 					continue
 				}
-				paths = append(paths, tmpSp)
-				syms = append(syms, sec)
+				for _, s := range sec {
+					paths = append(paths, tmpSp)
+					syms = append(syms, s)
+				}
 			}
 		} else {
 			pri, ok := l.GetSymbol(tmpSp.primary)
@@ -124,12 +130,14 @@ func findSymbol(sp symbolPath) (paths []symbolPath, syms []symbol.Symbol) {
 				paths = append(paths, tmpSp)
 				syms = append(syms, pri)
 			} else {
-				sec, ok := pri.GetSymbol(tmpSp.secondary)
-				if !ok {
+				sec := pri.GetSymbol(tmpSp.secondary)
+				if len(sec) == 0 {
 					continue
 				}
-				paths = append(paths, tmpSp)
-				syms = append(syms, sec)
+				for _, s := range sec {
+					paths = append(paths, tmpSp)
+					syms = append(syms, s)
+				}
 			}
 		}
 	}

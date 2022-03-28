@@ -12,6 +12,6 @@ func (e Entity) SymbolNames() []string {
 	return []string{}
 }
 
-func (e Entity) GetSymbol(name string) (symbol.Symbol, bool) {
-	return nil, false
+func (e Entity) GetSymbol(name string) []symbol.Symbol {
+	return nil
 }

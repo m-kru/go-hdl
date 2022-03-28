@@ -12,6 +12,6 @@ func (t Type) SymbolNames() []string {
 	return []string{}
 }
 
-func (t Type) GetSymbol(name string) (symbol.Symbol, bool) {
-	return nil, false
+func (t Type) GetSymbol(name string) []symbol.Symbol {
+	return nil
 }

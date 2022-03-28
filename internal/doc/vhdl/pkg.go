@@ -7,30 +7,34 @@ import (
 
 type Package struct {
 	Symbol
-	Consts map[string]symbol.Symbol
-	Funcs  map[string]symbol.Symbol
-	Procs  map[string]symbol.Symbol
-	Types  map[string]symbol.Symbol
+	Consts map[symbol.ID]symbol.Symbol
+	Funcs  map[symbol.ID]symbol.Symbol
+	Procs  map[symbol.ID]symbol.Symbol
+	Types  map[symbol.ID]symbol.Symbol
 }
 
 func (p Package) AddSymbol(s symbol.Symbol) error {
+	id := symbol.ID{Name: s.Name(), LineNum: s.LineNum()}
+
 	switch s.(type) {
 	case Constant:
-		if _, ok := p.Consts[s.Name()]; ok {
+		if _, ok := p.Consts[id]; ok {
 			return fmt.Errorf(
 				"constant '%s' defined at least twice in package '%s'",
 				s.Name(), p.Name(),
 			)
 		}
-		p.Consts[s.Name()] = s
+		p.Consts[id] = s
+	case Function:
+		p.Funcs[id] = s
 	case Type:
-		if _, ok := p.Types[s.Name()]; ok {
+		if _, ok := p.Types[id]; ok {
 			return fmt.Errorf(
 				"type '%s' defined at least twice in package '%s'",
 				s.Name(), p.Name(),
 			)
 		}
-		p.Types[s.Name()] = s
+		p.Types[id] = s
 	default:
 		panic("should never happen")
 	}
@@ -41,30 +45,40 @@ func (p Package) AddSymbol(s symbol.Symbol) error {
 func (p Package) SymbolNames() []string {
 	names := []string{}
 
-	for name, _ := range p.Consts {
-		names = append(names, name)
+	for id, _ := range p.Consts {
+		names = append(names, id.Name)
 	}
-	for name, _ := range p.Funcs {
-		names = append(names, name)
+	for id, _ := range p.Funcs {
+		names = append(names, id.Name)
 	}
-	for name, _ := range p.Procs {
-		names = append(names, name)
+	for id, _ := range p.Procs {
+		names = append(names, id.Name)
 	}
-	for name, _ := range p.Types {
-		names = append(names, name)
+	for id, _ := range p.Types {
+		names = append(names, id.Name)
 	}
 
 	return names
 }
 
-func (p Package) GetSymbol(name string) (symbol.Symbol, bool) {
-	if sym, ok := p.Consts[name]; ok {
-		return sym, true
+func (p Package) GetSymbol(name string) []symbol.Symbol {
+	syms := []symbol.Symbol{}
+
+	for id, s := range p.Consts {
+		if id.Name == name {
+			syms = append(syms, s)
+		}
 	}
-	if sym, ok := p.Types[name]; ok {
-		return sym, true
+	for id, s := range p.Funcs {
+		if id.Name == name {
+			syms = append(syms, s)
+		}
 	}
-	// TODO: Thinks how to handle functions and procedures.
-	// Their names can be overloaded.
-	return nil, false
+	for id, s := range p.Types {
+		if id.Name == name {
+			syms = append(syms, s)
+		}
+	}
+
+	return syms
 }
