@@ -1,28 +1,29 @@
 package vhdl
 
-import "regexp"
+import re "regexp"
 
-var emptyLine *regexp.Regexp = regexp.MustCompile(`^\s*$`)
-var commentLine *regexp.Regexp = regexp.MustCompile(`^\s*--`)
-var end *regexp.Regexp = regexp.MustCompile(`^\s*end\b`)
-var endWithSemicolon *regexp.Regexp = regexp.MustCompile(`^\s*end\s*;`)
-var endsWithSemicolon *regexp.Regexp = regexp.MustCompile(`;\s*($|--)`)
+var emptyLine *re.Regexp = re.MustCompile(`^\s*$`)
+var commentLine *re.Regexp = re.MustCompile(`^\s*--`)
+var end *re.Regexp = re.MustCompile(`^\s*end\b`)
+var endWithSemicolon *re.Regexp = re.MustCompile(`^\s*end\s*;`)
+var endsWithSemicolon *re.Regexp = re.MustCompile(`;\s*($|--)`)
 
-var constantDeclaration *regexp.Regexp = regexp.MustCompile(`^\s*constant\s+(\w+)\s*(,\s*\w+)?\s*(,\s*\w+)?`)
+var constantDeclaration *re.Regexp = re.MustCompile(`^\s*constant\s+(\w+)\s*(,\s*\w+)?\s*(,\s*\w+)?`)
 
-var entityDeclaration *regexp.Regexp = regexp.MustCompile(`^\s*entity\s+(\w*)\s+is`)
-var architectureDeclaration *regexp.Regexp = regexp.MustCompile(`^\s*architecture\s+\w+\s+of\s*\w+\s+is\b`)
+var entityDeclaration *re.Regexp = re.MustCompile(`^\s*entity\s+(\w*)\s+is`)
+var architectureDeclaration *re.Regexp = re.MustCompile(`^\s*architecture\s+\w+\s+of\s*\w+\s+is\b`)
 
-var functionDeclaration *regexp.Regexp = regexp.MustCompile(`^\s*(pure\b|impure\b)?\s*function\s+(\w+)`)
-var endsWithReturn *regexp.Regexp = regexp.MustCompile(`\breturn\s+\w+\s*;`)
+var functionDeclaration *re.Regexp = re.MustCompile(`^\s*(pure\b|impure\b)?\s*function\s+(\w+)`)
+var endsWithReturn *re.Regexp = re.MustCompile(`\breturn\s+\w+\s*;`)
 
-var packageDeclaration *regexp.Regexp = regexp.MustCompile(`^\s*package\s+(\w*)\s+is`)
-var endPackage *regexp.Regexp = regexp.MustCompile(`^\s*end\s+package\b`)
-var packageBodyDeclaration *regexp.Regexp = regexp.MustCompile(`^\s*package\s+body\s+\w+\s+is\b`)
+var packageDeclaration *re.Regexp = re.MustCompile(`^\s*package\s+(\w+)\s+is`)
+var packageInstantiation *re.Regexp = re.MustCompile(`^\s*package\s+(\w+)\s+is\s+new\b`)
+var endPackage *re.Regexp = re.MustCompile(`^\s*end\s+package\b`)
+var packageBodyDeclaration *re.Regexp = re.MustCompile(`^\s*package\s+body\s+\w+\s+is\b`)
 
-var arrayTypeDeclaration *regexp.Regexp = regexp.MustCompile(`^\s*type\s+(\w+)\s+is\s+array\b`)
+var arrayTypeDeclaration *re.Regexp = re.MustCompile(`^\s*type\s+(\w+)\s+is\s+array\b`)
 
-var enumTypeDeclaration *regexp.Regexp = regexp.MustCompile(`^\s*type\s+(\w+)\s+is\s*\(`)
+var enumTypeDeclaration *re.Regexp = re.MustCompile(`^\s*type\s+(\w+)\s+is\s*\(`)
 
-var recordTypeDeclaration *regexp.Regexp = regexp.MustCompile(`^\s*type\s+(\w+)\s+is\s+record\b`)
-var endRecord *regexp.Regexp = regexp.MustCompile(`^\s*end\s+record\b`)
+var recordTypeDeclaration *re.Regexp = re.MustCompile(`^\s*type\s+(\w+)\s+is\s+record\b`)
+var endRecord *re.Regexp = re.MustCompile(`^\s*end\s+record\b`)

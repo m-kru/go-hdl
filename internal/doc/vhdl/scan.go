@@ -71,7 +71,10 @@ GETLINE:
 		}
 	} else if len(packageBodyDeclaration.FindIndex(sc.line)) > 0 ||
 		len(architectureDeclaration.FindIndex(sc.line)) > 0 {
+		sc.docPresent = false
 		return false
+	} else {
+		sc.docPresent = false
 	}
 
 	return true
@@ -108,6 +111,13 @@ func scanFile(filepath string, wg *sync.WaitGroup) {
 				log.Fatalf("%s: %v", filepath, err)
 			}
 			libContainer.AddSymbol(libName, ent)
+		} else if submatches := packageInstantiation.FindSubmatchIndex(sCtx.line); len(submatches) > 0 {
+			name := string(sCtx.line[submatches[2]:submatches[3]])
+			pkgInst, err := scanPackageInstantiation(filepath, name, &sCtx)
+			if err != nil {
+				log.Fatalf("%s: %v", filepath, err)
+			}
+			libContainer.AddSymbol(libName, pkgInst)
 		} else if submatches := packageDeclaration.FindSubmatchIndex(sCtx.line); len(submatches) > 0 {
 			name := string(sCtx.line[submatches[2]:submatches[3]])
 			pkg, err := scanPackageDeclaration(filepath, name, &sCtx)
@@ -213,13 +223,38 @@ func scanPackageDeclaration(filepath string, name string, sc *scanContext) (symb
 				return pkg, fmt.Errorf("package '%s': %v", name, err)
 			}
 		} else if (len(end.FindIndex(sc.line)) > 0 && bytes.Contains(sc.line, []byte(name))) ||
-			(len(endPackage.FindIndex(sc.line)) > 0) {
+			(len(endPackage.FindIndex(sc.line)) > 0) ||
+			(len(endWithSemicolon.FindIndex(sc.line)) > 0) {
 			pkg.codeEnd = sc.endIdx
 			return pkg, nil
 		}
 	}
 
 	return pkg, fmt.Errorf("package declaration end line not found")
+}
+
+func scanPackageInstantiation(filepath string, name string, sc *scanContext) (symbol.Symbol, error) {
+	pi := PackageInstantiation{
+		Symbol{
+			filepath:  filepath,
+			name:      name,
+			codeStart: sc.startIdx,
+		},
+	}
+
+	if sc.docPresent {
+		pi.docStart = sc.docStart
+		pi.docEnd = sc.docEnd
+	}
+
+	for sc.proceed() {
+		if len(endsWithSemicolon.FindIndex(sc.line)) > 0 {
+			pi.codeEnd = sc.endIdx
+			return pi, nil
+		}
+	}
+
+	return pi, fmt.Errorf("package instantiation line with ';' not found")
 }
 
 func scanEnumTypeDeclaration(filepath string, name string, sc *scanContext) (symbol.Symbol, error) {
