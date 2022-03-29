@@ -38,7 +38,7 @@ jobs:
       - run: go get -u github.com/kisielk/errcheck
       - run: make errcheck
 
-  Check-Tests:
+  Vet-Tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -47,4 +47,4 @@ jobs:
           go-version: '^1.17.1'
       - run: go version
       - run: make build
-      - run: ./scripts/test-check.sh
+      - run: ./scripts/test-vet.sh
