@@ -60,6 +60,10 @@ func Parse() Args {
 			fmt.Printf(checkHelpMsg)
 		} else if os.Args[2] == "doc" {
 			fmt.Printf(docHelpMsg)
+		} else if os.Args[2] == "help" {
+			fmt.Printf(helpHelpMsg)
+		} else if os.Args[2] == "ver" {
+			fmt.Printf(verHelpMsg)
 		}
 		os.Exit(0)
 	case "check":
