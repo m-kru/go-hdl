@@ -2,7 +2,7 @@ package args
 
 func isValidCommand(cmd string) bool {
 	validCommands := [...]string{
-		"check", "doc", "gen", "help", "ver",
+		"doc", "gen", "help", "ver", "vet",
 	}
 
 	for i, _ := range validCommands {

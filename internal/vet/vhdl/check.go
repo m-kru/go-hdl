@@ -8,15 +8,15 @@ import (
 	"regexp"
 	"sync"
 
-	"github.com/m-kru/go-thdl/internal/check/rprt"
 	"github.com/m-kru/go-thdl/internal/utils"
+	"github.com/m-kru/go-thdl/internal/vet/rprt"
 )
 
 var ignoreNextLineRegExp *regexp.Regexp = regexp.MustCompile(`^\s*--thdl:ignore`)
 var ignoreThisLineRegExp *regexp.Regexp = regexp.MustCompile(`--thdl:ignore\s*$`)
 var commentLineRegExp *regexp.Regexp = regexp.MustCompile(`^\s*--`)
 
-func Check(filepaths []string, wg *sync.WaitGroup) {
+func Vet(filepaths []string, wg *sync.WaitGroup) {
 	var filesWg sync.WaitGroup
 
 	for _, fp := range filepaths {

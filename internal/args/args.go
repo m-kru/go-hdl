@@ -45,7 +45,7 @@ func (lm LibMap) Lib(filepath string) string {
 	return ""
 }
 
-type CheckArgs struct {
+type VetArgs struct {
 	IgnoreList
 }
 
@@ -65,15 +65,15 @@ type GenArgs struct {
 }
 
 type Args struct {
-	Cmd       string
-	Debug     bool
-	CheckArgs CheckArgs
-	DocArgs   DocArgs
-	GenArgs   GenArgs
+	Cmd     string
+	Debug   bool
+	VetArgs VetArgs
+	DocArgs DocArgs
+	GenArgs GenArgs
 }
 
 func setFileCfgArgs(fc FileCfg, args *Args) {
-	args.CheckArgs.IgnoreList.ignore = fc.Check.Ignore
+	args.VetArgs.IgnoreList.ignore = fc.Vet.Ignore
 
 	args.DocArgs.IgnoreList.ignore = fc.Doc.Ignore
 	args.DocArgs.LibMap.libs = fc.Libs

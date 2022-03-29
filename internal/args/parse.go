@@ -56,17 +56,17 @@ func Parse() Args {
 		} else if !isValidCommand(os.Args[2]) {
 			printHelp()
 			os.Exit(1)
-		} else if os.Args[2] == "check" {
-			fmt.Printf(checkHelpMsg)
 		} else if os.Args[2] == "doc" {
 			fmt.Printf(docHelpMsg)
 		} else if os.Args[2] == "help" {
 			fmt.Printf(helpHelpMsg)
 		} else if os.Args[2] == "ver" {
 			fmt.Printf(verHelpMsg)
+		} else if os.Args[2] == "vet" {
+			fmt.Printf(vetHelpMsg)
 		}
 		os.Exit(0)
-	case "check":
+	case "vet":
 	case "doc":
 		if argsLen < 3 {
 			fmt.Printf("missing symbol path\n")

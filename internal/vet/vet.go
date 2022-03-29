@@ -1,14 +1,14 @@
-package check
+package vet
 
 import (
 	"github.com/m-kru/go-thdl/internal/args"
-	"github.com/m-kru/go-thdl/internal/check/vhdl"
 	"github.com/m-kru/go-thdl/internal/utils"
+	"github.com/m-kru/go-thdl/internal/vet/vhdl"
 	"log"
 	"sync"
 )
 
-func Check(args args.CheckArgs) {
+func Vet(args args.VetArgs) {
 	var wg sync.WaitGroup
 	defer wg.Wait()
 
@@ -17,5 +17,5 @@ func Check(args args.CheckArgs) {
 		log.Fatalf("%v", err)
 	}
 	wg.Add(1)
-	vhdl.Check(vhdlFiles, &wg)
+	vhdl.Vet(vhdlFiles, &wg)
 }

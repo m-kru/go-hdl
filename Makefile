@@ -12,9 +12,9 @@ help:
 	@echo "  vet       Examine go sources with go vet."
 	@echo "  errcheck  Examine go sources with errcheck."
 	@echo "Test targets:"
-	@echo "  test        Run go test."
-	@echo "  test-check  Run check command tests."
-	@echo "  test-all    Run all tests."
+	@echo "  test      Run go test."
+	@echo "  test-vet  Run vet command tests."
+	@echo "  test-all  Run all tests."
 	@echo "Other targets:"
 	@echo "  help  Print help message."
 
@@ -41,10 +41,10 @@ errcheck:
 test:
 	go test ./...
 
-test-check:
-	@./scripts/test-check.sh
+test-vet:
+	@./scripts/test-vet.sh
 
-test-all: test test-check
+test-all: test test-vet
 
 
 # Installation targets

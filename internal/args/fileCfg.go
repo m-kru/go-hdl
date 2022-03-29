@@ -8,7 +8,7 @@ import (
 type FileCfg struct {
 	Ignore []string
 	Libs   map[string][]string
-	Check  struct {
+	Vet    struct {
 		Ignore []string
 	}
 	Doc struct {
@@ -38,9 +38,9 @@ func (fc FileCfg) String() string {
 		}
 	}
 
-	s.WriteString("  Check:\n")
+	s.WriteString("  Vet:\n")
 	s.WriteString("    Ignore:\n")
-	for _, i := range fc.Check.Ignore {
+	for _, i := range fc.Vet.Ignore {
 		s.WriteString(fmt.Sprintf("      - %s\n", i))
 	}
 
@@ -63,7 +63,7 @@ func (fc FileCfg) String() string {
 
 func (fc *FileCfg) propagateGlobalIgnore() {
 	for _, i := range fc.Ignore {
-		fc.Check.Ignore = append(fc.Check.Ignore, i)
+		fc.Vet.Ignore = append(fc.Vet.Ignore, i)
 		fc.Doc.Ignore = append(fc.Doc.Ignore, i)
 		fc.Gen.Ignore = append(fc.Gen.Ignore, i)
 	}

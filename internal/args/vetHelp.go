@@ -1,22 +1,21 @@
 package args
 
-var checkHelpMsg string = `Check command
-=============
+var vetHelpMsg string = `Vet command
+===========
 
 Usage
 -----
 
-thdl check [flags]
+thdl vet [flags]
 
 Flags:
   -no-config  Don't read .thdl.yml config file.
 
-
 Description
 -----------
 
-The check command checks for extremely dumb mistakes such as stucking resets
-to constant reset value. The check internally consists of independent,
+The vet command checks for likely mistakes such as stucking resets
+to constant reset value. The vet internally consists of independent,
 orthogonal scopes. Name of each scope reflects the functional scope that
 is actually checked by given scope. Currently following scopes exist:
 - clock - checks mistakes related with clock ports mappings,

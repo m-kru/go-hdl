@@ -11,11 +11,11 @@ Usage:
   thdl <command> [arguments]
 
 The commands are:
-  check  Check for extremely dumb mistakes.
-  doc    Show or generate documentation.
-  gen    Generate HDL files by processing sources.
-  help   Print more information about a specific command.
-  ver    Print thdl version.
+  doc   Show or generate documentation.
+  gen   Generate HDL files by processing sources.
+  help  Print more information about a specific command.
+  ver   Print thdl version.
+  vet   Check for extremely dumb mistakes.
 `
 
 func printHelp() {

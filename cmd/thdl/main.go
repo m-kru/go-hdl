@@ -6,9 +6,9 @@ import (
 	"os"
 
 	"github.com/m-kru/go-thdl/internal/args"
-	"github.com/m-kru/go-thdl/internal/check"
-	"github.com/m-kru/go-thdl/internal/check/rprt"
 	"github.com/m-kru/go-thdl/internal/doc"
+	"github.com/m-kru/go-thdl/internal/vet"
+	"github.com/m-kru/go-thdl/internal/vet/rprt"
 )
 
 var printDebug bool = false
@@ -35,8 +35,8 @@ func main() {
 
 	printDebug = args.Debug
 
-	if args.Cmd == "check" {
-		check.Check(args.CheckArgs)
+	if args.Cmd == "vet" {
+		vet.Vet(args.VetArgs)
 		if rprt.ViolationCount() > 0 {
 			os.Exit(1)
 		}
