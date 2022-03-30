@@ -27,3 +27,5 @@ var enumTypeDeclaration *re.Regexp = re.MustCompile(`^\s*type\s+(\w+)\s+is\s*\(`
 
 var recordTypeDeclaration *re.Regexp = re.MustCompile(`^\s*type\s+(\w+)\s+is\s+record\b`)
 var endRecord *re.Regexp = re.MustCompile(`^\s*end\s+record\b`)
+
+var subtypeDeclaration *re.Regexp = re.MustCompile(`^\s*subtype\s+(\w+)\s+is\s+`)

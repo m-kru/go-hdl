@@ -16,7 +16,7 @@ var VHDLKeywords map[string]bool = map[string]bool{
 	"natural": true,
 	"of":      true, "others": true, "out": true,
 	"package": true, "port": true, "positive": true, "procedure": true, "pure": true,
-	"range": true, "record": true, "report": true,
+	"range": true, "record": true, "report": true, "return": true,
 	"severity": true, "signed": true, "std_logic": true, "std_logic_vector": true, "string": true, "subtype": true,
 	"time": true, "to": true, "true": true, "type": true,
 	"unsigned": true,
