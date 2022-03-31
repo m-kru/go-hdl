@@ -170,6 +170,11 @@ func scanPackageDeclaration(filepath string, name string, sc *scanContext) (symb
 	}
 
 	for sc.proceed() {
+		var syms []symbol.Symbol
+		var err error
+
+		syms = nil
+
 		if submatches := constantDeclaration.FindSubmatchIndex(sc.line); len(submatches) > 0 {
 			names := []string{}
 			for i := 1; i < len(submatches)/2; i++ {
@@ -182,63 +187,40 @@ func scanPackageDeclaration(filepath string, name string, sc *scanContext) (symb
 				}
 				names = append(names, name)
 			}
-			consts, err := scanConstantDeclaration(filepath, names, sc)
-			if err != nil {
-				return pkg, fmt.Errorf("package '%s': %v", name, err)
-			}
-			for _, c := range consts {
-				err = pkg.AddSymbol(c)
-				if err != nil {
-					return pkg, fmt.Errorf("package '%s': %v", name, err)
-				}
-			}
+			syms, err = scanConstantDeclaration(filepath, names, sc)
 		} else if submatches := arrayTypeDeclaration.FindSubmatchIndex(sc.line); len(submatches) > 0 {
 			name := string(sc.line[submatches[2]:submatches[3]])
-			t, err := scanArrayTypeDeclaration(filepath, name, sc)
-			err = pkg.AddSymbol(t)
-			if err != nil {
-				return pkg, fmt.Errorf("package '%s': %v", name, err)
-			}
+			syms, err = scanArrayTypeDeclaration(filepath, name, sc)
 		} else if submatches := enumTypeDeclaration.FindSubmatchIndex(sc.line); len(submatches) > 0 {
 			name := string(sc.line[submatches[2]:submatches[3]])
-			t, err := scanEnumTypeDeclaration(filepath, name, sc)
-			err = pkg.AddSymbol(t)
-			if err != nil {
-				return pkg, fmt.Errorf("package '%s': %v", name, err)
-			}
+			syms, err = scanEnumTypeDeclaration(filepath, name, sc)
 		} else if submatches := functionDeclaration.FindSubmatchIndex(sc.line); len(submatches) > 0 {
 			name := string(sc.line[submatches[4]:submatches[5]])
-			f, err := scanFunctionDeclaration(filepath, name, sc)
-			err = pkg.AddSymbol(f)
-			if err != nil {
-				return pkg, fmt.Errorf("package '%s': %v", name, err)
-			}
+			syms, err = scanFunctionDeclaration(filepath, name, sc)
 		} else if submatches := procedureDeclaration.FindSubmatchIndex(sc.line); len(submatches) > 0 {
 			name := string(sc.line[submatches[2]:submatches[3]])
-			p, err := scanProcedureDeclaration(filepath, name, sc)
-			err = pkg.AddSymbol(p)
-			if err != nil {
-				return pkg, fmt.Errorf("package '%s': %v", name, err)
-			}
+			syms, err = scanProcedureDeclaration(filepath, name, sc)
 		} else if submatches := recordTypeDeclaration.FindSubmatchIndex(sc.line); len(submatches) > 0 {
 			name := string(sc.line[submatches[2]:submatches[3]])
-			t, err := scanRecordTypeDeclaration(filepath, name, sc)
-			err = pkg.AddSymbol(t)
-			if err != nil {
-				return pkg, fmt.Errorf("package '%s': %v", name, err)
-			}
+			syms, err = scanRecordTypeDeclaration(filepath, name, sc)
 		} else if submatches := subtypeDeclaration.FindSubmatchIndex(sc.line); len(submatches) > 0 {
 			name := string(sc.line[submatches[2]:submatches[3]])
-			t, err := scanSubtypeDeclaration(filepath, name, sc)
-			err = pkg.AddSymbol(t)
-			if err != nil {
-				return pkg, fmt.Errorf("package '%s': %v", name, err)
-			}
+			syms, err = scanSubtypeDeclaration(filepath, name, sc)
 		} else if (len(end.FindIndex(sc.line)) > 0 && bytes.Contains(sc.line, []byte(name))) ||
 			(len(endPackage.FindIndex(sc.line)) > 0) ||
 			(len(endWithSemicolon.FindIndex(sc.line)) > 0) {
 			pkg.codeEnd = sc.endIdx
 			return pkg, nil
+		}
+
+		if err != nil {
+			return pkg, fmt.Errorf("package '%s': %v", name, err)
+		}
+		for _, s := range syms {
+			err = pkg.AddSymbol(s)
+			if err != nil {
+				return pkg, fmt.Errorf("package '%s': %v", name, err)
+			}
 		}
 	}
 
@@ -269,7 +251,7 @@ func scanPackageInstantiation(filepath string, name string, sc *scanContext) (sy
 	return pi, fmt.Errorf("package instantiation line with ';' not found")
 }
 
-func scanEnumTypeDeclaration(filepath string, name string, sc *scanContext) (symbol.Symbol, error) {
+func scanEnumTypeDeclaration(filepath string, name string, sc *scanContext) ([]symbol.Symbol, error) {
 	t := Type{
 		Symbol{
 			filepath:  filepath,
@@ -287,7 +269,7 @@ func scanEnumTypeDeclaration(filepath string, name string, sc *scanContext) (sym
 	for {
 		if len(endsWithSemicolon.FindIndex(sc.line)) > 0 {
 			t.codeEnd = sc.endIdx
-			return t, nil
+			return []symbol.Symbol{t}, nil
 		}
 
 		if !sc.proceed() {
@@ -295,10 +277,10 @@ func scanEnumTypeDeclaration(filepath string, name string, sc *scanContext) (sym
 		}
 	}
 
-	return t, fmt.Errorf("enum declaration line with ';' not found")
+	return nil, fmt.Errorf("enum declaration line with ';' not found")
 }
 
-func scanArrayTypeDeclaration(filepath string, name string, sc *scanContext) (symbol.Symbol, error) {
+func scanArrayTypeDeclaration(filepath string, name string, sc *scanContext) ([]symbol.Symbol, error) {
 	t := Type{
 		Symbol{
 			filepath:  filepath,
@@ -316,7 +298,7 @@ func scanArrayTypeDeclaration(filepath string, name string, sc *scanContext) (sy
 	for {
 		if len(endsWithSemicolon.FindIndex(sc.line)) > 0 {
 			t.codeEnd = sc.endIdx
-			return t, nil
+			return []symbol.Symbol{t}, nil
 		}
 
 		if !sc.proceed() {
@@ -324,10 +306,10 @@ func scanArrayTypeDeclaration(filepath string, name string, sc *scanContext) (sy
 		}
 	}
 
-	return t, fmt.Errorf("array declaration end line not found")
+	return nil, fmt.Errorf("array declaration end line not found")
 }
 
-func scanRecordTypeDeclaration(filepath string, name string, sc *scanContext) (symbol.Symbol, error) {
+func scanRecordTypeDeclaration(filepath string, name string, sc *scanContext) ([]symbol.Symbol, error) {
 	t := Type{
 		Symbol{
 			filepath:  filepath,
@@ -347,14 +329,14 @@ func scanRecordTypeDeclaration(filepath string, name string, sc *scanContext) (s
 			(len(endRecord.FindIndex(sc.line)) > 0) ||
 			(len(endWithSemicolon.FindIndex(sc.line)) > 0) {
 			t.codeEnd = sc.endIdx
-			return t, nil
+			return []symbol.Symbol{t}, nil
 		}
 		if !sc.proceed() {
 			break
 		}
 	}
 
-	return t, fmt.Errorf("record declaration line with ';' not found")
+	return nil, fmt.Errorf("record declaration line with ';' not found")
 }
 
 func scanConstantDeclaration(filepath string, names []string, sc *scanContext) ([]symbol.Symbol, error) {
@@ -390,7 +372,7 @@ func scanConstantDeclaration(filepath string, names []string, sc *scanContext) (
 	return syms, fmt.Errorf("constant declaration line with ';' not found")
 }
 
-func scanFunctionDeclaration(filepath string, name string, sc *scanContext) (symbol.Symbol, error) {
+func scanFunctionDeclaration(filepath string, name string, sc *scanContext) ([]symbol.Symbol, error) {
 	f := Function{
 		Symbol{
 			filepath:  filepath,
@@ -408,17 +390,17 @@ func scanFunctionDeclaration(filepath string, name string, sc *scanContext) (sym
 	for {
 		if len(endsWithReturn.FindIndex(sc.line)) > 0 {
 			f.codeEnd = sc.endIdx
-			return f, nil
+			return []symbol.Symbol{f}, nil
 		}
 		if !sc.proceed() {
 			break
 		}
 	}
 
-	return f, fmt.Errorf("function declaration line with return not found")
+	return nil, fmt.Errorf("function declaration line with return not found")
 }
 
-func scanProcedureDeclaration(filepath string, name string, sc *scanContext) (symbol.Symbol, error) {
+func scanProcedureDeclaration(filepath string, name string, sc *scanContext) ([]symbol.Symbol, error) {
 	p := Procedure{
 		Symbol{
 			filepath:  filepath,
@@ -442,12 +424,12 @@ func scanProcedureDeclaration(filepath string, name string, sc *scanContext) (sy
 		if hasParams {
 			if len(endsWithRoundBracketAndSemicolon.FindIndex(sc.line)) > 0 {
 				p.codeEnd = sc.endIdx
-				return p, nil
+				return []symbol.Symbol{p}, nil
 			}
 		} else {
 			if len(endsWithSemicolon.FindIndex(sc.line)) > 0 {
 				p.codeEnd = sc.endIdx
-				return p, nil
+				return []symbol.Symbol{p}, nil
 			}
 		}
 		if !sc.proceed() {
@@ -455,10 +437,10 @@ func scanProcedureDeclaration(filepath string, name string, sc *scanContext) (sy
 		}
 	}
 
-	return p, fmt.Errorf("function declaration line with return not found")
+	return nil, fmt.Errorf("function declaration line with return not found")
 }
 
-func scanSubtypeDeclaration(filepath string, name string, sc *scanContext) (symbol.Symbol, error) {
+func scanSubtypeDeclaration(filepath string, name string, sc *scanContext) ([]symbol.Symbol, error) {
 	t := Type{
 		Symbol{
 			filepath:  filepath,
@@ -476,7 +458,7 @@ func scanSubtypeDeclaration(filepath string, name string, sc *scanContext) (symb
 	for {
 		if len(endsWithSemicolon.FindIndex(sc.line)) > 0 {
 			t.codeEnd = sc.endIdx
-			return t, nil
+			return []symbol.Symbol{t}, nil
 		}
 
 		if !sc.proceed() {
@@ -484,5 +466,5 @@ func scanSubtypeDeclaration(filepath string, name string, sc *scanContext) (symb
 		}
 	}
 
-	return t, fmt.Errorf("subtype declaration line with ';' not found")
+	return nil, fmt.Errorf("subtype declaration line with ';' not found")
 }
