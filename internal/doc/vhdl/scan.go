@@ -213,6 +213,13 @@ func scanPackageDeclaration(filepath string, name string, sc *scanContext) (symb
 			if err != nil {
 				return pkg, fmt.Errorf("package '%s': %v", name, err)
 			}
+		} else if submatches := procedureDeclaration.FindSubmatchIndex(sc.line); len(submatches) > 0 {
+			name := string(sc.line[submatches[2]:submatches[3]])
+			p, err := scanProcedureDeclaration(filepath, name, sc)
+			err = pkg.AddSymbol(p)
+			if err != nil {
+				return pkg, fmt.Errorf("package '%s': %v", name, err)
+			}
 		} else if submatches := recordTypeDeclaration.FindSubmatchIndex(sc.line); len(submatches) > 0 {
 			name := string(sc.line[submatches[2]:submatches[3]])
 			t, err := scanRecordTypeDeclaration(filepath, name, sc)
@@ -409,6 +416,46 @@ func scanFunctionDeclaration(filepath string, name string, sc *scanContext) (sym
 	}
 
 	return f, fmt.Errorf("function declaration line with return not found")
+}
+
+func scanProcedureDeclaration(filepath string, name string, sc *scanContext) (symbol.Symbol, error) {
+	p := Procedure{
+		Symbol{
+			filepath:  filepath,
+			name:      name,
+			lineNum:   sc.lineNum,
+			codeStart: sc.startIdx,
+		},
+	}
+
+	if sc.docPresent {
+		p.docStart = sc.docStart
+		p.docEnd = sc.docEnd
+	}
+
+	hasParams := false
+	if bytes.Contains(sc.line, []byte("(")) {
+		hasParams = true
+	}
+
+	for {
+		if hasParams {
+			if len(endsWithRoundBracketAndSemicolon.FindIndex(sc.line)) > 0 {
+				p.codeEnd = sc.endIdx
+				return p, nil
+			}
+		} else {
+			if len(endsWithSemicolon.FindIndex(sc.line)) > 0 {
+				p.codeEnd = sc.endIdx
+				return p, nil
+			}
+		}
+		if !sc.proceed() {
+			break
+		}
+	}
+
+	return p, fmt.Errorf("function declaration line with return not found")
 }
 
 func scanSubtypeDeclaration(filepath string, name string, sc *scanContext) (symbol.Symbol, error) {

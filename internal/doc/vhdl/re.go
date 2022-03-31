@@ -7,6 +7,7 @@ var commentLine *re.Regexp = re.MustCompile(`^\s*--`)
 var end *re.Regexp = re.MustCompile(`^\s*end\b`)
 var endWithSemicolon *re.Regexp = re.MustCompile(`^\s*end\s*;`)
 var endsWithSemicolon *re.Regexp = re.MustCompile(`;\s*($|--)`)
+var endsWithRoundBracketAndSemicolon *re.Regexp = re.MustCompile(`\)\s*;\s*($|--)`)
 
 var constantDeclaration *re.Regexp = re.MustCompile(`^\s*constant\s+(\w+)\s*(,\s*\w+)?\s*(,\s*\w+)?`)
 
@@ -20,6 +21,8 @@ var packageDeclaration *re.Regexp = re.MustCompile(`^\s*package\s+(\w+)\s+is`)
 var packageInstantiation *re.Regexp = re.MustCompile(`^\s*package\s+(\w+)\s+is\s+new\b`)
 var endPackage *re.Regexp = re.MustCompile(`^\s*end\s+package\b`)
 var packageBodyDeclaration *re.Regexp = re.MustCompile(`^\s*package\s+body\s+\w+\s+is\b`)
+
+var procedureDeclaration *re.Regexp = re.MustCompile(`^\s*procedure\s+(\w+)`)
 
 var arrayTypeDeclaration *re.Regexp = re.MustCompile(`^\s*type\s+(\w+)\s+is\s+array\b`)
 

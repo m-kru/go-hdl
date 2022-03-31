@@ -27,6 +27,8 @@ func (p Package) AddSymbol(s symbol.Symbol) error {
 		p.Consts[id] = s
 	case Function:
 		p.Funcs[id] = s
+	case Procedure:
+		p.Procs[id] = s
 	case Type:
 		if _, ok := p.Types[id]; ok {
 			return fmt.Errorf(
@@ -70,6 +72,11 @@ func (p Package) GetSymbol(name string) []symbol.Symbol {
 		}
 	}
 	for id, s := range p.Funcs {
+		if id.Name == name {
+			syms = append(syms, s)
+		}
+	}
+	for id, s := range p.Procs {
 		if id.Name == name {
 			syms = append(syms, s)
 		}
