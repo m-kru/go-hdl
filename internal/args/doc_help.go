@@ -44,6 +44,7 @@ Following kinds of symbol are supported by the doc command:
     - entity declaration,
     - function declaration within package declaration,
     - package declaration,
+    - package instantiation within package declaration,
     - procedure declaration within package declaration,
     - type declaration within package declaration.
 `
