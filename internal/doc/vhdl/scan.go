@@ -73,8 +73,6 @@ GETLINE:
 		len(architectureDeclaration.FindIndex(sc.line)) > 0 {
 		sc.docPresent = false
 		return false
-	} else {
-		sc.docPresent = false
 	}
 
 	return true
