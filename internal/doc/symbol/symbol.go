@@ -34,3 +34,15 @@ func SortByLineNum(s []Symbol) {
 
 	sort.Slice(s, sortFunc)
 }
+
+// SortByName sorts Symbol slice by name in increasing order.
+func SortByName(s []Symbol) {
+	sortFunc := func(i, j int) bool {
+		if s[i].Name() < s[j].Name() {
+			return true
+		}
+		return false
+	}
+
+	sort.Slice(s, sortFunc)
+}

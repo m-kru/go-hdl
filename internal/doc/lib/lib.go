@@ -41,6 +41,10 @@ func (l *Library) SymbolNames() []string {
 	return names
 }
 
+func (l *Library) Symbols() map[string]symbol.Symbol {
+	return l.symbols
+}
+
 func (l *Library) GetSymbol(name string) (symbol.Symbol, bool) {
 	if s, ok := l.symbols[name]; ok {
 		return s, true
