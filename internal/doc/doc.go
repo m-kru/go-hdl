@@ -19,6 +19,11 @@ func Doc(args args.DocArgs) uint8 {
 	ScanFiles()
 
 	symbolPaths := resolveSymbolPath(args.SymbolPath)
+	log.Printf("debug: looking for following symbol paths:\n")
+	for _, p := range symbolPaths {
+		log.Printf("debug: %s", p.DebugString())
+	}
+
 	foundSymbols := map[symbolPath][]symbol.Symbol{}
 
 	for _, sp := range symbolPaths {

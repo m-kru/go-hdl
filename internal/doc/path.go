@@ -12,6 +12,7 @@ type symbolPath struct {
 	library   string
 	primary   string
 	secondary string
+	tertiary  string
 }
 
 func (sp symbolPath) String() string {
@@ -24,13 +25,27 @@ func (sp symbolPath) String() string {
 
 func (sp symbolPath) DebugString() string {
 	return fmt.Sprintf(
-		"Symbol path:\n  Language:  %s\n  Library:   %s\n  Primary:   %s\n  Secondary: %s\n",
-		sp.language, sp.library, sp.primary, sp.secondary,
+		"{Language: %s, Library: %s, Primary: %s, Secondary: %s, Tertiary: %s}",
+		sp.language, sp.library, sp.primary, sp.secondary, sp.tertiary,
 	)
+}
+
+func (sp symbolPath) isLibrary() bool {
+	if sp.primary == "" && sp.secondary == "" && sp.tertiary == "" {
+		if sp.library != "" {
+			return true
+		}
+		panic("should never happen")
+	}
+	return false
 }
 
 // resolveSymbolPath returns a list of possible symbol paths based on the string.
 func resolveSymbolPath(path string) []symbolPath {
+	if utils.IsTooGeneralPath(path) {
+		log.Fatalf("provided path is too general")
+	}
+
 	langs := []string{}
 
 	innerPath := path
@@ -49,28 +64,64 @@ func resolveSymbolPath(path string) []symbolPath {
 		}
 	}
 
-	elems := strings.Split(innerPath, ".")
-
 	// Temporary list of symbol paths before adding language.
-	tmp := []symbolPath{}
+	var tmp []symbolPath
 
-	if len(elems) == 1 {
-		tmp = append(tmp, symbolPath{primary: elems[0]})
-		tmp = append(tmp, symbolPath{secondary: elems[0]})
-	} else if len(elems) == 2 {
-		tmp = append(tmp, symbolPath{library: elems[0], primary: elems[1]})
-		tmp = append(tmp, symbolPath{primary: elems[0], secondary: elems[1]})
-	} else if len(elems) == 3 {
-		tmp = append(
-			tmp,
-			symbolPath{
-				library:   elems[0],
-				primary:   elems[1],
-				secondary: elems[2],
-			},
-		)
+	// Unequivocal path.
+	if innerPath[len(innerPath)-1] == '.' {
+		innerPath = innerPath[0 : len(innerPath)-1]
+		elems := strings.Split(innerPath, ".")
+
+		switch len(elems) {
+		case 1:
+			tmp = []symbolPath{
+				symbolPath{library: elems[0]},
+			}
+		case 2:
+			tmp = []symbolPath{
+				symbolPath{library: elems[0], primary: elems[1]},
+			}
+		case 3:
+			tmp = []symbolPath{
+				symbolPath{library: elems[0], primary: elems[1], secondary: elems[2]},
+			}
+		case 4:
+			tmp = []symbolPath{
+				symbolPath{
+					library: elems[0], primary: elems[1], secondary: elems[2], tertiary: elems[3],
+				},
+			}
+		default:
+			log.Fatalf("invalid inner path format '%s', to many elements", innerPath)
+		}
 	} else {
-		log.Fatalf("invalid inner path format '%s', to many elements", innerPath)
+		elems := strings.Split(innerPath, ".")
+
+		switch len(elems) {
+		case 1:
+			tmp = []symbolPath{
+				symbolPath{library: elems[0]},
+				symbolPath{library: "*", primary: elems[0]},
+				symbolPath{library: "*", primary: "*", secondary: elems[0]},
+			}
+		case 2:
+			tmp = []symbolPath{
+				symbolPath{library: elems[0], primary: elems[1]},
+				symbolPath{library: "*", primary: elems[0], secondary: elems[1]},
+				symbolPath{library: "*", primary: "*", secondary: elems[0], tertiary: elems[1]},
+			}
+		case 3:
+			tmp = []symbolPath{
+				symbolPath{library: elems[0], primary: elems[1], secondary: elems[2]},
+				symbolPath{library: "*", primary: elems[0], secondary: elems[1], tertiary: elems[2]},
+			}
+		case 4:
+			tmp = []symbolPath{
+				symbolPath{library: elems[0], primary: elems[1], secondary: elems[2], tertiary: elems[3]},
+			}
+		default:
+			log.Fatalf("invalid inner path format '%s', to many elements", innerPath)
+		}
 	}
 
 	sps := []symbolPath{}

@@ -50,3 +50,12 @@ func IsIgnoredVHDLFile(filepath string) bool {
 	}
 	return false
 }
+
+func IsTooGeneralPath(path string) bool {
+	for _, r := range path {
+		if r != '.' && r != '*' {
+			return false
+		}
+	}
+	return true
+}
