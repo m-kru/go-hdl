@@ -6,7 +6,7 @@ var docHelpMsg string = `Doc command
 Usage
 -----
 
-thdl doc [flags] [<language>:][<library>.]<primarySymbol>[.<secondarySymbol>]
+  thdl doc [flags] [<language>:][<library>.]<primarySymbol>[.<secondarySymbol>]
 
 Flags:
   -debug      Print debug messages.
