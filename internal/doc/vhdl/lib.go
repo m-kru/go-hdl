@@ -25,13 +25,29 @@ func LibSummary(l *lib.Library) string {
 	symbol.SortByName(entities)
 	symbol.SortByName(pkgs)
 
+	entNameLen := 0
+	for _, e := range entities {
+		if len(e.Name()) > entNameLen {
+			entNameLen = len(e.Name())
+		}
+	}
+
 	b := strings.Builder{}
 
 	if len(entities) > 0 {
 		b.WriteString("Entities:\n")
 	}
 	for _, e := range entities {
-		b.WriteString(fmt.Sprintf("  %s\n", e.Name()))
+		b.WriteString(
+			fmt.Sprintf("  %-*s  %s\n", entNameLen, e.Name(), e.Filepath()),
+		)
+	}
+
+	pkgNameLen := 0
+	for _, p := range pkgs {
+		if len(p.Name()) > pkgNameLen {
+			pkgNameLen = len(p.Name())
+		}
 	}
 
 	if len(pkgs) == 0 {
@@ -42,7 +58,7 @@ func LibSummary(l *lib.Library) string {
 	b.WriteString("Packages:\n")
 
 	for _, p := range pkgs {
-		b.WriteString(fmt.Sprintf("  %s\n", p.Name()))
+		b.WriteString(fmt.Sprintf("  %-*s  %s\n", pkgNameLen, p.Name(), p.Filepath()))
 	}
 
 	return b.String()

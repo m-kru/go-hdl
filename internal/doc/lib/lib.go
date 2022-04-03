@@ -110,6 +110,10 @@ func (l *Library) AddSymbol(s symbol.Symbol) {
 }
 
 func (l *Library) Doc() string {
+	if l.docFile == "" {
+		return ""
+	}
+
 	f, err := os.ReadFile(l.docFile)
 	if err != nil {
 		log.Fatalf("error reading file %s: %v", l.docFile, err)
