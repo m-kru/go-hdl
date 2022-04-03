@@ -147,4 +147,21 @@ The reset scope is capable of checking following mistakes:
       if (rst_n ='1') then
       if rst_n then
       if  ( reset_n ) then
+
+
+Ignoring lines
+--------------
+
+There are two ways to ignore a particular line from being analyzed by thdl.
+The first one is to procede the line with following comment line:
+  --thdl:ignore
+Example:
+  --thdl:ignore
+  clk_20_i => clk_40_i
+The second is to end line with '--thdl:ignore'.
+Example:
+  clk_20_i => clk_40_i --thdl:ignore
+Single line comment token is of course language dependent.
+Please note, that there is no space between the single line comment token
+and 'thdl:ignore' annotation.
 `
