@@ -16,11 +16,21 @@ type symbolPath struct {
 }
 
 func (sp symbolPath) String() string {
-	if sp.secondary == "" {
-		return fmt.Sprintf("%s:%s.%s", sp.language, sp.library, sp.primary)
-	}
+	var s string
 
-	return fmt.Sprintf("%s:%s.%s.%s", sp.language, sp.library, sp.primary, sp.secondary)
+	if sp.primary == "" {
+		s = fmt.Sprintf("%s:%s", sp.language, sp.library)
+	} else if sp.secondary == "" {
+		s = fmt.Sprintf("%s:%s.%s", sp.language, sp.library, sp.primary)
+	} else if sp.tertiary == "" {
+		s = fmt.Sprintf("%s:%s.%s.%s", sp.language, sp.library, sp.primary, sp.secondary)
+	} else {
+		s = fmt.Sprintf(
+			"%s:%s.%s.%s.%s",
+			sp.language, sp.library, sp.primary, sp.secondary, sp.tertiary,
+		)
+	}
+	return s
 }
 
 func (sp symbolPath) DebugString() string {

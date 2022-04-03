@@ -89,8 +89,9 @@ func scanFile(filepath string, wg *sync.WaitGroup) {
 	if libName == "" {
 		libName = "work"
 	}
-	l := lib.MakeLibrary(libName)
+	l := lib.MakeLibrary("vhdl", libName, LibSummary)
 	libContainer.Add(&l)
+	libContainer.Get(libName).AddFile(filepath)
 
 	f, err := os.ReadFile(filepath)
 	if err != nil {

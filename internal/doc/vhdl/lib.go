@@ -28,7 +28,7 @@ func LibSummary(l *lib.Library) string {
 	b := strings.Builder{}
 
 	if len(entities) > 0 {
-		b.WriteString("Entities:\n\n")
+		b.WriteString("Entities:\n")
 	}
 	for _, e := range entities {
 		b.WriteString(fmt.Sprintf("  %s\n", e.Name()))
@@ -39,7 +39,7 @@ func LibSummary(l *lib.Library) string {
 	} else {
 		b.WriteRune('\n')
 	}
-	b.WriteString("Packages:\n\n")
+	b.WriteString("Packages:\n")
 
 	for _, p := range pkgs {
 		b.WriteString(fmt.Sprintf("  %s\n", p.Name()))

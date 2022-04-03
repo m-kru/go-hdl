@@ -22,6 +22,13 @@ func (lc libraryContainer) Add(l *lib.Library) {
 	libContainerMutex.Unlock()
 }
 
+func (lc libraryContainer) Get(name string) *lib.Library {
+	if _, ok := lc[name]; !ok {
+		panic("should never happen")
+	}
+	return lc[name]
+}
+
 func (lc libraryContainer) AddSymbol(libName string, s symbol.Symbol) {
 	libContainerMutex.Lock()
 	lc[libName].AddSymbol(s)

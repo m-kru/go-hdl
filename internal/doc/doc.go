@@ -79,17 +79,20 @@ func ScanFiles() {
 func findSymbol(sp symbolPath) (paths []symbolPath, syms [][]symbol.Symbol) {
 	var ok bool
 
-	libNames := []string{}
+	if sp.isLibrary() {
+		return findLibrary(sp)
+	}
 
-	if sp.library != "" {
-		libNames = append(libNames, sp.library)
-	} else {
+	libNames := []string{}
+	if sp.library == "*" {
 		switch sp.language {
 		case "vhdl":
 			libNames = vhdl.LibraryNames()
 		default:
 			panic("should never happen")
 		}
+	} else {
+		libNames = append(libNames, sp.library)
 	}
 
 	for _, libName := range libNames {
@@ -108,40 +111,82 @@ func findSymbol(sp symbolPath) (paths []symbolPath, syms [][]symbol.Symbol) {
 			continue
 		}
 
-		if tmpSp.primary == "" && tmpSp.secondary == "" {
-			panic("should never happen")
-		} else if tmpSp.primary == "" {
-			for _, primaryName := range l.SymbolNames() {
-				tmpSp.primary = primaryName
-				pri, ok := l.GetSymbol(tmpSp.primary)
-				if !ok {
-					continue
-				}
-				sec := pri.GetSymbol(tmpSp.secondary)
-				if len(sec) == 0 {
-					continue
-				}
-				paths = append(paths, tmpSp)
-				syms = append(syms, sec)
-			}
+		priNames := []string{}
+		if tmpSp.primary == "*" {
+			priNames = l.SymbolNames()
 		} else {
-			pri, ok := l.GetSymbol(tmpSp.primary)
-			if !ok {
+			priNames = append(priNames, tmpSp.primary)
+		}
+
+		for _, priName := range priNames {
+			tmpSp.primary = priName
+			tmpSp.secondary = ""
+			tmpSp.tertiary = ""
+			pri := l.GetSymbol(priName)
+			if len(pri) == 0 {
 				continue
 			}
-			if tmpSp.secondary == "" {
+
+			secNames := []string{}
+
+			if sp.secondary == "" {
 				paths = append(paths, tmpSp)
-				syms = append(syms, []symbol.Symbol{pri})
+				syms = append(syms, pri)
+				continue
+			} else if sp.secondary == "*" {
+				secNames = pri[0].SymbolNames()
 			} else {
-				sec := pri.GetSymbol(tmpSp.secondary)
+				secNames = append(secNames, sp.secondary)
+			}
+
+			for _, secName := range secNames {
+				tmpSp.secondary = secName
+				tmpSp.tertiary = ""
+				sec := pri[0].GetSymbol(secName)
 				if len(sec) == 0 {
 					continue
 				}
+
+				terName := sp.tertiary
+
+				if terName == "" {
+					paths = append(paths, tmpSp)
+					syms = append(syms, sec)
+					continue
+				} else if terName == "*" {
+					log.Fatalf("tertiary symbol can't be '*' wildcard")
+				}
+
+				ter := sec[0].GetSymbol(terName)
+				if len(ter) == 0 {
+					continue
+				}
+				tmpSp.tertiary = terName
 				paths = append(paths, tmpSp)
-				syms = append(syms, sec)
+				syms = append(syms, ter)
 			}
 		}
 	}
+
+	return
+}
+
+func findLibrary(sp symbolPath) (paths []symbolPath, syms [][]symbol.Symbol) {
+	var ok bool
+	var l *lib.Library
+
+	switch sp.language {
+	case "vhdl":
+		l, ok = vhdl.GetLibrary(sp.library)
+	default:
+		panic("should never happen")
+	}
+	if !ok {
+		return
+	}
+
+	paths = append(paths, sp)
+	syms = append(syms, []symbol.Symbol{l})
 
 	return
 }

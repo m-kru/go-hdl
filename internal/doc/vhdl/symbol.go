@@ -20,6 +20,10 @@ type Symbol struct {
 
 func (s Symbol) Filepath() string { return s.filepath }
 
+func (s Symbol) Files() []string {
+	panic("should never happen")
+}
+
 func (s Symbol) Name() string { return s.name }
 
 func (s Symbol) LineNum() uint32 { return s.lineNum }
@@ -27,9 +31,7 @@ func (s Symbol) LineNum() uint32 { return s.lineNum }
 func (s Symbol) Doc() string {
 	f, err := os.ReadFile(s.filepath)
 	if err != nil {
-		log.Fatalf("reading '%s' entity code: error reading file %s: %v",
-			s.name, s.filepath, err,
-		)
+		log.Fatalf("error reading file %s: %v", s.filepath, err)
 	}
 
 	return string(f[s.docStart:s.docEnd])
@@ -38,9 +40,7 @@ func (s Symbol) Doc() string {
 func (s Symbol) Code() string {
 	f, err := os.ReadFile(s.filepath)
 	if err != nil {
-		log.Fatalf("reading '%s' entity code: error reading file %s: %v",
-			s.name, s.filepath, err,
-		)
+		log.Fatalf("error reading file %s: %v", s.filepath, err)
 	}
 
 	return string(f[s.codeStart:s.codeEnd])
@@ -49,9 +49,7 @@ func (s Symbol) Code() string {
 func (s Symbol) DocCode() (string, string) {
 	f, err := os.ReadFile(s.filepath)
 	if err != nil {
-		log.Fatalf("reading '%s' entity code: error reading file %s: %v",
-			s.name, s.filepath, err,
-		)
+		log.Fatalf("error reading file %s: %v", s.filepath, err)
 	}
 
 	doc := string(f[s.docStart:s.docEnd])

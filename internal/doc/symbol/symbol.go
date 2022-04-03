@@ -6,6 +6,7 @@ import (
 
 type Symbol interface {
 	Filepath() string
+	Files() []string
 	Name() string
 	LineNum() uint32
 	SymbolNames() []string          // Get names of all inner symbols.
