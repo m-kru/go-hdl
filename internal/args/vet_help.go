@@ -11,6 +11,7 @@ thdl vet [flags]
 Flags:
   -no-config  Don't read .thdl.yml config file.
 
+
 Description
 -----------
 
@@ -26,6 +27,7 @@ Thdl by default ignores some files, as checking them makes no sense.
 If the file path matches one of the ignored patterns, then it won't be checked.
 Ignored file paths:
 - *_rfs.vhd - Xilinx VHDL encrypted files.
+
 
 Clock scope
 -----------

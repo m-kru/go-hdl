@@ -31,6 +31,7 @@ If path to symbol is a single word, then two scenarios are assumed:
 primarySymbol and secondarySymbol.
 If multiple symbols are found, then ambiguity is reported.
 
+
 Description
 -----------
 
