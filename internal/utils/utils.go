@@ -59,3 +59,12 @@ func IsTooGeneralPath(path string) bool {
 	}
 	return true
 }
+
+func IsTestbench(name string) bool {
+	if name == "tb" ||
+		strings.HasPrefix(name, "tb_") ||
+		strings.HasSuffix(name, "_tb") {
+		return true
+	}
+	return false
+}
