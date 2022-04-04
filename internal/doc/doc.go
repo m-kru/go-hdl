@@ -39,8 +39,10 @@ func Doc(args args.DocArgs) uint8 {
 		log.Fatalf("no symbol matching path '%s' found", args.SymbolPath)
 	} else if foundCount == 1 {
 		for path, syms := range foundSymbols {
-			fmt.Printf("%s\n\n", path)
-			fmt.Printf("%s\n", syms[0].Filepath())
+			fmt.Printf("%s\n", path)
+			if syms[0].Filepath() != "" {
+				fmt.Printf("\n%s\n", syms[0].Filepath())
+			}
 			symbol.SortByLineNum(syms)
 			for _, sym := range syms {
 				fmt.Printf("\n")
