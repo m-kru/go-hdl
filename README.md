@@ -46,4 +46,6 @@ Manual installation installs to `/usr/bin`.
 
 ### doc
 
+<p align="center"><img src="assets/doc_hctsp.png?raw=true"/></p>
+
 <p align="center"><img src="assets/doc_reset_synchronizer.png?raw=true"/></p>
