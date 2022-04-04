@@ -19,7 +19,7 @@ Simply run `thdl help` or `thdl help {command}` to read about particular command
 ## Commands
 
 The commands are:
-* `doc` - show or generate documentation (not yet fully supported),
+* `doc` - show or generate documentation (not yet fully supported, but more than usable),
 * `gen` - generate HDL files by processing sources (not yet supported),
 * `vet` - check for likely mistakes.
 
