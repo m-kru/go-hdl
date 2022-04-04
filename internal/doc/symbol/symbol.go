@@ -41,6 +41,10 @@ func SortByName(s []Symbol) {
 	sortFunc := func(i, j int) bool {
 		if s[i].Name() < s[j].Name() {
 			return true
+		} else if s[i].Name() == s[j].Name() {
+			if s[i].Filepath() < s[j].Filepath() {
+				return true
+			}
 		}
 		return false
 	}
