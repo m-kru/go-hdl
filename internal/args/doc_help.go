@@ -77,4 +77,13 @@ To see the documentation of "foo" secondarySymbol type:
   thdl doc foo.foo.foo.
 To see the documentation of "foo" tertiarySymbol type:
   thdl doc foo.foo.foo.foo
+
+
+Library documentation
+---------------------
+
+To document a library provide 'doc.<langugeExtension>' file within the library.
+For example, to document a VHDL library provide 'doc.vhd' file. Each library
+can have only one doc file. If more than one doc file is found per library,
+then the error is reported.
 `

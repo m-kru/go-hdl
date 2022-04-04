@@ -57,15 +57,6 @@ settings.
   vet:
     ignore:
       - some/ignored/dir
-
-
-Library documentation
----------------------
-
-To document a library provide 'doc.<langugeExtension>' file within the library.
-For example, to document a VHDL library provide 'doc.vhd' file. Each library
-can have only one doc file. If more than one doc file is found per library,
-then the error is reported.
 `
 
 func printHelp() {
