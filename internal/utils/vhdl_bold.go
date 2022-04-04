@@ -29,11 +29,19 @@ func VHDLTerminalBold(s string) string {
 	startIdx := 0
 	endIdx := 0
 
+	var prevR rune
+	inString := false
+	inComment := false
+
 	for i, r := range s {
 		if r == ' ' || r == '\t' || r == '\n' || r == '\r' ||
 			r == ':' || r == ';' || r == ',' || r == '(' || r == ')' {
+			if r == '\n' || r == '\r' {
+				inComment = false
+			}
 			if inWord {
-				if _, ok := VHDLKeywords[strings.ToLower(s[startIdx:endIdx])]; ok {
+				_, ok := VHDLKeywords[strings.ToLower(s[startIdx:endIdx])]
+				if ok && !inComment && !inString {
 					aux := "\033[1m" + s[startIdx:endIdx] + "\033[0m"
 					_, _ = b.WriteString(aux)
 				} else {
@@ -49,6 +57,19 @@ func VHDLTerminalBold(s string) string {
 			}
 		}
 		endIdx += 1
+		if r == '-' && prevR == '-' && !inString {
+			inComment = true
+		}
+		if r == '"' {
+			if prevR != '\\' {
+				if inString {
+					inString = false
+				} else {
+					inString = true
+				}
+			}
+		}
+		prevR = r
 	}
 
 	return b.String()
