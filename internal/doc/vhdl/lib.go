@@ -43,7 +43,7 @@ func LibSummary(l *lib.Library) string {
 		}
 	}
 	if len(entities) > 0 {
-		b.WriteString("Entities:\n")
+		b.WriteString(fmt.Sprintf("Entities (%d):\n", len(entities)))
 	}
 	for _, e := range entities {
 		b.WriteString(
@@ -61,7 +61,7 @@ func LibSummary(l *lib.Library) string {
 		b.WriteRune('\n')
 	}
 	if len(pkgs) > 0 {
-		b.WriteString("Packages:\n")
+		b.WriteString(fmt.Sprintf("Packages (%d):\n", len(pkgs)))
 	}
 	for _, p := range pkgs {
 		b.WriteString(
@@ -79,7 +79,7 @@ func LibSummary(l *lib.Library) string {
 		b.WriteRune('\n')
 	}
 	if len(tbEntities) > 0 {
-		b.WriteString("Testbench Entities:\n")
+		b.WriteString(fmt.Sprintf("Testbench Entities (%d):\n", len(tbEntities)))
 	}
 	for _, e := range tbEntities {
 		b.WriteString(
