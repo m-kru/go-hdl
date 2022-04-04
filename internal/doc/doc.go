@@ -40,11 +40,14 @@ func Doc(args args.DocArgs) uint8 {
 	} else if foundCount == 1 {
 		for path, syms := range foundSymbols {
 			fmt.Printf("%s\n", path)
-			if syms[0].Filepath() != "" {
-				fmt.Printf("\n%s\n", syms[0].Filepath())
-			}
-			symbol.SortByLineNum(syms)
+			prevFilepath := ""
 			for _, sym := range syms {
+				fp := sym.Filepath()
+				if fp != "" && fp != prevFilepath {
+					fmt.Printf("\n%s\n", fp)
+					prevFilepath = fp
+				}
+				symbol.SortByLineNum(syms)
 				fmt.Printf("\n")
 				doc, code := sym.DocCode()
 				fmt.Printf(utils.Deindent(doc))

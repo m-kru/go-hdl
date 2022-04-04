@@ -19,7 +19,7 @@ type Library struct {
 	files      []string
 	filesMutex sync.Mutex
 
-	symbols      map[string]symbol.Symbol
+	symbols      map[string][]symbol.Symbol
 	symbolsMutex sync.Mutex
 
 	libSummary LibrarySummary
@@ -46,7 +46,7 @@ func MakeLibrary(lang string, name string, ls LibrarySummary) Library {
 		lang:       lang,
 		name:       name,
 		files:      []string{},
-		symbols:    map[string]symbol.Symbol{},
+		symbols:    map[string][]symbol.Symbol{},
 		libSummary: ls,
 	}
 }
@@ -92,20 +92,26 @@ func (l *Library) SymbolNames() []string {
 	return names
 }
 
-func (l *Library) Symbols() map[string]symbol.Symbol {
+func (l *Library) Symbols() map[string][]symbol.Symbol {
 	return l.symbols
 }
 
 func (l *Library) GetSymbol(name string) []symbol.Symbol {
 	if s, ok := l.symbols[name]; ok {
-		return []symbol.Symbol{s}
+		return s
 	}
 	return nil
 }
 
 func (l *Library) AddSymbol(s symbol.Symbol) {
 	l.symbolsMutex.Lock()
-	l.symbols[s.Name()] = s
+
+	if _, ok := l.symbols[s.Name()]; ok {
+		l.symbols[s.Name()] = append(l.symbols[s.Name()], s)
+	} else {
+		l.symbols[s.Name()] = []symbol.Symbol{s}
+	}
+
 	l.symbolsMutex.Unlock()
 }
 

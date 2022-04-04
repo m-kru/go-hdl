@@ -11,14 +11,16 @@ func LibSummary(l *lib.Library) string {
 	entities := []symbol.Symbol{}
 	pkgs := []symbol.Symbol{}
 
-	for _, s := range l.Symbols() {
-		switch s.(type) {
-		case Entity:
-			entities = append(entities, s)
-		case Package:
-			pkgs = append(pkgs, s)
-		default:
-			panic("should never happen")
+	for _, syms := range l.Symbols() {
+		for _, s := range syms {
+			switch s.(type) {
+			case Entity:
+				entities = append(entities, s)
+			case Package:
+				pkgs = append(pkgs, s)
+			default:
+				panic("should never happen")
+			}
 		}
 	}
 
