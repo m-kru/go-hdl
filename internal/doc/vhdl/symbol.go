@@ -5,8 +5,8 @@ import (
 	"os"
 )
 
-// Symbol is a generic common symbol struct.
-type Symbol struct {
+// symbol is a generic common symbol struct.
+type symbol struct {
 	filepath string
 	name     string
 	lineNum  uint32
@@ -18,17 +18,17 @@ type Symbol struct {
 	codeEnd   uint32
 }
 
-func (s Symbol) Filepath() string { return s.filepath }
+func (s symbol) Filepath() string { return s.filepath }
 
-func (s Symbol) Files() []string {
+func (s symbol) Files() []string {
 	panic("should never happen")
 }
 
-func (s Symbol) Name() string { return s.name }
+func (s symbol) Name() string { return s.name }
 
-func (s Symbol) LineNum() uint32 { return s.lineNum }
+func (s symbol) LineNum() uint32 { return s.lineNum }
 
-func (s Symbol) Doc() string {
+func (s symbol) Doc() string {
 	f, err := os.ReadFile(s.filepath)
 	if err != nil {
 		log.Fatalf("error reading file %s: %v", s.filepath, err)
@@ -37,7 +37,7 @@ func (s Symbol) Doc() string {
 	return string(f[s.docStart:s.docEnd])
 }
 
-func (s Symbol) Code() string {
+func (s symbol) Code() string {
 	f, err := os.ReadFile(s.filepath)
 	if err != nil {
 		log.Fatalf("error reading file %s: %v", s.filepath, err)
@@ -46,7 +46,7 @@ func (s Symbol) Code() string {
 	return string(f[s.codeStart:s.codeEnd])
 }
 
-func (s Symbol) DocCode() (string, string) {
+func (s symbol) DocCode() (string, string) {
 	f, err := os.ReadFile(s.filepath)
 	if err != nil {
 		log.Fatalf("error reading file %s: %v", s.filepath, err)

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/m-kru/go-thdl/internal/args"
 	"github.com/m-kru/go-thdl/internal/doc/lib"
-	"github.com/m-kru/go-thdl/internal/doc/symbol"
+	"github.com/m-kru/go-thdl/internal/doc/sym"
 	"github.com/m-kru/go-thdl/internal/doc/vhdl"
 	"github.com/m-kru/go-thdl/internal/utils"
 	"log"
@@ -19,12 +19,12 @@ func Doc(args args.DocArgs) uint8 {
 	ScanFiles()
 
 	symbolPaths := resolveSymbolPath(args.SymbolPath)
-	log.Printf("debug: looking for following symbol paths:\n")
+	log.Printf("debug: looking for following sym paths:\n")
 	for _, p := range symbolPaths {
 		log.Printf("debug: %s", p.DebugString())
 	}
 
-	foundSymbols := map[symbolPath][]symbol.Symbol{}
+	foundSymbols := map[symbolPath][]sym.Symbol{}
 
 	for _, sp := range symbolPaths {
 		paths, syms := findSymbol(sp)
@@ -36,20 +36,20 @@ func Doc(args args.DocArgs) uint8 {
 	foundCount := len(foundSymbols)
 
 	if foundCount == 0 {
-		log.Fatalf("no symbol matching path '%s' found", args.SymbolPath)
+		log.Fatalf("no sym matching path '%s' found", args.SymbolPath)
 	} else if foundCount == 1 {
 		for path, syms := range foundSymbols {
 			fmt.Printf("%s\n", path)
 			prevFilepath := ""
-			for _, sym := range syms {
-				fp := sym.Filepath()
+			for _, s := range syms {
+				fp := s.Filepath()
 				if fp != "" && fp != prevFilepath {
 					fmt.Printf("\n%s\n", fp)
 					prevFilepath = fp
 				}
-				symbol.SortByLineNum(syms)
+				sym.SortByLineNum(syms)
 				fmt.Printf("\n")
-				doc, code := sym.DocCode()
+				doc, code := s.DocCode()
 				fmt.Printf(utils.Deindent(doc))
 				if !args.NoBold {
 					code = utils.BoldCodeTerminal(path.language, code)
@@ -81,7 +81,7 @@ func ScanFiles() {
 	vhdl.ScanFiles(docArgs, vhdlFiles, &wg)
 }
 
-func findSymbol(sp symbolPath) (paths []symbolPath, syms [][]symbol.Symbol) {
+func findSymbol(sp symbolPath) (paths []symbolPath, syms [][]sym.Symbol) {
 	var ok bool
 
 	if sp.isLibrary() {
@@ -159,7 +159,7 @@ func findSymbol(sp symbolPath) (paths []symbolPath, syms [][]symbol.Symbol) {
 					syms = append(syms, sec)
 					continue
 				} else if terName == "*" {
-					log.Fatalf("tertiary symbol can't be '*' wildcard")
+					log.Fatalf("tertiary sym can't be '*' wildcard")
 				}
 
 				ter := sec[0].GetSymbol(terName)
@@ -176,7 +176,7 @@ func findSymbol(sp symbolPath) (paths []symbolPath, syms [][]symbol.Symbol) {
 	return
 }
 
-func findLibrary(sp symbolPath) (paths []symbolPath, syms [][]symbol.Symbol) {
+func findLibrary(sp symbolPath) (paths []symbolPath, syms [][]sym.Symbol) {
 	var ok bool
 	var l *lib.Library
 
@@ -191,7 +191,7 @@ func findLibrary(sp symbolPath) (paths []symbolPath, syms [][]symbol.Symbol) {
 	}
 
 	paths = append(paths, sp)
-	syms = append(syms, []symbol.Symbol{l})
+	syms = append(syms, []sym.Symbol{l})
 
 	return
 }

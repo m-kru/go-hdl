@@ -2,19 +2,19 @@ package vhdl
 
 import (
 	"fmt"
-	"github.com/m-kru/go-thdl/internal/doc/symbol"
+	"github.com/m-kru/go-thdl/internal/doc/sym"
 )
 
 type Package struct {
-	Symbol
-	Consts map[symbol.ID]symbol.Symbol
-	Funcs  map[symbol.ID]symbol.Symbol
-	Procs  map[symbol.ID]symbol.Symbol
-	Types  map[symbol.ID]symbol.Symbol
+	symbol
+	Consts map[sym.ID]sym.Symbol
+	Funcs  map[sym.ID]sym.Symbol
+	Procs  map[sym.ID]sym.Symbol
+	Types  map[sym.ID]sym.Symbol
 }
 
-func (p Package) AddSymbol(s symbol.Symbol) error {
-	id := symbol.ID{Name: s.Name(), LineNum: s.LineNum()}
+func (p Package) AddSymbol(s sym.Symbol) error {
+	id := sym.ID{Name: s.Name(), LineNum: s.LineNum()}
 
 	switch s.(type) {
 	case Constant:
@@ -63,8 +63,8 @@ func (p Package) SymbolNames() []string {
 	return names
 }
 
-func (p Package) GetSymbol(name string) []symbol.Symbol {
-	syms := []symbol.Symbol{}
+func (p Package) GetSymbol(name string) []sym.Symbol {
+	syms := []sym.Symbol{}
 
 	for id, s := range p.Consts {
 		if id.Name == name {

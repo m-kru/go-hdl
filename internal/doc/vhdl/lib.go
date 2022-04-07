@@ -3,15 +3,15 @@ package vhdl
 import (
 	"fmt"
 	"github.com/m-kru/go-thdl/internal/doc/lib"
-	"github.com/m-kru/go-thdl/internal/doc/symbol"
+	"github.com/m-kru/go-thdl/internal/doc/sym"
 	"github.com/m-kru/go-thdl/internal/utils"
 	"strings"
 )
 
 func LibSummary(l *lib.Library) string {
-	entities := []symbol.Symbol{}
-	tbEntities := []symbol.Symbol{}
-	pkgs := []symbol.Symbol{}
+	entities := []sym.Symbol{}
+	tbEntities := []sym.Symbol{}
+	pkgs := []sym.Symbol{}
 
 	for _, syms := range l.Symbols() {
 		for _, s := range syms {
@@ -30,9 +30,9 @@ func LibSummary(l *lib.Library) string {
 		}
 	}
 
-	symbol.SortByName(entities)
-	symbol.SortByName(pkgs)
-	symbol.SortByName(tbEntities)
+	sym.SortByName(entities)
+	sym.SortByName(pkgs)
+	sym.SortByName(tbEntities)
 
 	b := strings.Builder{}
 

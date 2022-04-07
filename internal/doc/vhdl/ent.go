@@ -1,17 +1,17 @@
 package vhdl
 
 import (
-	"github.com/m-kru/go-thdl/internal/doc/symbol"
+	"github.com/m-kru/go-thdl/internal/doc/sym"
 )
 
 type Entity struct {
-	Symbol
+	symbol
 }
 
 func (e Entity) SymbolNames() []string {
 	return []string{}
 }
 
-func (e Entity) GetSymbol(name string) []symbol.Symbol {
+func (e Entity) GetSymbol(name string) []sym.Symbol {
 	return nil
 }

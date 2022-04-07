@@ -2,7 +2,7 @@ package vhdl
 
 import (
 	"github.com/m-kru/go-thdl/internal/doc/lib"
-	"github.com/m-kru/go-thdl/internal/doc/symbol"
+	"github.com/m-kru/go-thdl/internal/doc/sym"
 	"sync"
 )
 
@@ -29,7 +29,7 @@ func (lc libraryContainer) Get(name string) *lib.Library {
 	return lc[name]
 }
 
-func (lc libraryContainer) AddSymbol(libName string, s symbol.Symbol) {
+func (lc libraryContainer) AddSymbol(libName string, s sym.Symbol) {
 	libContainerMutex.Lock()
 	lc[libName].AddSymbol(s)
 	libContainerMutex.Unlock()

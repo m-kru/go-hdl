@@ -11,7 +11,7 @@ import (
 
 	"github.com/m-kru/go-thdl/internal/args"
 	"github.com/m-kru/go-thdl/internal/doc/lib"
-	"github.com/m-kru/go-thdl/internal/doc/symbol"
+	"github.com/m-kru/go-thdl/internal/doc/sym"
 	"github.com/m-kru/go-thdl/internal/utils"
 )
 
@@ -81,9 +81,9 @@ func scanFile(filepath string, wg *sync.WaitGroup) {
 	}
 }
 
-func scanEntityDeclaration(filepath string, name string, sc *scanContext) (symbol.Symbol, error) {
+func scanEntityDeclaration(filepath string, name string, sc *scanContext) (sym.Symbol, error) {
 	e := Entity{
-		Symbol{
+		symbol{
 			filepath:  filepath,
 			name:      name,
 			codeStart: sc.startIdx,
@@ -105,17 +105,17 @@ func scanEntityDeclaration(filepath string, name string, sc *scanContext) (symbo
 	return e, fmt.Errorf("entity declaration end line not found")
 }
 
-func scanPackageDeclaration(filepath string, name string, sc *scanContext) (symbol.Symbol, error) {
+func scanPackageDeclaration(filepath string, name string, sc *scanContext) (sym.Symbol, error) {
 	pkg := Package{
-		Symbol: Symbol{
+		symbol: symbol{
 			filepath:  filepath,
 			name:      name,
 			codeStart: sc.startIdx,
 		},
-		Consts: map[symbol.ID]symbol.Symbol{},
-		Funcs:  map[symbol.ID]symbol.Symbol{},
-		Procs:  map[symbol.ID]symbol.Symbol{},
-		Types:  map[symbol.ID]symbol.Symbol{},
+		Consts: map[sym.ID]sym.Symbol{},
+		Funcs:  map[sym.ID]sym.Symbol{},
+		Procs:  map[sym.ID]sym.Symbol{},
+		Types:  map[sym.ID]sym.Symbol{},
 	}
 
 	if sc.docPresent {
@@ -124,7 +124,7 @@ func scanPackageDeclaration(filepath string, name string, sc *scanContext) (symb
 	}
 
 	for sc.proceed() {
-		var syms []symbol.Symbol
+		var syms []sym.Symbol
 		var err error
 
 		syms = nil
@@ -184,9 +184,9 @@ func scanPackageDeclaration(filepath string, name string, sc *scanContext) (symb
 	return pkg, fmt.Errorf("package declaration end line not found")
 }
 
-func scanPackageInstantiation(filepath string, name string, sc *scanContext) (symbol.Symbol, error) {
+func scanPackageInstantiation(filepath string, name string, sc *scanContext) (sym.Symbol, error) {
 	pi := PackageInstantiation{
-		Symbol{
+		symbol{
 			filepath:  filepath,
 			name:      name,
 			codeStart: sc.startIdx,
@@ -208,9 +208,9 @@ func scanPackageInstantiation(filepath string, name string, sc *scanContext) (sy
 	return pi, fmt.Errorf("package instantiation line with ';' not found")
 }
 
-func scanEnumTypeDeclaration(filepath string, name string, sc *scanContext) ([]symbol.Symbol, error) {
+func scanEnumTypeDeclaration(filepath string, name string, sc *scanContext) ([]sym.Symbol, error) {
 	t := Type{
-		Symbol{
+		symbol{
 			filepath:  filepath,
 			name:      name,
 			lineNum:   sc.lineNum,
@@ -226,7 +226,7 @@ func scanEnumTypeDeclaration(filepath string, name string, sc *scanContext) ([]s
 	for {
 		if len(endsWithSemicolon.FindIndex(sc.line)) > 0 {
 			t.codeEnd = sc.endIdx
-			return []symbol.Symbol{t}, nil
+			return []sym.Symbol{t}, nil
 		}
 
 		if !sc.proceed() {
@@ -237,9 +237,9 @@ func scanEnumTypeDeclaration(filepath string, name string, sc *scanContext) ([]s
 	return nil, fmt.Errorf("enum declaration line with ';' not found")
 }
 
-func scanArrayTypeDeclaration(filepath string, name string, sc *scanContext) ([]symbol.Symbol, error) {
+func scanArrayTypeDeclaration(filepath string, name string, sc *scanContext) ([]sym.Symbol, error) {
 	t := Type{
-		Symbol{
+		symbol{
 			filepath:  filepath,
 			name:      name,
 			lineNum:   sc.lineNum,
@@ -255,7 +255,7 @@ func scanArrayTypeDeclaration(filepath string, name string, sc *scanContext) ([]
 	for {
 		if len(endsWithSemicolon.FindIndex(sc.line)) > 0 {
 			t.codeEnd = sc.endIdx
-			return []symbol.Symbol{t}, nil
+			return []sym.Symbol{t}, nil
 		}
 
 		if !sc.proceed() {
@@ -266,9 +266,9 @@ func scanArrayTypeDeclaration(filepath string, name string, sc *scanContext) ([]
 	return nil, fmt.Errorf("array declaration end line not found")
 }
 
-func scanRecordTypeDeclaration(filepath string, name string, sc *scanContext) ([]symbol.Symbol, error) {
+func scanRecordTypeDeclaration(filepath string, name string, sc *scanContext) ([]sym.Symbol, error) {
 	t := Type{
-		Symbol{
+		symbol{
 			filepath:  filepath,
 			name:      name,
 			lineNum:   sc.lineNum,
@@ -286,7 +286,7 @@ func scanRecordTypeDeclaration(filepath string, name string, sc *scanContext) ([
 			(len(endRecord.FindIndex(sc.line)) > 0) ||
 			(len(endWithSemicolon.FindIndex(sc.line)) > 0) {
 			t.codeEnd = sc.endIdx
-			return []symbol.Symbol{t}, nil
+			return []sym.Symbol{t}, nil
 		}
 		if !sc.proceed() {
 			break
@@ -296,7 +296,7 @@ func scanRecordTypeDeclaration(filepath string, name string, sc *scanContext) ([
 	return nil, fmt.Errorf("record declaration line with ';' not found")
 }
 
-func scanSomeTypeDeclaration(filepath string, name string, sc *scanContext) ([]symbol.Symbol, error) {
+func scanSomeTypeDeclaration(filepath string, name string, sc *scanContext) ([]sym.Symbol, error) {
 	if !sc.lookahead() {
 		return nil, fmt.Errorf("some type declaration line with type kind not found")
 	}
@@ -312,9 +312,9 @@ func scanSomeTypeDeclaration(filepath string, name string, sc *scanContext) ([]s
 	return nil, nil
 }
 
-func scanConstantDeclaration(filepath string, names []string, sc *scanContext) ([]symbol.Symbol, error) {
+func scanConstantDeclaration(filepath string, names []string, sc *scanContext) ([]sym.Symbol, error) {
 	c := Constant{
-		Symbol{
+		symbol{
 			filepath:  filepath,
 			lineNum:   sc.lineNum,
 			codeStart: sc.startIdx,
@@ -326,7 +326,7 @@ func scanConstantDeclaration(filepath string, names []string, sc *scanContext) (
 		c.docEnd = sc.docEnd
 	}
 
-	syms := []symbol.Symbol{}
+	syms := []sym.Symbol{}
 
 	for {
 		if len(endsWithSemicolon.FindIndex(sc.line)) > 0 {
@@ -345,9 +345,9 @@ func scanConstantDeclaration(filepath string, names []string, sc *scanContext) (
 	return syms, fmt.Errorf("constant declaration line with ';' not found")
 }
 
-func scanFunctionDeclaration(filepath string, name string, sc *scanContext) ([]symbol.Symbol, error) {
+func scanFunctionDeclaration(filepath string, name string, sc *scanContext) ([]sym.Symbol, error) {
 	f := Function{
-		Symbol{
+		symbol{
 			filepath:  filepath,
 			name:      name,
 			lineNum:   sc.lineNum,
@@ -363,7 +363,7 @@ func scanFunctionDeclaration(filepath string, name string, sc *scanContext) ([]s
 	for {
 		if len(endsWithReturn.FindIndex(sc.line)) > 0 {
 			f.codeEnd = sc.endIdx
-			return []symbol.Symbol{f}, nil
+			return []sym.Symbol{f}, nil
 		}
 		if !sc.proceed() {
 			break
@@ -373,9 +373,9 @@ func scanFunctionDeclaration(filepath string, name string, sc *scanContext) ([]s
 	return nil, fmt.Errorf("function declaration line with return not found")
 }
 
-func scanProcedureDeclaration(filepath string, name string, sc *scanContext) ([]symbol.Symbol, error) {
+func scanProcedureDeclaration(filepath string, name string, sc *scanContext) ([]sym.Symbol, error) {
 	p := Procedure{
-		Symbol{
+		symbol{
 			filepath:  filepath,
 			name:      name,
 			lineNum:   sc.lineNum,
@@ -397,12 +397,12 @@ func scanProcedureDeclaration(filepath string, name string, sc *scanContext) ([]
 		if hasParams {
 			if len(endsWithRoundBracketAndSemicolon.FindIndex(sc.line)) > 0 {
 				p.codeEnd = sc.endIdx
-				return []symbol.Symbol{p}, nil
+				return []sym.Symbol{p}, nil
 			}
 		} else {
 			if len(endsWithSemicolon.FindIndex(sc.line)) > 0 {
 				p.codeEnd = sc.endIdx
-				return []symbol.Symbol{p}, nil
+				return []sym.Symbol{p}, nil
 			}
 		}
 		if !sc.proceed() {
@@ -413,9 +413,9 @@ func scanProcedureDeclaration(filepath string, name string, sc *scanContext) ([]
 	return nil, fmt.Errorf("function declaration line with return not found")
 }
 
-func scanSubtypeDeclaration(filepath string, name string, sc *scanContext) ([]symbol.Symbol, error) {
+func scanSubtypeDeclaration(filepath string, name string, sc *scanContext) ([]sym.Symbol, error) {
 	t := Type{
-		Symbol{
+		symbol{
 			filepath:  filepath,
 			name:      name,
 			lineNum:   sc.lineNum,
@@ -431,7 +431,7 @@ func scanSubtypeDeclaration(filepath string, name string, sc *scanContext) ([]sy
 	for {
 		if len(endsWithSemicolon.FindIndex(sc.line)) > 0 {
 			t.codeEnd = sc.endIdx
-			return []symbol.Symbol{t}, nil
+			return []sym.Symbol{t}, nil
 		}
 
 		if !sc.proceed() {

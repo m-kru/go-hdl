@@ -1,17 +1,17 @@
 package vhdl
 
 import (
-	"github.com/m-kru/go-thdl/internal/doc/symbol"
+	"github.com/m-kru/go-thdl/internal/doc/sym"
 )
 
 type Procedure struct {
-	Symbol
+	symbol
 }
 
 func (p Procedure) SymbolNames() []string {
 	return []string{}
 }
 
-func (p Procedure) GetSymbol(name string) []symbol.Symbol {
+func (p Procedure) GetSymbol(name string) []sym.Symbol {
 	return nil
 }
