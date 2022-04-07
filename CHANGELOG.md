@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - [VHDL] Improved array, enumeration and record type declarations scanning.
 ### Fixed
-- [VHDL] Fixed VHDL keywords bolding in strings and comments.
+- [VHDL] Fixed keywords bolding in strings and comments.
 
 ## [0.1.0] - 2022-04-04
 First users release.
