@@ -42,6 +42,8 @@ type scanContext struct {
 	docPresent bool
 	docStart   uint32
 	docEnd     uint32
+
+	lookaheadLine []byte
 }
 
 // proceed returns false on EOF, architecture declaration or package
@@ -50,12 +52,16 @@ type scanContext struct {
 // or they implement symbols declared in the package declaration.
 func (sc *scanContext) proceed() bool {
 GETLINE:
-	if ok := sc.scanner.Scan(); !ok {
+	if sc.lookaheadLine != nil {
+		sc.line = sc.lookaheadLine
+		sc.lookaheadLine = nil
+	} else if ok := sc.scanner.Scan(); !ok {
 		return false
+	} else {
+		sc.line = bytes.ToLower(sc.scanner.Bytes())
 	}
 
 	sc.lineNum += 1
-	sc.line = bytes.ToLower(sc.scanner.Bytes())
 
 	sc.startIdx = sc.endIdx
 	sc.endIdx += uint32(len(sc.line)) + 1
@@ -74,6 +80,20 @@ GETLINE:
 		sc.docPresent = false
 		return false
 	}
+
+	return true
+}
+
+func (sc *scanContext) lookahead() bool {
+	if sc.lookaheadLine != nil {
+		panic("cannot lookahead more than one line")
+	}
+
+	if ok := sc.scanner.Scan(); !ok {
+		return false
+	}
+
+	sc.lookaheadLine = bytes.ToLower(sc.scanner.Bytes())
 
 	return true
 }
@@ -207,6 +227,9 @@ func scanPackageDeclaration(filepath string, name string, sc *scanContext) (symb
 		} else if submatches := subtypeDeclaration.FindSubmatchIndex(sc.line); len(submatches) > 0 {
 			name := string(sc.line[submatches[2]:submatches[3]])
 			syms, err = scanSubtypeDeclaration(filepath, name, sc)
+		} else if submatches := someTypeDeclaration.FindSubmatchIndex(sc.line); len(submatches) > 0 {
+			name := string(sc.line[submatches[2]:submatches[3]])
+			syms, err = scanSomeTypeDeclaration(filepath, name, sc)
 		} else if (len(end.FindIndex(sc.line)) > 0 && bytes.Contains(sc.line, []byte(name))) ||
 			(len(endPackage.FindIndex(sc.line)) > 0) ||
 			(len(endWithSemicolon.FindIndex(sc.line)) > 0) {
@@ -338,6 +361,22 @@ func scanRecordTypeDeclaration(filepath string, name string, sc *scanContext) ([
 	}
 
 	return nil, fmt.Errorf("record declaration line with ';' not found")
+}
+
+func scanSomeTypeDeclaration(filepath string, name string, sc *scanContext) ([]symbol.Symbol, error) {
+	if !sc.lookahead() {
+		return nil, fmt.Errorf("some type declaration line with type kind not found")
+	}
+
+	if len(startsWithRecord.FindIndex(sc.lookaheadLine)) > 0 {
+		return scanRecordTypeDeclaration(filepath, name, sc)
+	} else if len(startsWithRoundBracket.FindIndex(sc.lookaheadLine)) > 0 {
+		return scanEnumTypeDeclaration(filepath, name, sc)
+	} else if len(startsWithArray.FindIndex(sc.lookaheadLine)) > 0 {
+		return scanArrayTypeDeclaration(filepath, name, sc)
+	}
+
+	return nil, nil
 }
 
 func scanConstantDeclaration(filepath string, names []string, sc *scanContext) ([]symbol.Symbol, error) {

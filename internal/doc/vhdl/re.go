@@ -32,3 +32,8 @@ var recordTypeDeclaration *re.Regexp = re.MustCompile(`^\s*type\s+(\w+)\s+is\s+r
 var endRecord *re.Regexp = re.MustCompile(`^\s*end\s+record\b`)
 
 var subtypeDeclaration *re.Regexp = re.MustCompile(`^\s*subtype\s+(\w+)\s+is\s+`)
+
+var someTypeDeclaration *re.Regexp = re.MustCompile(`^\s*type\s+(\w+)`)
+var startsWithArray *re.Regexp = re.MustCompile(`^\s*(is\s+)?array`)
+var startsWithRecord *re.Regexp = re.MustCompile(`^\s*(is\s+)?record`)
+var startsWithRoundBracket *re.Regexp = re.MustCompile(`^\s*(is\s+)?\(`)
