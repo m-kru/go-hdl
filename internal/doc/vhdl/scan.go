@@ -123,22 +123,22 @@ func scanFile(filepath string, wg *sync.WaitGroup) {
 	sCtx := scanContext{scanner: scanner}
 
 	for sCtx.proceed() {
-		if submatches := entityDeclaration.FindSubmatchIndex(sCtx.line); len(submatches) > 0 {
-			name := string(sCtx.line[submatches[2]:submatches[3]])
+		if sm := entityDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
+			name := string(sCtx.line[sm[2]:sm[3]])
 			ent, err := scanEntityDeclaration(filepath, name, &sCtx)
 			if err != nil {
 				log.Fatalf("%s: %v", filepath, err)
 			}
 			libContainer.AddSymbol(libName, ent)
-		} else if submatches := packageInstantiation.FindSubmatchIndex(sCtx.line); len(submatches) > 0 {
-			name := string(sCtx.line[submatches[2]:submatches[3]])
+		} else if sm := packageInstantiation.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
+			name := string(sCtx.line[sm[2]:sm[3]])
 			pkgInst, err := scanPackageInstantiation(filepath, name, &sCtx)
 			if err != nil {
 				log.Fatalf("%s: %v", filepath, err)
 			}
 			libContainer.AddSymbol(libName, pkgInst)
-		} else if submatches := packageDeclaration.FindSubmatchIndex(sCtx.line); len(submatches) > 0 {
-			name := string(sCtx.line[submatches[2]:submatches[3]])
+		} else if sm := packageDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
+			name := string(sCtx.line[sm[2]:sm[3]])
 			pkg, err := scanPackageDeclaration(filepath, name, &sCtx)
 			if err != nil {
 				log.Fatalf("%s: %v", filepath, err)
@@ -196,39 +196,39 @@ func scanPackageDeclaration(filepath string, name string, sc *scanContext) (symb
 
 		syms = nil
 
-		if submatches := constantDeclaration.FindSubmatchIndex(sc.line); len(submatches) > 0 {
+		if sm := constantDeclaration.FindSubmatchIndex(sc.line); len(sm) > 0 {
 			names := []string{}
-			for i := 1; i < len(submatches)/2; i++ {
-				if submatches[2*i] < 0 {
+			for i := 1; i < len(sm)/2; i++ {
+				if sm[2*i] < 0 {
 					continue
 				}
-				name := string(sc.line[submatches[2*i]:submatches[2*i+1]])
+				name := string(sc.line[sm[2*i]:sm[2*i+1]])
 				if name[0] == ',' {
 					name = strings.TrimSpace(name[1:])
 				}
 				names = append(names, name)
 			}
 			syms, err = scanConstantDeclaration(filepath, names, sc)
-		} else if submatches := arrayTypeDeclaration.FindSubmatchIndex(sc.line); len(submatches) > 0 {
-			name := string(sc.line[submatches[2]:submatches[3]])
+		} else if sm := arrayTypeDeclaration.FindSubmatchIndex(sc.line); len(sm) > 0 {
+			name := string(sc.line[sm[2]:sm[3]])
 			syms, err = scanArrayTypeDeclaration(filepath, name, sc)
-		} else if submatches := enumTypeDeclaration.FindSubmatchIndex(sc.line); len(submatches) > 0 {
-			name := string(sc.line[submatches[2]:submatches[3]])
+		} else if sm := enumTypeDeclaration.FindSubmatchIndex(sc.line); len(sm) > 0 {
+			name := string(sc.line[sm[2]:sm[3]])
 			syms, err = scanEnumTypeDeclaration(filepath, name, sc)
-		} else if submatches := functionDeclaration.FindSubmatchIndex(sc.line); len(submatches) > 0 {
-			name := string(sc.line[submatches[4]:submatches[5]])
+		} else if sm := functionDeclaration.FindSubmatchIndex(sc.line); len(sm) > 0 {
+			name := string(sc.line[sm[4]:sm[5]])
 			syms, err = scanFunctionDeclaration(filepath, name, sc)
-		} else if submatches := procedureDeclaration.FindSubmatchIndex(sc.line); len(submatches) > 0 {
-			name := string(sc.line[submatches[2]:submatches[3]])
+		} else if sm := procedureDeclaration.FindSubmatchIndex(sc.line); len(sm) > 0 {
+			name := string(sc.line[sm[2]:sm[3]])
 			syms, err = scanProcedureDeclaration(filepath, name, sc)
-		} else if submatches := recordTypeDeclaration.FindSubmatchIndex(sc.line); len(submatches) > 0 {
-			name := string(sc.line[submatches[2]:submatches[3]])
+		} else if sm := recordTypeDeclaration.FindSubmatchIndex(sc.line); len(sm) > 0 {
+			name := string(sc.line[sm[2]:sm[3]])
 			syms, err = scanRecordTypeDeclaration(filepath, name, sc)
-		} else if submatches := subtypeDeclaration.FindSubmatchIndex(sc.line); len(submatches) > 0 {
-			name := string(sc.line[submatches[2]:submatches[3]])
+		} else if sm := subtypeDeclaration.FindSubmatchIndex(sc.line); len(sm) > 0 {
+			name := string(sc.line[sm[2]:sm[3]])
 			syms, err = scanSubtypeDeclaration(filepath, name, sc)
-		} else if submatches := someTypeDeclaration.FindSubmatchIndex(sc.line); len(submatches) > 0 {
-			name := string(sc.line[submatches[2]:submatches[3]])
+		} else if sm := someTypeDeclaration.FindSubmatchIndex(sc.line); len(sm) > 0 {
+			name := string(sc.line[sm[2]:sm[3]])
 			syms, err = scanSomeTypeDeclaration(filepath, name, sc)
 		} else if (len(end.FindIndex(sc.line)) > 0 && bytes.Contains(sc.line, []byte(name))) ||
 			(len(endPackage.FindIndex(sc.line)) > 0) ||
