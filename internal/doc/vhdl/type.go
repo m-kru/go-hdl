@@ -6,6 +6,7 @@ import (
 
 type Type struct {
 	symbol
+	kind string
 }
 
 func (t Type) SymbolNames() []string {

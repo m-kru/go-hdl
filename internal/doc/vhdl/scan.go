@@ -210,7 +210,8 @@ func scanPackageInstantiation(filepath string, name string, sc *scanContext) (sy
 
 func scanEnumTypeDeclaration(filepath string, name string, sc *scanContext) ([]sym.Symbol, error) {
 	t := Type{
-		symbol{
+		kind: "enum",
+		symbol: symbol{
 			filepath:  filepath,
 			name:      name,
 			lineNum:   sc.lineNum,
@@ -239,7 +240,8 @@ func scanEnumTypeDeclaration(filepath string, name string, sc *scanContext) ([]s
 
 func scanArrayTypeDeclaration(filepath string, name string, sc *scanContext) ([]sym.Symbol, error) {
 	t := Type{
-		symbol{
+		kind: "array",
+		symbol: symbol{
 			filepath:  filepath,
 			name:      name,
 			lineNum:   sc.lineNum,
@@ -268,7 +270,8 @@ func scanArrayTypeDeclaration(filepath string, name string, sc *scanContext) ([]
 
 func scanRecordTypeDeclaration(filepath string, name string, sc *scanContext) ([]sym.Symbol, error) {
 	t := Type{
-		symbol{
+		kind: "record",
+		symbol: symbol{
 			filepath:  filepath,
 			name:      name,
 			lineNum:   sc.lineNum,
@@ -415,7 +418,8 @@ func scanProcedureDeclaration(filepath string, name string, sc *scanContext) ([]
 
 func scanSubtypeDeclaration(filepath string, name string, sc *scanContext) ([]sym.Symbol, error) {
 	t := Type{
-		symbol{
+		kind: "subtype",
+		symbol: symbol{
 			filepath:  filepath,
 			name:      name,
 			lineNum:   sc.lineNum,
