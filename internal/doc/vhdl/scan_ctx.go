@@ -53,10 +53,6 @@ GETLINE:
 			sc.docStart = sc.startIdx
 			sc.docPresent = true
 		}
-	} else if len(packageBodyDeclaration.FindIndex(sc.line)) > 0 ||
-		len(architectureDeclaration.FindIndex(sc.line)) > 0 {
-		sc.docPresent = false
-		return false
 	}
 
 	return true
