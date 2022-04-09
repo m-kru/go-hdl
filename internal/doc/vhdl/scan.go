@@ -103,7 +103,7 @@ func scanEntityDeclaration(filepath string, name string, sc *scanContext) (sym.S
 		}
 	}
 
-	return e, fmt.Errorf("entity declaration end line not found")
+	return e, fmt.Errorf("'%s' entity declaration end line not found", name)
 }
 
 func scanPackageDeclaration(filepath string, name string, sc *scanContext) (sym.Symbol, error) {
@@ -183,7 +183,7 @@ func scanPackageDeclaration(filepath string, name string, sc *scanContext) (sym.
 		}
 	}
 
-	return pkg, fmt.Errorf("package declaration end line not found")
+	return pkg, fmt.Errorf("'%s' package declaration end line not found", name)
 }
 
 func scanPackageInstantiation(filepath string, name string, sc *scanContext) (sym.Symbol, error) {
@@ -208,7 +208,7 @@ func scanPackageInstantiation(filepath string, name string, sc *scanContext) (sy
 		}
 	}
 
-	return pi, fmt.Errorf("package instantiation line with ';' not found")
+	return pi, fmt.Errorf("'%s' package instantiation line with ';' not found", name)
 }
 
 func scanEnumTypeDeclaration(filepath string, name string, sc *scanContext) ([]sym.Symbol, error) {
@@ -238,7 +238,7 @@ func scanEnumTypeDeclaration(filepath string, name string, sc *scanContext) ([]s
 		}
 	}
 
-	return nil, fmt.Errorf("enum declaration line with ';' not found")
+	return nil, fmt.Errorf("'%s' enum declaration line with ';' not found", name)
 }
 
 func scanArrayTypeDeclaration(filepath string, name string, sc *scanContext) ([]sym.Symbol, error) {
@@ -268,7 +268,7 @@ func scanArrayTypeDeclaration(filepath string, name string, sc *scanContext) ([]
 		}
 	}
 
-	return nil, fmt.Errorf("array declaration end line not found")
+	return nil, fmt.Errorf("'%s' array declaration end line not found", name)
 }
 
 func scanRecordTypeDeclaration(filepath string, name string, sc *scanContext) ([]sym.Symbol, error) {
@@ -299,7 +299,7 @@ func scanRecordTypeDeclaration(filepath string, name string, sc *scanContext) ([
 		}
 	}
 
-	return nil, fmt.Errorf("record declaration line with ';' not found")
+	return nil, fmt.Errorf("'%s' record declaration line with ';' not found", name)
 }
 
 func scanSomeTypeDeclaration(filepath string, name string, sc *scanContext) ([]sym.Symbol, error) {
@@ -376,7 +376,7 @@ func scanFunctionDeclaration(filepath string, name string, sc *scanContext) ([]s
 		}
 	}
 
-	return nil, fmt.Errorf("function declaration line with return not found")
+	return nil, fmt.Errorf("'%s' function declaration line with return not found", name)
 }
 
 func scanProcedureDeclaration(filepath string, name string, sc *scanContext) ([]sym.Symbol, error) {
@@ -416,7 +416,7 @@ func scanProcedureDeclaration(filepath string, name string, sc *scanContext) ([]
 		}
 	}
 
-	return nil, fmt.Errorf("function declaration line with return not found")
+	return nil, fmt.Errorf("'%s' procedure declaration line with return not found", name)
 }
 
 func scanSubtypeDeclaration(filepath string, name string, sc *scanContext) ([]sym.Symbol, error) {
