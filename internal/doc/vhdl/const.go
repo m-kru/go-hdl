@@ -8,10 +8,5 @@ type Constant struct {
 	symbol
 }
 
-func (c Constant) SymbolNames() []string {
-	return []string{}
-}
-
-func (c Constant) GetSymbol(name string) []sym.Symbol {
-	return nil
-}
+func (c Constant) InnerKeys() []string               { return []string{} }
+func (c Constant) GetSymbol(key string) []sym.Symbol { return nil }

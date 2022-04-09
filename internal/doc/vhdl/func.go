@@ -8,10 +8,5 @@ type Function struct {
 	symbol
 }
 
-func (f Function) SymbolNames() []string {
-	return []string{}
-}
-
-func (f Function) GetSymbol(name string) []sym.Symbol {
-	return nil
-}
+func (f Function) InnerKeys() []string               { return []string{} }
+func (f Function) GetSymbol(key string) []sym.Symbol { return nil }

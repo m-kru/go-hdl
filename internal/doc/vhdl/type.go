@@ -9,10 +9,5 @@ type Type struct {
 	kind string
 }
 
-func (t Type) SymbolNames() []string {
-	return []string{}
-}
-
-func (t Type) GetSymbol(name string) []sym.Symbol {
-	return nil
-}
+func (t Type) InnerKeys() []string               { return []string{} }
+func (t Type) GetSymbol(key string) []sym.Symbol { return nil }

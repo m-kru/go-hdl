@@ -57,21 +57,21 @@ func scanFile(filepath string, wg *sync.WaitGroup) {
 
 	for sCtx.proceed() {
 		if sm := entityDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
-			name := string(sCtx.line[sm[2]:sm[3]])
+			name := string(sCtx.actualLine[sm[2]:sm[3]])
 			ent, err := scanEntityDeclaration(filepath, name, &sCtx)
 			if err != nil {
 				log.Fatalf("%s: %v", filepath, err)
 			}
 			libContainer.AddSymbol(libName, ent)
 		} else if sm := packageInstantiation.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
-			name := string(sCtx.line[sm[2]:sm[3]])
+			name := string(sCtx.actualLine[sm[2]:sm[3]])
 			pkgInst, err := scanPackageInstantiation(filepath, name, &sCtx)
 			if err != nil {
 				log.Fatalf("%s: %v", filepath, err)
 			}
 			libContainer.AddSymbol(libName, pkgInst)
 		} else if sm := packageDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
-			name := string(sCtx.line[sm[2]:sm[3]])
+			name := string(sCtx.actualLine[sm[2]:sm[3]])
 			pkg, err := scanPackageDeclaration(filepath, name, &sCtx)
 			if err != nil {
 				log.Fatalf("%s: %v", filepath, err)
@@ -85,6 +85,7 @@ func scanEntityDeclaration(filepath string, name string, sc *scanContext) (sym.S
 	e := Entity{
 		symbol{
 			filepath:  filepath,
+			key:       strings.ToLower(name),
 			name:      name,
 			codeStart: sc.startIdx,
 		},
@@ -109,6 +110,7 @@ func scanPackageDeclaration(filepath string, name string, sc *scanContext) (sym.
 	pkg := Package{
 		symbol: symbol{
 			filepath:  filepath,
+			key:       strings.ToLower(name),
 			name:      name,
 			codeStart: sc.startIdx,
 		},
@@ -188,6 +190,7 @@ func scanPackageInstantiation(filepath string, name string, sc *scanContext) (sy
 	pi := PackageInstantiation{
 		symbol{
 			filepath:  filepath,
+			key:       strings.ToLower(name),
 			name:      name,
 			codeStart: sc.startIdx,
 		},
@@ -213,7 +216,7 @@ func scanEnumTypeDeclaration(filepath string, name string, sc *scanContext) ([]s
 		kind: "enum",
 		symbol: symbol{
 			filepath:  filepath,
-			name:      name,
+			key:       name,
 			lineNum:   sc.lineNum,
 			codeStart: sc.startIdx,
 		},
@@ -243,7 +246,7 @@ func scanArrayTypeDeclaration(filepath string, name string, sc *scanContext) ([]
 		kind: "array",
 		symbol: symbol{
 			filepath:  filepath,
-			name:      name,
+			key:       name,
 			lineNum:   sc.lineNum,
 			codeStart: sc.startIdx,
 		},
@@ -273,7 +276,7 @@ func scanRecordTypeDeclaration(filepath string, name string, sc *scanContext) ([
 		kind: "record",
 		symbol: symbol{
 			filepath:  filepath,
-			name:      name,
+			key:       name,
 			lineNum:   sc.lineNum,
 			codeStart: sc.startIdx,
 		},
@@ -335,7 +338,7 @@ func scanConstantDeclaration(filepath string, names []string, sc *scanContext) (
 		if len(endsWithSemicolon.FindIndex(sc.line)) > 0 {
 			c.codeEnd = sc.endIdx
 			for _, n := range names {
-				c.name = n
+				c.key = n
 				syms = append(syms, c)
 			}
 			return syms, nil
@@ -352,7 +355,7 @@ func scanFunctionDeclaration(filepath string, name string, sc *scanContext) ([]s
 	f := Function{
 		symbol{
 			filepath:  filepath,
-			name:      name,
+			key:       name,
 			lineNum:   sc.lineNum,
 			codeStart: sc.startIdx,
 		},
@@ -380,7 +383,7 @@ func scanProcedureDeclaration(filepath string, name string, sc *scanContext) ([]
 	p := Procedure{
 		symbol{
 			filepath:  filepath,
-			name:      name,
+			key:       name,
 			lineNum:   sc.lineNum,
 			codeStart: sc.startIdx,
 		},
@@ -421,7 +424,7 @@ func scanSubtypeDeclaration(filepath string, name string, sc *scanContext) ([]sy
 		kind: "subtype",
 		symbol: symbol{
 			filepath:  filepath,
-			name:      name,
+			key:       name,
 			lineNum:   sc.lineNum,
 			codeStart: sc.startIdx,
 		},

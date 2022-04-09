@@ -14,14 +14,14 @@ type Package struct {
 }
 
 func (p Package) AddSymbol(s sym.Symbol) error {
-	id := sym.ID{Name: s.Name(), LineNum: s.LineNum()}
+	id := sym.ID{Key: s.Key(), LineNum: s.LineNum()}
 
 	switch s.(type) {
 	case Constant:
 		if _, ok := p.Consts[id]; ok {
 			return fmt.Errorf(
 				"constant '%s' defined at least twice in package '%s'",
-				s.Name(), p.Name(),
+				s.Key(), p.Key(),
 			)
 		}
 		p.Consts[id] = s
@@ -33,7 +33,7 @@ func (p Package) AddSymbol(s sym.Symbol) error {
 		if _, ok := p.Types[id]; ok {
 			return fmt.Errorf(
 				"type '%s' defined at least twice in package '%s'",
-				s.Name(), p.Name(),
+				s.Key(), p.Key(),
 			)
 		}
 		p.Types[id] = s
@@ -44,45 +44,45 @@ func (p Package) AddSymbol(s sym.Symbol) error {
 	return nil
 }
 
-func (p Package) SymbolNames() []string {
+func (p Package) InnerKeys() []string {
 	names := []string{}
 
 	for id, _ := range p.Consts {
-		names = append(names, id.Name)
+		names = append(names, id.Key)
 	}
 	for id, _ := range p.Funcs {
-		names = append(names, id.Name)
+		names = append(names, id.Key)
 	}
 	for id, _ := range p.Procs {
-		names = append(names, id.Name)
+		names = append(names, id.Key)
 	}
 	for id, _ := range p.Types {
-		names = append(names, id.Name)
+		names = append(names, id.Key)
 	}
 
 	return names
 }
 
-func (p Package) GetSymbol(name string) []sym.Symbol {
+func (p Package) GetSymbol(key string) []sym.Symbol {
 	syms := []sym.Symbol{}
 
 	for id, s := range p.Consts {
-		if id.Name == name {
+		if id.Key == key {
 			syms = append(syms, s)
 		}
 	}
 	for id, s := range p.Funcs {
-		if id.Name == name {
+		if id.Key == key {
 			syms = append(syms, s)
 		}
 	}
 	for id, s := range p.Procs {
-		if id.Name == name {
+		if id.Key == key {
 			syms = append(syms, s)
 		}
 	}
 	for id, s := range p.Types {
-		if id.Name == name {
+		if id.Key == key {
 			syms = append(syms, s)
 		}
 	}

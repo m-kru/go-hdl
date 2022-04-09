@@ -8,6 +8,7 @@ import (
 // symbol is a generic common symbol struct.
 type symbol struct {
 	filepath string
+	key      string
 	name     string
 	lineNum  uint32
 
@@ -19,12 +20,9 @@ type symbol struct {
 }
 
 func (s symbol) Filepath() string { return s.filepath }
-
-func (s symbol) Files() []string {
-	panic("should never happen")
-}
-
-func (s symbol) Name() string { return s.name }
+func (s symbol) Key() string      { return s.key }
+func (s symbol) Name() string     { return s.name }
+func (s symbol) Files() []string  { panic("should never happen") }
 
 func (s symbol) LineNum() uint32 { return s.lineNum }
 

@@ -118,7 +118,7 @@ func findSymbol(sp symbolPath) (paths []symbolPath, syms [][]sym.Symbol) {
 
 		priNames := []string{}
 		if tmpSp.primary == "*" {
-			priNames = l.SymbolNames()
+			priNames = l.InnerKeys()
 		} else {
 			priNames = append(priNames, tmpSp.primary)
 		}
@@ -139,7 +139,7 @@ func findSymbol(sp symbolPath) (paths []symbolPath, syms [][]sym.Symbol) {
 				syms = append(syms, pri)
 				continue
 			} else if sp.secondary == "*" {
-				secNames = pri[0].SymbolNames()
+				secNames = pri[0].InnerKeys()
 			} else {
 				secNames = append(secNames, sp.secondary)
 			}

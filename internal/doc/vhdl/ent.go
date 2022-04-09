@@ -8,10 +8,5 @@ type Entity struct {
 	symbol
 }
 
-func (e Entity) SymbolNames() []string {
-	return []string{}
-}
-
-func (e Entity) GetSymbol(name string) []sym.Symbol {
-	return nil
-}
+func (e Entity) InnerKeys() []string               { return []string{} }
+func (e Entity) GetSymbol(key string) []sym.Symbol { return nil }

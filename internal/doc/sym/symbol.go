@@ -4,13 +4,18 @@ import (
 	"sort"
 )
 
+// Symbol interface represents generic symbol.
+//
+// Key is the key by which symbol must be searched in a symbol container.
+// Key can differ from Name if language is case insensitive.
 type Symbol interface {
 	Filepath() string
 	Files() []string
+	Key() string
 	Name() string
 	LineNum() uint32
-	SymbolNames() []string          // Get names of all inner symbols.
-	GetSymbol(name string) []Symbol // Get inner symbol.
+	InnerKeys() []string           // List of inner symbols keys.
+	GetSymbol(key string) []Symbol // Get inner symbol.
 	Doc() string
 	Code() string
 	DocCode() (string, string) // Get Doc and Code in one call, no need to read file twice.
@@ -20,7 +25,7 @@ type Symbol interface {
 // It is assumed, that multiple symbols with the same name
 // can't be declared in the same line.
 type ID struct {
-	Name    string
+	Key     string
 	LineNum uint32
 }
 

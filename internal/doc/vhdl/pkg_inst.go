@@ -8,10 +8,5 @@ type PackageInstantiation struct {
 	symbol
 }
 
-func (pi PackageInstantiation) SymbolNames() []string {
-	return []string{}
-}
-
-func (pi PackageInstantiation) GetSymbol(name string) []sym.Symbol {
-	return nil
-}
+func (pi PackageInstantiation) InnerKeys() []string               { return []string{} }
+func (pi PackageInstantiation) GetSymbol(key string) []sym.Symbol { return nil }

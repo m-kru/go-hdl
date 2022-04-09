@@ -16,8 +16,8 @@ var libContainerMutex sync.Mutex
 // already exists, then it is not overwritten.
 func (lc libraryContainer) Add(l *lib.Library) {
 	libContainerMutex.Lock()
-	if _, ok := lc[l.Name()]; !ok {
-		lc[l.Name()] = l
+	if _, ok := lc[l.Key()]; !ok {
+		lc[l.Key()] = l
 	}
 	libContainerMutex.Unlock()
 }

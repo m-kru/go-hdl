@@ -25,17 +25,13 @@ type Library struct {
 	libSummary LibrarySummary
 }
 
-func (l *Library) Filepath() string {
-	return l.docFile
-}
-
-func (l *Library) Files() []string {
-	return l.files
-}
-
-func (l *Library) LineNum() uint32 {
-	panic("should never happen")
-}
+func (l *Library) Filepath() string          { return l.docFile }
+func (l *Library) Files() []string           { return l.files }
+func (l *Library) Key() string               { return l.name }
+func (l *Library) Name() string              { return l.name }
+func (l *Library) Code() string              { return l.libSummary(l) }
+func (l *Library) DocCode() (string, string) { return l.Doc(), l.Code() }
+func (l *Library) LineNum() uint32           { panic("should never happen") }
 
 func MakeLibrary(lang string, name string, ls LibrarySummary) Library {
 	if !utils.IsValidLang(lang) {
@@ -80,9 +76,7 @@ func (l *Library) AddFile(f string) {
 	l.filesMutex.Unlock()
 }
 
-func (l *Library) Name() string { return l.name }
-
-func (l *Library) SymbolNames() []string {
+func (l *Library) InnerKeys() []string {
 	names := []string{}
 
 	for name, _ := range l.symbols {
@@ -96,8 +90,8 @@ func (l *Library) Symbols() map[string][]sym.Symbol {
 	return l.symbols
 }
 
-func (l *Library) GetSymbol(name string) []sym.Symbol {
-	if s, ok := l.symbols[name]; ok {
+func (l *Library) GetSymbol(key string) []sym.Symbol {
+	if s, ok := l.symbols[key]; ok {
 		return s
 	}
 	return nil
@@ -106,10 +100,10 @@ func (l *Library) GetSymbol(name string) []sym.Symbol {
 func (l *Library) AddSymbol(s sym.Symbol) {
 	l.symbolsMutex.Lock()
 
-	if _, ok := l.symbols[s.Name()]; ok {
-		l.symbols[s.Name()] = append(l.symbols[s.Name()], s)
+	if _, ok := l.symbols[s.Key()]; ok {
+		l.symbols[s.Key()] = append(l.symbols[s.Key()], s)
 	} else {
-		l.symbols[s.Name()] = []sym.Symbol{s}
+		l.symbols[s.Key()] = []sym.Symbol{s}
 	}
 
 	l.symbolsMutex.Unlock()
@@ -126,12 +120,4 @@ func (l *Library) Doc() string {
 	}
 
 	return string(f)
-}
-
-func (l *Library) Code() string {
-	return l.libSummary(l)
-}
-
-func (l *Library) DocCode() (string, string) {
-	return l.Doc(), l.Code()
 }

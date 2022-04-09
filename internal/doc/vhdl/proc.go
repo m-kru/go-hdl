@@ -8,10 +8,5 @@ type Procedure struct {
 	symbol
 }
 
-func (p Procedure) SymbolNames() []string {
-	return []string{}
-}
-
-func (p Procedure) GetSymbol(name string) []sym.Symbol {
-	return nil
-}
+func (p Procedure) InnerKeys() []string               { return []string{} }
+func (p Procedure) GetSymbol(key string) []sym.Symbol { return nil }
