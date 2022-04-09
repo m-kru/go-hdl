@@ -165,7 +165,7 @@ func scanPackageDeclaration(filepath string, name string, sc *scanContext) (sym.
 		} else if sm := someTypeDeclaration.FindSubmatchIndex(sc.line); len(sm) > 0 {
 			name := string(sc.line[sm[2]:sm[3]])
 			syms, err = scanSomeTypeDeclaration(filepath, name, sc)
-		} else if (len(end.FindIndex(sc.line)) > 0 && bytes.Contains(sc.line, []byte(name))) ||
+		} else if (len(end.FindIndex(sc.line)) > 0 && bytes.Contains(sc.line, []byte(strings.ToLower(name)))) ||
 			(len(endPackage.FindIndex(sc.line)) > 0) ||
 			(len(endWithSemicolon.FindIndex(sc.line)) > 0) {
 			pkg.codeEnd = sc.endIdx
@@ -288,7 +288,7 @@ func scanRecordTypeDeclaration(filepath string, name string, sc *scanContext) ([
 	}
 
 	for {
-		if (len(end.FindIndex(sc.line)) > 0 && bytes.Contains(sc.line, []byte(name))) ||
+		if (len(end.FindIndex(sc.line)) > 0 && bytes.Contains(sc.line, []byte(strings.ToLower(name)))) ||
 			(len(endRecord.FindIndex(sc.line)) > 0) ||
 			(len(endWithSemicolon.FindIndex(sc.line)) > 0) {
 			t.codeEnd = sc.endIdx
