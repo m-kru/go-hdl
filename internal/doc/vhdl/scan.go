@@ -108,16 +108,15 @@ func scanEntityDeclaration(filepath string, name string, sc *scanContext) (sym.S
 
 func scanPackageDeclaration(filepath string, name string, sc *scanContext) (sym.Symbol, error) {
 	pkg := Package{
-		symbol: symbol{
-			filepath:  filepath,
-			key:       strings.ToLower(name),
-			name:      name,
-			codeStart: sc.startIdx,
-		},
-		Consts: map[sym.ID]sym.Symbol{},
-		Funcs:  map[sym.ID]sym.Symbol{},
-		Procs:  map[sym.ID]sym.Symbol{},
-		Types:  map[sym.ID]sym.Symbol{},
+		filepath:  filepath,
+		key:       strings.ToLower(name),
+		name:      name,
+		codeStart: sc.startIdx,
+		Consts:    map[sym.ID]sym.Symbol{},
+		Funcs:     map[sym.ID]sym.Symbol{},
+		Procs:     map[sym.ID]sym.Symbol{},
+		Types:     map[sym.ID]sym.Symbol{},
+		Subtypes:  map[sym.ID]sym.Symbol{},
 	}
 
 	if sc.docPresent {
@@ -145,25 +144,29 @@ func scanPackageDeclaration(filepath string, name string, sc *scanContext) (sym.
 			}
 			syms, err = scanConstantDeclaration(filepath, names, sc)
 		} else if sm := arrayTypeDeclaration.FindSubmatchIndex(sc.line); len(sm) > 0 {
-			name := string(sc.line[sm[2]:sm[3]])
+			name := string(sc.actualLine[sm[2]:sm[3]])
 			syms, err = scanArrayTypeDeclaration(filepath, name, sc)
 		} else if sm := enumTypeDeclaration.FindSubmatchIndex(sc.line); len(sm) > 0 {
-			name := string(sc.line[sm[2]:sm[3]])
+			name := string(sc.actualLine[sm[2]:sm[3]])
 			syms, err = scanEnumTypeDeclaration(filepath, name, sc)
 		} else if sm := functionDeclaration.FindSubmatchIndex(sc.line); len(sm) > 0 {
-			name := string(sc.line[sm[4]:sm[5]])
-			syms, err = scanFunctionDeclaration(filepath, name, sc)
+			impure := false
+			if sm[2] > 0 && string(sc.actualLine[sm[2]:sm[3]]) == "impure" {
+				impure = true
+			}
+			name := string(sc.actualLine[sm[4]:sm[5]])
+			syms, err = scanFunctionDeclaration(filepath, impure, name, sc)
 		} else if sm := procedureDeclaration.FindSubmatchIndex(sc.line); len(sm) > 0 {
-			name := string(sc.line[sm[2]:sm[3]])
+			name := string(sc.actualLine[sm[2]:sm[3]])
 			syms, err = scanProcedureDeclaration(filepath, name, sc)
 		} else if sm := recordTypeDeclaration.FindSubmatchIndex(sc.line); len(sm) > 0 {
-			name := string(sc.line[sm[2]:sm[3]])
+			name := string(sc.actualLine[sm[2]:sm[3]])
 			syms, err = scanRecordTypeDeclaration(filepath, name, sc)
 		} else if sm := subtypeDeclaration.FindSubmatchIndex(sc.line); len(sm) > 0 {
-			name := string(sc.line[sm[2]:sm[3]])
+			name := string(sc.actualLine[sm[2]:sm[3]])
 			syms, err = scanSubtypeDeclaration(filepath, name, sc)
 		} else if sm := someTypeDeclaration.FindSubmatchIndex(sc.line); len(sm) > 0 {
-			name := string(sc.line[sm[2]:sm[3]])
+			name := string(sc.actualLine[sm[2]:sm[3]])
 			syms, err = scanSomeTypeDeclaration(filepath, name, sc)
 		} else if (len(end.FindIndex(sc.line)) > 0 && bytes.Contains(sc.line, []byte(strings.ToLower(name)))) ||
 			(len(endPackage.FindIndex(sc.line)) > 0) ||
@@ -216,7 +219,8 @@ func scanEnumTypeDeclaration(filepath string, name string, sc *scanContext) ([]s
 		kind: "enum",
 		symbol: symbol{
 			filepath:  filepath,
-			key:       name,
+			key:       strings.ToLower(name),
+			name:      name,
 			lineNum:   sc.lineNum,
 			codeStart: sc.startIdx,
 		},
@@ -338,7 +342,8 @@ func scanConstantDeclaration(filepath string, names []string, sc *scanContext) (
 		if len(endsWithSemicolon.FindIndex(sc.line)) > 0 {
 			c.codeEnd = sc.endIdx
 			for _, n := range names {
-				c.key = n
+				c.key = strings.ToLower(n)
+				c.name = n
 				syms = append(syms, c)
 			}
 			return syms, nil
@@ -351,11 +356,13 @@ func scanConstantDeclaration(filepath string, names []string, sc *scanContext) (
 	return syms, fmt.Errorf("constant declaration line with ';' not found")
 }
 
-func scanFunctionDeclaration(filepath string, name string, sc *scanContext) ([]sym.Symbol, error) {
+func scanFunctionDeclaration(filepath string, impure bool, name string, sc *scanContext) ([]sym.Symbol, error) {
 	f := Function{
-		symbol{
+		impure: impure,
+		symbol: symbol{
 			filepath:  filepath,
-			key:       name,
+			key:       strings.ToLower(name),
+			name:      name,
 			lineNum:   sc.lineNum,
 			codeStart: sc.startIdx,
 		},
@@ -383,7 +390,8 @@ func scanProcedureDeclaration(filepath string, name string, sc *scanContext) ([]
 	p := Procedure{
 		symbol{
 			filepath:  filepath,
-			key:       name,
+			key:       strings.ToLower(name),
+			name:      name,
 			lineNum:   sc.lineNum,
 			codeStart: sc.startIdx,
 		},
@@ -420,11 +428,11 @@ func scanProcedureDeclaration(filepath string, name string, sc *scanContext) ([]
 }
 
 func scanSubtypeDeclaration(filepath string, name string, sc *scanContext) ([]sym.Symbol, error) {
-	t := Type{
-		kind: "subtype",
-		symbol: symbol{
+	t := Subtype{
+		symbol{
 			filepath:  filepath,
-			key:       name,
+			key:       strings.ToLower(name),
+			name:      name,
 			lineNum:   sc.lineNum,
 			codeStart: sc.startIdx,
 		},

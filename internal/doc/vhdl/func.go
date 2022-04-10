@@ -6,6 +6,7 @@ import (
 
 type Function struct {
 	symbol
+	impure bool
 }
 
 func (f Function) InnerKeys() []string               { return []string{} }
