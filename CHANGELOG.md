@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- [VHDL, doc] Support protected type.
 - [VHDL, doc] Actual names used in library summary, not lowercased.
 - [VHDL, doc] Improved array, enumeration and record type declarations scanning.
 ### Changed

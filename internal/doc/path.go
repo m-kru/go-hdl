@@ -143,6 +143,7 @@ func resolveSymbolPath(path string) []symbolPath {
 				sp.library = strings.ToLower(sp.library)
 				sp.primary = strings.ToLower(sp.primary)
 				sp.secondary = strings.ToLower(sp.secondary)
+				sp.tertiary = strings.ToLower(sp.tertiary)
 			}
 			sps = append(sps, sp)
 		}

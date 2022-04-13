@@ -281,28 +281,54 @@ func scanArrayTypeDeclaration(filepath string, name string, sc *scanContext) ([]
 }
 
 func scanProtectedTypeDeclaration(filepath string, name string, sc *scanContext) ([]sym.Symbol, error) {
-	t := Protected{
-		symbol: symbol{
-			filepath:  filepath,
-			key:       strings.ToLower(name),
-			name:      name,
-			lineNum:   sc.lineNum,
-			codeStart: sc.startIdx,
-		},
+	prot := Protected{
+		filepath:  filepath,
+		key:       strings.ToLower(name),
+		name:      name,
+		lineNum:   sc.lineNum,
+		codeStart: sc.startIdx,
+		Funcs:     map[sym.ID]sym.Symbol{},
+		Procs:     map[sym.ID]sym.Symbol{},
 	}
 
 	if sc.docPresent {
-		t.docStart = sc.docStart
-		t.docEnd = sc.docEnd
+		prot.docStart = sc.docStart
+		prot.docEnd = sc.docEnd
 	}
 
 	for {
-		if (len(end.FindIndex(sc.line)) > 0 && bytes.Contains(sc.line, []byte(strings.ToLower(name)))) ||
+		var syms []sym.Symbol
+		var err error
+
+		syms = nil
+
+		if sm := functionDeclaration.FindSubmatchIndex(sc.line); len(sm) > 0 {
+			impure := false
+			if sm[2] > 0 && string(sc.actualLine[sm[2]:sm[3]]) == "impure" {
+				impure = true
+			}
+			name := string(sc.actualLine[sm[4]:sm[5]])
+			syms, err = scanFunctionDeclaration(filepath, impure, name, sc)
+		} else if sm := procedureDeclaration.FindSubmatchIndex(sc.line); len(sm) > 0 {
+			name := string(sc.actualLine[sm[2]:sm[3]])
+			syms, err = scanProcedureDeclaration(filepath, name, sc)
+		} else if (len(end.FindIndex(sc.line)) > 0 && bytes.Contains(sc.line, []byte(strings.ToLower(name)))) ||
 			(len(endProtected.FindIndex(sc.line)) > 0) ||
 			(len(endWithSemicolon.FindIndex(sc.line)) > 0) {
-			t.codeEnd = sc.endIdx
-			return []sym.Symbol{t}, nil
+			prot.codeEnd = sc.endIdx
+			return []sym.Symbol{prot}, nil
 		}
+
+		if err != nil {
+			return nil, fmt.Errorf("protected '%s': %v", name, err)
+		}
+		for _, s := range syms {
+			err = prot.AddSymbol(s)
+			if err != nil {
+				return nil, fmt.Errorf("protected '%s': %v", name, err)
+			}
+		}
+
 		if !sc.proceed() {
 			break
 		}

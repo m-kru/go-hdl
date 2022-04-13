@@ -41,13 +41,13 @@ func Doc(args args.DocArgs) uint8 {
 		for path, syms := range foundSymbols {
 			fmt.Printf("%s\n", path)
 			prevFilepath := ""
+			sym.SortByLineNum(syms)
 			for _, s := range syms {
 				fp := s.Filepath()
 				if fp != "" && fp != prevFilepath {
 					fmt.Printf("\n%s\n", fp)
 					prevFilepath = fp
 				}
-				sym.SortByLineNum(syms)
 				fmt.Printf("\n")
 				doc, code := s.DocCode()
 				fmt.Printf(utils.Deindent(doc))
