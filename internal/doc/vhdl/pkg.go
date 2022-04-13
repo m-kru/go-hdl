@@ -197,12 +197,6 @@ func (p Package) AddSymbol(s sym.Symbol) error {
 
 	switch s.(type) {
 	case Constant:
-		if _, ok := p.Consts[id]; ok {
-			return fmt.Errorf(
-				"constant '%s' defined at least twice in package '%s'",
-				s.Key(), p.Key(),
-			)
-		}
 		p.Consts[id] = s
 	case Function:
 		p.Funcs[id] = s
@@ -211,20 +205,8 @@ func (p Package) AddSymbol(s sym.Symbol) error {
 	case Protected:
 		p.Prots[id] = s
 	case Type:
-		if _, ok := p.Types[id]; ok {
-			return fmt.Errorf(
-				"type '%s' defined at least twice in package '%s'",
-				s.Key(), p.Key(),
-			)
-		}
 		p.Types[id] = s
 	case Subtype:
-		if _, ok := p.Subtypes[id]; ok {
-			return fmt.Errorf(
-				"subtype '%s' defined at least twice in package '%s'",
-				s.Key(), p.Key(),
-			)
-		}
 		p.Subtypes[id] = s
 	default:
 		panic("should never happen")
