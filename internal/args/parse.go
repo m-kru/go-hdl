@@ -40,8 +40,7 @@ func Parse() Args {
 
 	argsLen := len(os.Args)
 	if argsLen == 1 {
-		printHelp()
-		os.Exit(1)
+		log.Fatalf("missing command, run 'thdl help' for more information")
 	}
 
 	args.Cmd = os.Args[1]
@@ -99,8 +98,7 @@ func Parse() Args {
 		}
 		args.DocArgs.SymbolPath = symbolPath
 	default:
-		printHelp()
-		os.Exit(1)
+		log.Fatalf(fmt.Sprintf("invalid command '%s', run 'thdl help' for more information", args.Cmd))
 	}
 
 	return args
