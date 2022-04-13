@@ -175,10 +175,10 @@ func (p Protected) Code() string {
 			if utils.IsSingleLine(code) {
 				s = fmt.Sprintf("%s", code)
 			} else {
-				s = fmt.Sprintf("%s ...\n", utils.FirstLine(code))
+				s = fmt.Sprintf("procedure %s ...\n", ps[0].Name())
 			}
 		} else {
-			s = fmt.Sprintf("Procedure %s ... (%d)\n", ps[0].Name(), len(ps))
+			s = fmt.Sprintf("procedure %s ... (%d)\n", ps[0].Name(), len(ps))
 		}
 		b.WriteString(s)
 	}
