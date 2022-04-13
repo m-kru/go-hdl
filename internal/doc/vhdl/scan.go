@@ -159,6 +159,9 @@ func scanPackageDeclaration(filepath string, name string, sc *scanContext) (sym.
 		} else if sm := procedureDeclaration.FindSubmatchIndex(sc.line); len(sm) > 0 {
 			name := string(sc.actualLine[sm[2]:sm[3]])
 			syms, err = scanProcedureDeclaration(filepath, name, sc)
+		} else if sm := protectedTypeDeclaration.FindSubmatchIndex(sc.line); len(sm) > 0 {
+			name := string(sc.actualLine[sm[2]:sm[3]])
+			syms, err = scanProtectedTypeDeclaration(filepath, name, sc)
 		} else if sm := recordTypeDeclaration.FindSubmatchIndex(sc.line); len(sm) > 0 {
 			name := string(sc.actualLine[sm[2]:sm[3]])
 			syms, err = scanRecordTypeDeclaration(filepath, name, sc)
@@ -250,7 +253,8 @@ func scanArrayTypeDeclaration(filepath string, name string, sc *scanContext) ([]
 		kind: "array",
 		symbol: symbol{
 			filepath:  filepath,
-			key:       name,
+			key:       strings.ToLower(name),
+			name:      name,
 			lineNum:   sc.lineNum,
 			codeStart: sc.startIdx,
 		},
@@ -275,12 +279,45 @@ func scanArrayTypeDeclaration(filepath string, name string, sc *scanContext) ([]
 	return nil, fmt.Errorf("'%s' array declaration end line not found", name)
 }
 
+func scanProtectedTypeDeclaration(filepath string, name string, sc *scanContext) ([]sym.Symbol, error) {
+	t := Type{
+		kind: "protected",
+		symbol: symbol{
+			filepath:  filepath,
+			key:       strings.ToLower(name),
+			name:      name,
+			lineNum:   sc.lineNum,
+			codeStart: sc.startIdx,
+		},
+	}
+
+	if sc.docPresent {
+		t.docStart = sc.docStart
+		t.docEnd = sc.docEnd
+	}
+
+	for {
+		if (len(end.FindIndex(sc.line)) > 0 && bytes.Contains(sc.line, []byte(strings.ToLower(name)))) ||
+			(len(endProtected.FindIndex(sc.line)) > 0) ||
+			(len(endWithSemicolon.FindIndex(sc.line)) > 0) {
+			t.codeEnd = sc.endIdx
+			return []sym.Symbol{t}, nil
+		}
+		if !sc.proceed() {
+			break
+		}
+	}
+
+	return nil, fmt.Errorf("'%s' protected declaration line with ';' not found", name)
+}
+
 func scanRecordTypeDeclaration(filepath string, name string, sc *scanContext) ([]sym.Symbol, error) {
 	t := Type{
 		kind: "record",
 		symbol: symbol{
 			filepath:  filepath,
-			key:       name,
+			key:       strings.ToLower(name),
+			name:      name,
 			lineNum:   sc.lineNum,
 			codeStart: sc.startIdx,
 		},
@@ -311,7 +348,9 @@ func scanSomeTypeDeclaration(filepath string, name string, sc *scanContext) ([]s
 		return nil, fmt.Errorf("some type declaration line with type kind not found")
 	}
 
-	if len(startsWithRecord.FindIndex(sc.lookaheadLine)) > 0 {
+	if len(startsWithProtected.FindIndex(sc.lookaheadLine)) > 0 {
+		return scanProtectedTypeDeclaration(filepath, name, sc)
+	} else if len(startsWithRecord.FindIndex(sc.lookaheadLine)) > 0 {
 		return scanRecordTypeDeclaration(filepath, name, sc)
 	} else if len(startsWithRoundBracket.FindIndex(sc.lookaheadLine)) > 0 {
 		return scanEnumTypeDeclaration(filepath, name, sc)
