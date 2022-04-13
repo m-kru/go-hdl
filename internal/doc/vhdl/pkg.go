@@ -25,6 +25,7 @@ type Package struct {
 	Consts   map[sym.ID]sym.Symbol
 	Funcs    map[sym.ID]sym.Symbol
 	Procs    map[sym.ID]sym.Symbol
+	Prots    map[sym.ID]sym.Symbol
 	Types    map[sym.ID]sym.Symbol
 	Subtypes map[sym.ID]sym.Symbol
 }
@@ -207,6 +208,8 @@ func (p Package) AddSymbol(s sym.Symbol) error {
 		p.Funcs[id] = s
 	case Procedure:
 		p.Procs[id] = s
+	case Protected:
+		p.Prots[id] = s
 	case Type:
 		if _, ok := p.Types[id]; ok {
 			return fmt.Errorf(
@@ -242,6 +245,9 @@ func (p Package) InnerKeys() []string {
 	for id, _ := range p.Procs {
 		names = append(names, id.Key)
 	}
+	for id, _ := range p.Prots {
+		names = append(names, id.Key)
+	}
 	for id, _ := range p.Types {
 		names = append(names, id.Key)
 	}
@@ -266,6 +272,11 @@ func (p Package) GetSymbol(key string) []sym.Symbol {
 		}
 	}
 	for id, s := range p.Procs {
+		if id.Key == key {
+			syms = append(syms, s)
+		}
+	}
+	for id, s := range p.Prots {
 		if id.Key == key {
 			syms = append(syms, s)
 		}

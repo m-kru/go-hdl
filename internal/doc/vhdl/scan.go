@@ -115,6 +115,7 @@ func scanPackageDeclaration(filepath string, name string, sc *scanContext) (sym.
 		Consts:    map[sym.ID]sym.Symbol{},
 		Funcs:     map[sym.ID]sym.Symbol{},
 		Procs:     map[sym.ID]sym.Symbol{},
+		Prots:     map[sym.ID]sym.Symbol{},
 		Types:     map[sym.ID]sym.Symbol{},
 		Subtypes:  map[sym.ID]sym.Symbol{},
 	}
@@ -280,8 +281,7 @@ func scanArrayTypeDeclaration(filepath string, name string, sc *scanContext) ([]
 }
 
 func scanProtectedTypeDeclaration(filepath string, name string, sc *scanContext) ([]sym.Symbol, error) {
-	t := Type{
-		kind: "protected",
+	t := Protected{
 		symbol: symbol{
 			filepath:  filepath,
 			key:       strings.ToLower(name),
