@@ -10,23 +10,22 @@ import (
 
 func LibSummary(l *lib.Library) string {
 	ents := []sym.Symbol{}
-	tbEnts := []sym.Symbol{}
-	pkgDecs := []sym.Symbol{}
-	pkgInsts := []sym.Symbol{}
+	tbs := []sym.Symbol{}
+	pkgs := []sym.Symbol{}
 
 	for _, syms := range l.Symbols() {
 		for _, s := range syms {
 			switch s.(type) {
 			case Entity:
 				if utils.IsTestbench(s.Key()) {
-					tbEnts = append(tbEnts, s)
+					tbs = append(tbs, s)
 				} else {
 					ents = append(ents, s)
 				}
 			case Package:
-				pkgDecs = append(pkgDecs, s)
+				pkgs = append(pkgs, s)
 			case PackageInstantiation:
-				pkgInsts = append(pkgInsts, s)
+				pkgs = append(pkgs, s)
 			default:
 				panic("should never happen")
 			}
@@ -34,12 +33,12 @@ func LibSummary(l *lib.Library) string {
 	}
 
 	sym.SortByName(ents)
-	sym.SortByName(pkgDecs)
-	sym.SortByName(tbEnts)
+	sym.SortByName(pkgs)
+	sym.SortByName(tbs)
 
 	b := strings.Builder{}
 
-	// Entity Declarations
+	// Entities
 	entNameLen := 0
 	for _, e := range ents {
 		if len(e.Name()) > entNameLen {
@@ -47,7 +46,7 @@ func LibSummary(l *lib.Library) string {
 		}
 	}
 	if len(ents) > 0 {
-		b.WriteString(fmt.Sprintf("Entity Declarations (%d):\n", len(ents)))
+		b.WriteString(fmt.Sprintf("Entities (%d):\n", len(ents)))
 	}
 	for _, e := range ents {
 		b.WriteString(
@@ -55,58 +54,39 @@ func LibSummary(l *lib.Library) string {
 		)
 	}
 
-	// Package Declarations
+	// Packages
 	pkgNameLen := 0
-	for _, p := range pkgDecs {
+	for _, p := range pkgs {
 		if len(p.Name()) > pkgNameLen {
 			pkgNameLen = len(p.Name())
 		}
 	}
-	if len(pkgDecs) > 0 && b.Len() > 0 {
+	if len(pkgs) > 0 && b.Len() > 0 {
 		b.WriteRune('\n')
 	}
-	if len(pkgDecs) > 0 {
-		b.WriteString(fmt.Sprintf("Package Declarations (%d):\n", len(pkgDecs)))
+	if len(pkgs) > 0 {
+		b.WriteString(fmt.Sprintf("Packages (%d):\n", len(pkgs)))
 	}
-	for _, p := range pkgDecs {
+	for _, p := range pkgs {
 		b.WriteString(
 			fmt.Sprintf("  %-*s  %s\n", pkgNameLen, p.Name(), p.Filepath()),
 		)
 	}
 
-	// Package Instantiations
-	pkgNameLen = 0
-	for _, p := range pkgInsts {
-		if len(p.Name()) > pkgNameLen {
-			pkgNameLen = len(p.Name())
-		}
-	}
-	if len(pkgInsts) > 0 && b.Len() > 0 {
-		b.WriteRune('\n')
-	}
-	if len(pkgInsts) > 0 {
-		b.WriteString(fmt.Sprintf("Package Instantiations (%d):\n", len(pkgInsts)))
-	}
-	for _, p := range pkgInsts {
-		b.WriteString(
-			fmt.Sprintf("  %-*s  %s\n", pkgNameLen, p.Name(), p.Filepath()),
-		)
-	}
-
-	// Testbench Entities
+	// Testbenches
 	tbEntNameLen := 0
-	for _, e := range tbEnts {
+	for _, e := range tbs {
 		if len(e.Name()) > tbEntNameLen {
 			tbEntNameLen = len(e.Name())
 		}
 	}
-	if len(tbEnts) > 0 && b.Len() > 0 {
+	if len(tbs) > 0 && b.Len() > 0 {
 		b.WriteRune('\n')
 	}
-	if len(tbEnts) > 0 {
-		b.WriteString(fmt.Sprintf("Testbench Entities (%d):\n", len(tbEnts)))
+	if len(tbs) > 0 {
+		b.WriteString(fmt.Sprintf("Testbenches (%d):\n", len(tbs)))
 	}
-	for _, e := range tbEnts {
+	for _, e := range tbs {
 		b.WriteString(
 			fmt.Sprintf("  %-*s  %s\n", tbEntNameLen, e.Name(), e.Filepath()),
 		)
