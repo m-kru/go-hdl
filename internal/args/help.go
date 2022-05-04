@@ -47,6 +47,12 @@ settings.
     ignore: [bar.vhd]
     fusesoc: true
     no-bold: true
+    html:
+      # Copyright string placed in the left bottom corner.
+      # If not set, then there is no copyright footer.
+      copyright: "Copyright string"
+      path: output/path/for/the/generated/html/documentation
+      title: "HTML title string"
 
   # Gen command settings.
   gen:

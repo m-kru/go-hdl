@@ -49,12 +49,20 @@ type VetArgs struct {
 	IgnoreList
 }
 
+type HTMLArgs struct {
+	Copyright string
+	Path      string
+	Title     string
+}
+
 type DocArgs struct {
 	IgnoreList
 	LibMap
 	Fusesoc    bool
 	NoBold     bool
 	SymbolPath string
+	GenHTML    bool
+	HTML       HTMLArgs
 }
 
 type GenArgs struct {

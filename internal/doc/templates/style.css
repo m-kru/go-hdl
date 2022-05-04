@@ -1,0 +1,126 @@
+body {
+  max-width: 940px;
+  margin: auto;
+}
+
+a {
+  color: SteelBlue;
+  text-decoration: none;
+}
+
+.content {
+  margin-left: 5px;
+  margin-right: 5px;
+  margin-top: 50px;
+}
+
+.topbar {
+  position: fixed;
+  top: 0;
+  width: 940px;
+  background-color: Black;
+}
+
+.topbar a {
+  color: White;
+}
+
+.dropbtn {
+  background-color: Black;
+  height: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+}
+
+.dropbtn:hover {
+  color: Red;
+}
+
+.dropbtn.active {
+  background-color: SteelBlue;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: White;
+  background-color: Black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {
+  background-color: Silver;
+  color: Black;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown:hover .dropbtn {
+  background-color: Silver;
+}
+
+.dropdown:hover .dropbtn a {
+  color: Black;
+}
+
+footer {
+  color: Grey;
+  font-size: 0.75em;
+}
+
+.left-footer {
+  text-align: left;
+  display: inline-block;
+}
+
+.right-footer {
+  float: right;
+  display: inline-block;
+}
+
+.code {
+  background-color: AliceBlue;
+  border: 1px solid;
+  border-radius: 0.3em 0.3em 0.3em 0.3em;
+  border-color: Grey;
+  font-family: monospace, monospace;
+  font-size: 0.9em;
+  overflow-x: auto;
+  padding: 3px;
+  margin-top: 0.625em;
+  white-space: pre;
+}
+
+.doc {
+  font-family: monospace, monospace;
+  font-size: 1em;
+  overflow-x: auto;
+  padding: 0px;
+  margin: 0px;
+  white-space: pre;
+}
+
+.symbol-list {
+  list-style-type: none;
+  padding-left: 5px;
+}
+
+.symbol-list li {
+  padding-bottom: 5px;
+}

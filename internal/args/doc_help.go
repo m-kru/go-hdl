@@ -13,7 +13,12 @@ Flags:
   -no-bold    Don't print language keywords in bold.
   -no-config  Don't read .thdl.yml config file.
   -fusesoc    Infer libraries from FuseSoc .core files.
+  -html       Generate documentation in HTML format.
 
+Parameters:
+  -html-copyright  Copyright placed in the left bottom corner.
+  -html-path       Output path for the generated HTML documentation.
+  -html-title      HTML title.
 
 Description
 -----------

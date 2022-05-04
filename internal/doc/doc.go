@@ -18,6 +18,11 @@ func Doc(args args.DocArgs) uint8 {
 
 	ScanFiles()
 
+	if docArgs.GenHTML {
+		generateHTML(docArgs.HTML)
+		return 0
+	}
+
 	symbolPaths := resolveSymbolPath(args.SymbolPath)
 	log.Printf("debug: looking for following sym paths:\n")
 	for _, p := range symbolPaths {
