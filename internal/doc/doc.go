@@ -3,6 +3,7 @@ package doc
 import (
 	"fmt"
 	"github.com/m-kru/go-thdl/internal/args"
+	"github.com/m-kru/go-thdl/internal/doc/html"
 	"github.com/m-kru/go-thdl/internal/doc/lib"
 	"github.com/m-kru/go-thdl/internal/doc/sym"
 	"github.com/m-kru/go-thdl/internal/doc/vhdl"
@@ -19,7 +20,7 @@ func Doc(args args.DocArgs) uint8 {
 	ScanFiles()
 
 	if docArgs.GenHTML {
-		generateHTML(docArgs.HTML)
+		html.Generate(docArgs.HTML)
 		return 0
 	}
 
