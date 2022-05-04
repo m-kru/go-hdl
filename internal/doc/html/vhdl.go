@@ -3,14 +3,13 @@ package html
 import (
 	_ "embed"
 	"fmt"
-	"github.com/m-kru/go-thdl/internal/args"
 	"github.com/m-kru/go-thdl/internal/doc/vhdl"
 	"log"
 	"os"
 	"strings"
 )
 
-func generateVHDL(htmlArgs args.HTMLArgs) {
+func generateVHDL() {
 	vhdlLibs := vhdl.LibraryNames()
 
 	if len(vhdlLibs) == 0 {
@@ -22,10 +21,10 @@ func generateVHDL(htmlArgs args.HTMLArgs) {
 		log.Fatalf("making vhdl directory: %v", err)
 	}
 
-	generateVHDLIndex(htmlArgs)
+	generateVHDLIndex()
 }
 
-func generateVHDLIndex(htmlArgs args.HTMLArgs) {
+func generateVHDLIndex() {
 	vhdlLibs := vhdl.LibraryNames()
 	libList := strings.Builder{}
 

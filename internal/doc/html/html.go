@@ -7,12 +7,16 @@ import (
 	"os"
 )
 
-func Generate(htmlArgs args.HTMLArgs) {
+var htmlArgs args.HTMLArgs
+
+func Generate(args args.HTMLArgs) {
+	htmlArgs = args
+
 	if err := os.MkdirAll(htmlArgs.Path, 0775); err != nil {
 		log.Fatalf("making html directory: %v", err)
 	}
 
-	generateCSS(htmlArgs)
+	generateCSS()
 
 	if htmlArgs.Copyright != "" {
 		htmlArgs.Copyright = "&copy; " + htmlArgs.Copyright
@@ -21,6 +25,6 @@ func Generate(htmlArgs args.HTMLArgs) {
 		htmlArgs.Title = "THDL Documentation"
 	}
 
-	generateIndex(htmlArgs)
-	generateVHDL(htmlArgs)
+	generateIndex()
+	generateVHDL()
 }

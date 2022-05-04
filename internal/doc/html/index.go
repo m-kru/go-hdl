@@ -3,7 +3,6 @@ package html
 import (
 	_ "embed"
 	"fmt"
-	"github.com/m-kru/go-thdl/internal/args"
 	"github.com/m-kru/go-thdl/internal/doc/vhdl"
 	"log"
 	"os"
@@ -22,7 +21,7 @@ type indexFormatters struct {
 	Topbar      string
 }
 
-func generateIndex(htmlArgs args.HTMLArgs) {
+func generateIndex() {
 	f, err := os.Create(htmlArgs.Path + "index.html")
 	if err != nil {
 		log.Fatalf("creating index.html file: %v", err)
