@@ -45,9 +45,9 @@ func generateIndex(htmlArgs args.HTMLArgs) {
 	}
 
 	indexFmts := indexFormatters{
-		Copyright:   "",
+		Copyright:   htmlArgs.Copyright,
 		LibraryList: libList.String(),
-		Title:       "THDL Documentation",
+		Title:       htmlArgs.Title,
 		Topbar:      topbar("home", 0),
 	}
 

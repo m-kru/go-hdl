@@ -14,6 +14,13 @@ func Generate(htmlArgs args.HTMLArgs) {
 
 	generateCSS(htmlArgs)
 
+	if htmlArgs.Copyright != "" {
+		htmlArgs.Copyright = "&copy; " + htmlArgs.Copyright
+	}
+	if htmlArgs.Title == "" {
+		htmlArgs.Title = "THDL Documentation"
+	}
+
 	generateIndex(htmlArgs)
 	generateVHDL(htmlArgs)
 }

@@ -40,10 +40,10 @@ func generateVHDLIndex(htmlArgs args.HTMLArgs) {
 	libList.WriteString("    </ul>")
 
 	langFmts := LangFormatters{
-		Copyright:   "",
+		Copyright:   htmlArgs.Copyright,
 		Language:    "VHDL",
 		LibraryList: libList.String(),
-		Title:       "THDL Documentation",
+		Title:       htmlArgs.Title,
 		Topbar:      topbar("vhdl", 1),
 	}
 
