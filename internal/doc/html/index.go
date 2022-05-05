@@ -36,7 +36,7 @@ func generateIndex() {
 		for _, l := range vhdlLibs {
 			libList.WriteString(
 				fmt.Sprintf(
-					"      <li><a href=\"vhdl/libs/%[1]s/index.html\">%[1]s</a></li>\n", l,
+					"      <li><a href=\"vhdl/%[1]s/index.html\">%[1]s</a></li>\n", l,
 				),
 			)
 		}

@@ -9,32 +9,7 @@ import (
 )
 
 func LibSummary(l *lib.Library) string {
-	ents := []sym.Symbol{}
-	tbs := []sym.Symbol{}
-	pkgs := []sym.Symbol{}
-
-	for _, syms := range l.Symbols() {
-		for _, s := range syms {
-			switch s.(type) {
-			case Entity:
-				if utils.IsTestbench(s.Key()) {
-					tbs = append(tbs, s)
-				} else {
-					ents = append(ents, s)
-				}
-			case Package:
-				pkgs = append(pkgs, s)
-			case PackageInstantiation:
-				pkgs = append(pkgs, s)
-			default:
-				panic("should never happen")
-			}
-		}
-	}
-
-	sym.SortByName(ents)
-	sym.SortByName(pkgs)
-	sym.SortByName(tbs)
+	ents, pkgs, tbs := LibSortedSymbols(l)
 
 	b := strings.Builder{}
 
@@ -93,4 +68,33 @@ func LibSummary(l *lib.Library) string {
 	}
 
 	return b.String()
+}
+
+// LibSortedSymbols returns entity, package and testbench symbols sorted
+// in alphabetical oreder.
+func LibSortedSymbols(lib *lib.Library) (ents []sym.Symbol, pkgs []sym.Symbol, tbs []sym.Symbol) {
+	for _, syms := range lib.Symbols() {
+		for _, s := range syms {
+			switch s.(type) {
+			case Entity:
+				if utils.IsTestbench(s.Key()) {
+					tbs = append(tbs, s)
+				} else {
+					ents = append(ents, s)
+				}
+			case Package:
+				pkgs = append(pkgs, s)
+			case PackageInstantiation:
+				pkgs = append(pkgs, s)
+			default:
+				panic("should never happen")
+			}
+		}
+	}
+
+	sym.SortByName(ents)
+	sym.SortByName(pkgs)
+	sym.SortByName(tbs)
+
+	return
 }
