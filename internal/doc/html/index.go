@@ -26,7 +26,6 @@ func generateIndex() {
 	if err != nil {
 		log.Fatalf("creating index.html file: %v", err)
 	}
-	defer f.Close()
 
 	libList := strings.Builder{}
 
@@ -53,5 +52,10 @@ func generateIndex() {
 	err = indexTmpl.Execute(f, indexFmts)
 	if err != nil {
 		log.Fatalf("generating index.html file: %v", err)
+	}
+
+	err = f.Close()
+	if err != nil {
+		log.Fatalf("closing index.html file: %v", err)
 	}
 }

@@ -51,11 +51,15 @@ func generateVHDLIndex() {
 	if err != nil {
 		log.Fatalf("creating vhdl/index.html file: %v", err)
 	}
-	defer f.Close()
 
 	err = langIndexTmpl.Execute(f, langFmts)
 	if err != nil {
-		log.Fatalf("generating index.html file: %v", err)
+		log.Fatalf("generating vhdl/index.html file: %v", err)
+	}
+
+	err = f.Close()
+	if err != nil {
+		log.Fatalf("closing vhdl/index.html file: %v", err)
 	}
 }
 
@@ -136,10 +140,14 @@ func generateVHDLLibIndex(name string) {
 	if err != nil {
 		log.Fatalf("creating vhdl/%s/index.html file: %v", name, err)
 	}
-	defer f.Close()
 
 	err = libIndexTmpl.Execute(f, libFmts)
 	if err != nil {
 		log.Fatalf("generating vhdl/%s/index.html file: %v", name, err)
+	}
+
+	err = f.Close()
+	if err != nil {
+		log.Fatalf("closing vhdl/%s/index.html file: %v", name, err)
 	}
 }

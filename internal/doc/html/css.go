@@ -23,11 +23,15 @@ func generateCSS() {
 	if err != nil {
 		log.Fatalf("creating style.css file: %v", err)
 	}
-	defer f.Close()
 
 	cssFmts := cssFormatters{}
 	err = cssStyleTmpl.Execute(f, cssFmts)
 	if err != nil {
 		log.Fatalf("generating style.css file: %v", err)
+	}
+
+	err = f.Close()
+	if err != nil {
+		log.Fatalf("closing style.css file: %v", err)
 	}
 }
