@@ -189,35 +189,17 @@ func generateVHDLLibSymbol(lib *lib.Library, key string) {
 
 	syms := lib.GetSymbol(key)
 	sym.SortByFilepath(syms)
+	details := false
+	if len(syms) > 1 {
+		details = true
+	}
 	for _, s := range syms {
 		switch s.(type) {
 		case vhdl.Entity:
-			if len(syms) == 1 {
-				content.WriteString(fmt.Sprintf("<p>%s</p>", s.Filepath()))
-				content.WriteString(
-					fmt.Sprintf("  <p class=\"doc\">%s</p>", s.Doc()),
-				)
-				content.WriteString(
-					fmt.Sprintf("  <p class=\"code\">%s</p>", utils.VHDLHTMLBold(s.Code())),
-				)
-			} else {
-				content.WriteString("  <details>")
-				content.WriteString(fmt.Sprintf("<summary class=\"summary\">%s</summary>", s.Filepath()))
-				content.WriteString("  <div class=\"details1\">")
-				content.WriteString(
-					fmt.Sprintf("  <p class=\"doc\">%s</p>", utils.Deindent(s.Doc())),
-				)
-				content.WriteString(
-					fmt.Sprintf(
-						"  <p class=\"code\">%s</p>", utils.Deindent(utils.VHDLHTMLBold(s.Code())),
-					),
-				)
-				content.WriteString("  </div>")
-				content.WriteString("  </details>")
-			}
+			generateVHDLEntityContent(s, details, &content)
 		case vhdl.Package:
 		default:
-			panic("should never happen")
+			//panic("should never happen")
 		}
 	}
 
@@ -243,5 +225,28 @@ func generateVHDLLibSymbol(lib *lib.Library, key string) {
 	err = f.Close()
 	if err != nil {
 		log.Fatalf("closing %s file: %v", path, err)
+	}
+}
+
+// If details is true, the content is put into the html <details> element.
+func generateVHDLEntityContent(ent sym.Symbol, details bool, content *strings.Builder) {
+	if details {
+		content.WriteString("  <details>")
+		content.WriteString(fmt.Sprintf("<summary class=\"summary\">%s</summary>", ent.Filepath()))
+		content.WriteString("  <div class=\"details1\">")
+	} else {
+		content.WriteString(fmt.Sprintf("<p>%s</p>", ent.Filepath()))
+	}
+
+	content.WriteString(
+		fmt.Sprintf("  <p class=\"doc\">%s</p>", ent.Doc()),
+	)
+	content.WriteString(
+		fmt.Sprintf("  <p class=\"code\">%s</p>", utils.VHDLHTMLBold(ent.Code())),
+	)
+
+	if details {
+		content.WriteString("  </div>")
+		content.WriteString("  </details>")
 	}
 }
