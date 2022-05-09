@@ -56,3 +56,16 @@ func SortByName(s []Symbol) {
 
 	sort.Slice(s, sortFunc)
 }
+
+// UniqueNames returns a list containing only unique names with their count from the symbol list.
+func UniqueNames(syms []Symbol) map[string]int {
+	names := map[string]int{}
+	for _, s := range syms {
+		if _, ok := names[s.Name()]; !ok {
+			names[s.Name()] = 1
+		} else {
+			names[s.Name()] += 1
+		}
+	}
+	return names
+}

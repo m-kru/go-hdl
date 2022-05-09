@@ -3,9 +3,12 @@ package html
 import (
 	_ "embed"
 	"fmt"
+	"github.com/m-kru/go-thdl/internal/doc/sym"
 	"github.com/m-kru/go-thdl/internal/doc/vhdl"
+	"golang.org/x/exp/maps"
 	"log"
 	"os"
+	"sort"
 	"strings"
 )
 
@@ -86,26 +89,33 @@ func generateVHDLLibIndex(name string) {
 		panic("should never happen")
 	}
 
-	ents, pkgs, tbs := vhdl.LibSortedSymbols(lib)
+	ents, pkgs, tbs := vhdl.LibSymbols(lib)
 
-	tbNames := map[string]int{}
-	for _, tb := range tbs {
-		if _, ok := tbNames[tb.Name()]; !ok {
-			tbNames[tb.Name()] = 1
-		} else {
-			tbNames[tb.Name()] += 1
-		}
-	}
+	entUniqueNames := sym.UniqueNames(ents)
+	entNames := maps.Keys(entUniqueNames)
+	sort.Strings(entNames)
+
+	pkgUniqueNames := sym.UniqueNames(pkgs)
+	pkgNames := maps.Keys(pkgUniqueNames)
+	sort.Strings(pkgNames)
+
+	tbUniqueNames := sym.UniqueNames(tbs)
+	tbNames := maps.Keys(tbUniqueNames)
+	sort.Strings(tbNames)
 
 	ulStr := "    <ul class=\"symbol-list\">\n"
-	liStr := "<li><a href=\"%[1]s.html\">%[1]s</a></li>\n"
+	liStr := "<li><a href=\"%s.html\">%s%s</a></li>\n"
 	ulEndStr := "    </ul>\n"
 
 	if len(ents) > 0 {
 		smblList.WriteString(fmt.Sprintf("    <h3>Entities (%d)</h3>\n", len(ents)))
 		smblList.WriteString(ulStr)
-		for _, e := range ents {
-			smblList.WriteString(fmt.Sprintf(liStr, e.Name()))
+		for _, e := range entNames {
+			count := ""
+			if entUniqueNames[e] > 1 {
+				count = fmt.Sprintf(" (%d)", entUniqueNames[e])
+			}
+			smblList.WriteString(fmt.Sprintf(liStr, strings.ToLower(e), e, count))
 		}
 		smblList.WriteString(ulEndStr)
 	}
@@ -113,8 +123,12 @@ func generateVHDLLibIndex(name string) {
 	if len(pkgs) > 0 {
 		smblList.WriteString(fmt.Sprintf("    <h3>Packages (%d)</h3>\n", len(pkgs)))
 		smblList.WriteString(ulStr)
-		for _, p := range pkgs {
-			smblList.WriteString(fmt.Sprintf(liStr, p.Name()))
+		for _, p := range pkgNames {
+			count := ""
+			if pkgUniqueNames[p] > 1 {
+				count = fmt.Sprintf(" (%d)", pkgUniqueNames[p])
+			}
+			smblList.WriteString(fmt.Sprintf(liStr, strings.ToLower(p), p, count))
 		}
 		smblList.WriteString(ulEndStr)
 	}
@@ -122,8 +136,12 @@ func generateVHDLLibIndex(name string) {
 	if len(tbs) > 0 {
 		smblList.WriteString(fmt.Sprintf("    <h3>Testbenches (%d)</h3>\n", len(tbs)))
 		smblList.WriteString(ulStr)
-		for _, t := range tbs {
-			smblList.WriteString(fmt.Sprintf(liStr, t.Name()))
+		for _, t := range tbNames {
+			count := ""
+			if tbUniqueNames[t] > 1 {
+				count = fmt.Sprintf(" (%d)", tbUniqueNames[t])
+			}
+			smblList.WriteString(fmt.Sprintf(liStr, strings.ToLower(t), t, count))
 		}
 		smblList.WriteString(ulEndStr)
 	}
@@ -133,7 +151,7 @@ func generateVHDLLibIndex(name string) {
 		Path:       "vhdl:" + name,
 		SymbolList: smblList.String(),
 		Title:      htmlArgs.Title,
-		Topbar:     topbar("vhdl", 3),
+		Topbar:     topbar("vhdl", 2),
 	}
 
 	f, err := os.Create(htmlArgs.Path + "vhdl/" + name + "/index.html")

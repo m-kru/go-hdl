@@ -70,9 +70,8 @@ func LibSummary(l *lib.Library) string {
 	return b.String()
 }
 
-// LibSortedSymbols returns entity, package and testbench symbols sorted
-// in alphabetical oreder.
-func LibSortedSymbols(lib *lib.Library) (ents []sym.Symbol, pkgs []sym.Symbol, tbs []sym.Symbol) {
+// LibSymbols returns entity, package and testbench symbols from library.
+func LibSymbols(lib *lib.Library) (ents []sym.Symbol, pkgs []sym.Symbol, tbs []sym.Symbol) {
 	for _, syms := range lib.Symbols() {
 		for _, s := range syms {
 			switch s.(type) {
@@ -91,6 +90,14 @@ func LibSortedSymbols(lib *lib.Library) (ents []sym.Symbol, pkgs []sym.Symbol, t
 			}
 		}
 	}
+
+	return
+}
+
+// LibSortedSymbols returns entity, package and testbench symbols sorted
+// in alphabetical oreder.
+func LibSortedSymbols(lib *lib.Library) (ents []sym.Symbol, pkgs []sym.Symbol, tbs []sym.Symbol) {
+	ents, pkgs, tbs = LibSymbols(lib)
 
 	sym.SortByName(ents)
 	sym.SortByName(pkgs)
