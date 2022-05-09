@@ -188,6 +188,7 @@ func generateVHDLLibSymbol(lib *lib.Library, key string) {
 	content := strings.Builder{}
 
 	syms := lib.GetSymbol(key)
+	sym.SortByFilepath(syms)
 	for _, s := range syms {
 		switch s.(type) {
 		case vhdl.Entity:
@@ -199,9 +200,24 @@ func generateVHDLLibSymbol(lib *lib.Library, key string) {
 				content.WriteString(
 					fmt.Sprintf("  <p class=\"code\">%s</p>", utils.VHDLHTMLBold(s.Code())),
 				)
+			} else {
+				content.WriteString("  <details>")
+				content.WriteString(fmt.Sprintf("<summary class=\"summary\">%s</summary>", s.Filepath()))
+				content.WriteString("  <div class=\"details1\">")
+				content.WriteString(
+					fmt.Sprintf("  <p class=\"doc\">%s</p>", utils.Deindent(s.Doc())),
+				)
+				content.WriteString(
+					fmt.Sprintf(
+						"  <p class=\"code\">%s</p>", utils.Deindent(utils.VHDLHTMLBold(s.Code())),
+					),
+				)
+				content.WriteString("  </div>")
+				content.WriteString("  </details>")
 			}
+		case vhdl.Package:
 		default:
-			//panic("should never happen")
+			panic("should never happen")
 		}
 	}
 

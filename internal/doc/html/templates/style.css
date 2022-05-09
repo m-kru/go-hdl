@@ -124,3 +124,12 @@ footer {
 .symbol-list li {
   padding-bottom: 5px;
 }
+
+.details1 {
+  margin-left: 10px;
+}
+
+.summary {
+  color: SteelBlue;
+  padding-bottom: 5px;
+}

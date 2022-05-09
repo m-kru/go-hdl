@@ -57,6 +57,18 @@ func SortByName(s []Symbol) {
 	sort.Slice(s, sortFunc)
 }
 
+// SortByName sorts Symbol slice by filepath in increasing order.
+func SortByFilepath(s []Symbol) {
+	sortFunc := func(i, j int) bool {
+		if s[i].Filepath() < s[j].Filepath() {
+			return true
+		}
+		return false
+	}
+
+	sort.Slice(s, sortFunc)
+}
+
 // UniqueNames returns a list containing only unique names with their count from the symbol list.
 func UniqueNames(syms []Symbol) map[string]int {
 	names := map[string]int{}
