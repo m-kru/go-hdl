@@ -48,7 +48,7 @@ func topbar(active string, nestingLevel int) string {
 		)
 		for _, l := range vhdlLibs {
 			b.WriteString(
-				fmt.Sprintf("        <a href=\"vhdl/%[1]s/index.html\">%[1]s</a>\n", l),
+				fmt.Sprintf("        <a href=\"%[1]svhdl/%[2]s/index.html\">%[2]s</a>\n", root, l),
 			)
 		}
 		b.WriteString(`      </div>

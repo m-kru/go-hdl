@@ -3,8 +3,10 @@ package html
 import (
 	_ "embed"
 	"fmt"
+	"github.com/m-kru/go-thdl/internal/doc/lib"
 	"github.com/m-kru/go-thdl/internal/doc/sym"
 	"github.com/m-kru/go-thdl/internal/doc/vhdl"
+	"github.com/m-kru/go-thdl/internal/utils"
 	"golang.org/x/exp/maps"
 	"log"
 	"os"
@@ -79,6 +81,7 @@ func generateVHDLLib(name string) {
 	}
 
 	generateVHDLLibIndex(name)
+	generateVHDLLibSymbols(name)
 }
 
 func generateVHDLLibIndex(name string) {
@@ -167,5 +170,62 @@ func generateVHDLLibIndex(name string) {
 	err = f.Close()
 	if err != nil {
 		log.Fatalf("closing vhdl/%s/index.html file: %v", name, err)
+	}
+}
+
+func generateVHDLLibSymbols(name string) {
+	lib, ok := vhdl.GetLibrary(name)
+	if !ok {
+		panic("should never happen")
+	}
+
+	for _, k := range lib.InnerKeys() {
+		generateVHDLLibSymbol(lib, k)
+	}
+}
+
+func generateVHDLLibSymbol(lib *lib.Library, key string) {
+	content := strings.Builder{}
+
+	syms := lib.GetSymbol(key)
+	for _, s := range syms {
+		switch s.(type) {
+		case vhdl.Entity:
+			if len(syms) == 1 {
+				content.WriteString(fmt.Sprintf("<p>%s</p>", s.Filepath()))
+				content.WriteString(
+					fmt.Sprintf("  <p class=\"doc\">%s</p>", s.Doc()),
+				)
+				content.WriteString(
+					fmt.Sprintf("  <p class=\"code\">%s</p>", utils.VHDLHTMLBold(s.Code())),
+				)
+			}
+		default:
+			//panic("should never happen")
+		}
+	}
+
+	symFmts := SymbolFormatters{
+		Copyright: htmlArgs.Copyright,
+		Path:      fmt.Sprintf("vhdl:%s:%s", lib.Key(), key),
+		Content:   content.String(),
+		Title:     htmlArgs.Title,
+		Topbar:    topbar("vhdl", 2),
+	}
+
+	path := fmt.Sprintf("%svhdl/%s/%s.html", htmlArgs.Path, lib.Name(), key)
+	f, err := os.Create(path)
+	if err != nil {
+		log.Fatalf("creating %s file: %v", path, err)
+	}
+
+	err = symbolTmpl.Execute(f, symFmts)
+	if err != nil {
+		log.Fatalf("generating %s file: %v", path, err)
+	}
+
+	err = f.Close()
+	if err != nil {
+		log.Fatalf("closing %s file: %v", path, err)
 	}
 }

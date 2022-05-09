@@ -22,7 +22,7 @@ var VHDLKeywords map[string]bool = map[string]bool{
 	"unsigned": true,
 }
 
-func VHDLTerminalBold(s string) string {
+func vhdlBold(s string, prefix string, suffix string) string {
 	b := strings.Builder{}
 
 	inWord := false
@@ -42,7 +42,7 @@ func VHDLTerminalBold(s string) string {
 			if inWord {
 				_, ok := VHDLKeywords[strings.ToLower(s[startIdx:endIdx])]
 				if ok && !inComment && !inString {
-					aux := "\033[1m" + s[startIdx:endIdx] + "\033[0m"
+					aux := prefix + s[startIdx:endIdx] + suffix
 					_, _ = b.WriteString(aux)
 				} else {
 					_, _ = b.WriteString(s[startIdx:endIdx])
@@ -73,4 +73,12 @@ func VHDLTerminalBold(s string) string {
 	}
 
 	return b.String()
+}
+
+func VHDLTerminalBold(s string) string {
+	return vhdlBold(s, "\033[1m", "\033[0m")
+}
+
+func VHDLHTMLBold(s string) string {
+	return vhdlBold(s, "<b>", "</b>")
 }

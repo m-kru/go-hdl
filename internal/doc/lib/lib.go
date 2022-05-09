@@ -77,13 +77,13 @@ func (l *Library) AddFile(f string) {
 }
 
 func (l *Library) InnerKeys() []string {
-	names := []string{}
+	keys := []string{}
 
-	for name, _ := range l.symbols {
-		names = append(names, name)
+	for key, _ := range l.symbols {
+		keys = append(keys, key)
 	}
 
-	return names
+	return keys
 }
 
 func (l *Library) Symbols() map[string][]sym.Symbol {
