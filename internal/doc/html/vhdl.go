@@ -258,6 +258,10 @@ func genVHDLPkgContent(pkg sym.Symbol, details bool, content *strings.Builder) {
 	}
 
 	content.WriteString(
+		fmt.Sprintf("  <h3>Package %s</h3>\n", pkg.Name()),
+	)
+
+	content.WriteString(
 		fmt.Sprintf("  <p class=\"doc\">%s</p>\n", pkg.Doc()),
 	)
 
@@ -319,7 +323,7 @@ func genVHDLPkgUniqueSymbolsContent(pkg vhdl.Package, class string, detailsLevel
 	}
 
 	if len(keys) > 0 {
-		content.WriteString(fmt.Sprintf("  <h3>%s</h3>\n", class))
+		content.WriteString(fmt.Sprintf("  <h4>%s</h4>\n", class))
 	}
 
 	for _, key := range keys {
