@@ -3,6 +3,7 @@ package vhdl
 import (
 	"github.com/m-kru/go-thdl/internal/doc/lib"
 	"github.com/m-kru/go-thdl/internal/doc/sym"
+	"sort"
 	"sync"
 )
 
@@ -35,12 +36,15 @@ func (lc libraryContainer) AddSymbol(libName string, s sym.Symbol) {
 	libContainerMutex.Unlock()
 }
 
+// LibraryNames returns library names sorted in alphabetical order.
 func LibraryNames() []string {
 	names := []string{}
 
 	for name, _ := range libContainer {
 		names = append(names, name)
 	}
+
+	sort.Strings(names)
 
 	return names
 }
