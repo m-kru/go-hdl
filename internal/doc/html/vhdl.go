@@ -251,7 +251,7 @@ func generateVHDLEntityContent(ent sym.Symbol, details bool, content *strings.Bu
 func genVHDLPkgContent(pkg sym.Symbol, details bool, content *strings.Builder) {
 	if details {
 		content.WriteString("  <details>\n")
-		content.WriteString(fmt.Sprintf("<summary class=\"summary\">%s</summary>\n", pkg.Filepath()))
+		content.WriteString(fmt.Sprintf("<summary class=\"filepath-summary\">%s</summary>\n", pkg.Filepath()))
 		content.WriteString("  <div class=\"details1\">\n")
 	} else {
 		content.WriteString(fmt.Sprintf("<p>%s</p>", pkg.Filepath()))

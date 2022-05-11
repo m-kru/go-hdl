@@ -1,11 +1,16 @@
+a {
+  color: SteelBlue;
+  text-decoration: none;
+}
+
 body {
   /*max-width: 940px;*/
   /*margin: auto;*/
 }
 
-a {
-  color: SteelBlue;
-  text-decoration: none;
+footer {
+  color: Grey;
+  font-size: 0.75em;
 }
 
 .content {
@@ -15,10 +20,10 @@ a {
 }
 
 .topbar {
+  background-color: Black;
   position: fixed;
   top: 0;
   /*width: 940px;*/
-  background-color: Black;
 }
 
 .topbar a {
@@ -27,10 +32,10 @@ a {
 
 .dropbtn {
   background-color: Black;
+  border: none;
+  font-size: 16px;
   height: 100%;
   padding: 10px;
-  font-size: 16px;
-  border: none;
 }
 
 .dropbtn:hover {
@@ -48,9 +53,9 @@ a {
 
 .dropdown-content {
   display: none;
-  position: absolute;
   background-color: #f1f1f1;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  position: absolute;
   z-index: 1;
 }
 
@@ -79,11 +84,6 @@ a {
   color: Black;
 }
 
-footer {
-  color: Grey;
-  font-size: 0.75em;
-}
-
 .left-footer {
   text-align: left;
   display: inline-block;
@@ -96,25 +96,35 @@ footer {
 
 .code {
   background-color: AliceBlue;
+
   border: 1px solid;
-  border-color: Grey;
+  border-color: Black;
   border-radius: 0.3em 0.3em 0.3em 0.3em;
+
   font-family: monospace, monospace;
   font-size: 0.9em;
-  overflow-x: auto;
-  padding: 3px;
-  margin-top: 0.625em;
+
+  margin-top: 5px;
+  margin-bottom: 5px;
   margin-left: 5px;
   margin-right: 5px;
+
+  overflow-x: auto;
+  padding: 5px;
   white-space: pre;
 }
 
 .doc {
   font-family: monospace, monospace;
   font-size: 1em;
+
+  margin-bottom: 5px;
+  margin-top: 5px;
+  margin-left: 5px;
+  margin-right: 5px;
+
   overflow-x: auto;
   padding: 0px;
-  margin: 0px;
   white-space: pre;
 }
 
@@ -128,36 +138,52 @@ footer {
 }
 
 .details1 {
-  background-color: WhiteSmoke;
+  background-color: Snow;
   border: 1px solid;
-  border-color: Grey;
+  border-color: Black;
   border-radius: 0.3em 0.3em 0.3em 0.3em;
-  margin-left: 10px;
+
+  margin-bottom: 5px;
+  margin-top: 5px;
+  margin-left: 5px;
+  margin-right: 5px;
+
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 5px;
+}
+
+.details2 {
+  background-color: WhiteSmoke;
+
+  border: 1px solid;
+  border-color: Black;
+  border-radius: 0.3em 0.3em 0.3em 0.3em;
+
+  margin-bottom: 5px;
+  margin-top: 5px;
+  margin-left: 5px;
+  margin-right: 5px;
+
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 5px;
 }
 
 .filepath-summary {
-  color: SteelBlue;
-  padding-bottom: 5px;
+  margin-bottom: 5px;
+  margin-top: 5px;
 }
 
 .code-summary {
-  /*
-  background-color: WhiteSmoke;
-  border: 1px solid;
-  border-color: Grey;
-  border-radius: 0.3em 0.3em 0.3em 0.3em;
-  */
-  color: SteelBlue;
   font-family: monospace, monospace;
-  padding-bottom: 3px;
-  padding-top: 3px;
+
   margin-bottom: 5px;
   margin-top: 5px;
-  /*white-space: pre;*/
-}
 
-details > summary {
-  /*list-style-type: '';*/
+  overflow-x: auto;
 }
 
 .summary-align {
