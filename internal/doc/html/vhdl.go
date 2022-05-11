@@ -234,7 +234,7 @@ func generateVHDLEntityContent(ent sym.Symbol, details bool, content *strings.Bu
 	if details {
 		content.WriteString("  <details>")
 		content.WriteString(fmt.Sprintf("<summary class=\"filepath-summary\">%s</summary>", ent.Filepath()))
-		content.WriteString("  <div class=\"details1\">")
+		content.WriteString("  <div class=\"details\">")
 	} else {
 		content.WriteString(fmt.Sprintf("<p>%s</p>", ent.Filepath()))
 	}
@@ -252,7 +252,7 @@ func genVHDLPkgContent(pkg sym.Symbol, details bool, content *strings.Builder) {
 	if details {
 		content.WriteString("  <details>\n")
 		content.WriteString(fmt.Sprintf("<summary class=\"filepath-summary\">%s</summary>\n", pkg.Filepath()))
-		content.WriteString("  <div class=\"details1\">\n")
+		content.WriteString("  <div class=\"details\">\n")
 	} else {
 		content.WriteString(fmt.Sprintf("<p>%s</p>", pkg.Filepath()))
 	}
@@ -265,14 +265,9 @@ func genVHDLPkgContent(pkg sym.Symbol, details bool, content *strings.Builder) {
 		fmt.Sprintf("  <p class=\"doc\">%s</p>\n", pkg.Doc()),
 	)
 
-	detailsLevel := 1
-	if details {
-		detailsLevel = 2
-	}
-
-	genVHDLPkgUniqueSymbolsContent(pkg.(vhdl.Package), "Constants", detailsLevel, content)
-	genVHDLPkgUniqueSymbolsContent(pkg.(vhdl.Package), "Types", detailsLevel, content)
-	genVHDLPkgUniqueSymbolsContent(pkg.(vhdl.Package), "Subtypes", detailsLevel, content)
+	genVHDLPkgUniqueSymbolsContent(pkg.(vhdl.Package), "Constants", content)
+	genVHDLPkgUniqueSymbolsContent(pkg.(vhdl.Package), "Types", content)
+	genVHDLPkgUniqueSymbolsContent(pkg.(vhdl.Package), "Subtypes", content)
 
 	if details {
 		content.WriteString("  </div>\n")
@@ -280,7 +275,7 @@ func genVHDLPkgContent(pkg sym.Symbol, details bool, content *strings.Builder) {
 	}
 }
 
-func genVHDLUniqueSymbolContent(sym sym.Symbol, summary string, detailsLevel int, content *strings.Builder) {
+func genVHDLUniqueSymbolContent(sym sym.Symbol, summary string, content *strings.Builder) {
 	doc := utils.Deindent(sym.Doc())
 	code := utils.Deindent(sym.Code())
 
@@ -291,9 +286,7 @@ func genVHDLUniqueSymbolContent(sym sym.Symbol, summary string, detailsLevel int
 		content.WriteString(
 			fmt.Sprintf("<summary class=\"code-summary\">%s</summary>\n", utils.VHDLHTMLBold(summary)),
 		)
-		content.WriteString(
-			fmt.Sprintf("  <div class=\"details%d\">\n", detailsLevel),
-		)
+		content.WriteString("  <div class=\"details\">\n")
 		if len(doc) > 0 {
 			content.WriteString(fmt.Sprintf("  <p class=\"doc\">%s</p>", doc))
 		}
@@ -309,7 +302,7 @@ func genVHDLUniqueSymbolContent(sym sym.Symbol, summary string, detailsLevel int
 	}
 }
 
-func genVHDLPkgUniqueSymbolsContent(pkg vhdl.Package, class string, detailsLevel int, content *strings.Builder) {
+func genVHDLPkgUniqueSymbolsContent(pkg vhdl.Package, class string, content *strings.Builder) {
 	var keys []string
 	switch class {
 	case "Constants":
@@ -336,6 +329,6 @@ func genVHDLPkgUniqueSymbolsContent(pkg vhdl.Package, class string, detailsLevel
 			s = fmt.Sprintf("%s ...\n", utils.FirstLine(code))
 		}
 
-		genVHDLUniqueSymbolContent(sym, s, detailsLevel, content)
+		genVHDLUniqueSymbolContent(sym, s, content)
 	}
 }

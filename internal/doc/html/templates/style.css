@@ -137,39 +137,11 @@ footer {
   padding-bottom: 5px;
 }
 
-.details1 {
-  background-color: Snow;
-  border: 1px solid;
-  border-color: Black;
-  border-radius: 0.3em 0.3em 0.3em 0.3em;
-
-  margin-bottom: 5px;
-  margin-top: 5px;
-  margin-left: 5px;
-  margin-right: 5px;
-
-  padding-bottom: 5px;
-  padding-left: 5px;
-  padding-right: 5px;
-  padding-top: 5px;
-}
-
-.details2 {
-  background-color: WhiteSmoke;
-
-  border: 1px solid;
-  border-color: Black;
-  border-radius: 0.3em 0.3em 0.3em 0.3em;
-
-  margin-bottom: 5px;
-  margin-top: 5px;
-  margin-left: 5px;
-  margin-right: 5px;
-
-  padding-bottom: 5px;
-  padding-left: 5px;
-  padding-right: 5px;
-  padding-top: 5px;
+.details {
+  margin-bottom: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 10px;
 }
 
 .filepath-summary {
