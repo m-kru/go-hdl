@@ -1,6 +1,6 @@
 body {
-  max-width: 940px;
-  margin: auto;
+  /*max-width: 940px;*/
+  /*margin: auto;*/
 }
 
 a {
@@ -17,7 +17,7 @@ a {
 .topbar {
   position: fixed;
   top: 0;
-  width: 940px;
+  /*width: 940px;*/
   background-color: Black;
 }
 
@@ -97,13 +97,15 @@ footer {
 .code {
   background-color: AliceBlue;
   border: 1px solid;
-  border-radius: 0.3em 0.3em 0.3em 0.3em;
   border-color: Grey;
+  border-radius: 0.3em 0.3em 0.3em 0.3em;
   font-family: monospace, monospace;
   font-size: 0.9em;
   overflow-x: auto;
   padding: 3px;
   margin-top: 0.625em;
+  margin-left: 5px;
+  margin-right: 5px;
   white-space: pre;
 }
 
@@ -126,10 +128,38 @@ footer {
 }
 
 .details1 {
+  background-color: WhiteSmoke;
+  border: 1px solid;
+  border-color: Grey;
+  border-radius: 0.3em 0.3em 0.3em 0.3em;
   margin-left: 10px;
 }
 
-.summary {
+.filepath-summary {
   color: SteelBlue;
   padding-bottom: 5px;
+}
+
+.code-summary {
+  /*
+  background-color: WhiteSmoke;
+  border: 1px solid;
+  border-color: Grey;
+  border-radius: 0.3em 0.3em 0.3em 0.3em;
+  */
+  color: SteelBlue;
+  font-family: monospace, monospace;
+  padding-bottom: 3px;
+  padding-top: 3px;
+  margin-bottom: 5px;
+  margin-top: 5px;
+  /*white-space: pre;*/
+}
+
+details > summary {
+  /*list-style-type: '';*/
+}
+
+.summary-align {
+  margin-left: 14px;
 }

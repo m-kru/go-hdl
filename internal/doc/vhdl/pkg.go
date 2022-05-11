@@ -45,15 +45,41 @@ func (p Package) Doc() string {
 	return string(f[p.docStart:p.docEnd])
 }
 
-func (p Package) Code() string {
-	b := strings.Builder{}
-
-	// Constants.
+// PkgSortedConstKeys returns constant keys in alphabetical order.
+func PkgSortedConstKeys(p Package) []string {
 	consts := []string{}
 	for id, _ := range p.Consts {
 		consts = append(consts, id.Key)
 	}
 	sort.Strings(consts)
+	return consts
+}
+
+// PkgSortedTypeKeys returns type keys in alphabetical order.
+func PkgSortedTypeKeys(p Package) []string {
+	types := []string{}
+	for id, _ := range p.Types {
+		types = append(types, id.Key)
+	}
+	sort.Strings(types)
+	return types
+}
+
+// PkgSortedSubtypeKeys returns type keys in alphabetical order.
+func PkgSortedSubtypeKeys(p Package) []string {
+	subtypes := []string{}
+	for id, _ := range p.Subtypes {
+		subtypes = append(subtypes, id.Key)
+	}
+	sort.Strings(subtypes)
+	return subtypes
+}
+
+func (p Package) Code() string {
+	b := strings.Builder{}
+
+	// Constants.
+	consts := PkgSortedConstKeys(p)
 	for _, key := range consts {
 		c := p.GetSymbol(key)[0]
 		code := utils.Dewhitespace(c.Code())
@@ -137,11 +163,7 @@ func (p Package) Code() string {
 	}
 
 	// Types.
-	types := []string{}
-	for id, _ := range p.Types {
-		types = append(types, id.Key)
-	}
-	sort.Strings(types)
+	types := PkgSortedTypeKeys(p)
 	if len(types) > 0 && b.Len() > 0 {
 		b.WriteRune('\n')
 	}
@@ -158,11 +180,7 @@ func (p Package) Code() string {
 	}
 
 	// Subtypes.
-	subtypes := []string{}
-	for id, _ := range p.Subtypes {
-		subtypes = append(subtypes, id.Key)
-	}
-	sort.Strings(subtypes)
+	subtypes := PkgSortedSubtypeKeys(p)
 	if len(subtypes) > 0 && b.Len() > 0 {
 		b.WriteRune('\n')
 	}

@@ -198,6 +198,7 @@ func generateVHDLLibSymbol(lib *lib.Library, key string) {
 		case vhdl.Entity:
 			generateVHDLEntityContent(s, details, &content)
 		case vhdl.Package:
+			genVHDLPkgContent(s, details, &content)
 		default:
 			//panic("should never happen")
 		}
@@ -232,21 +233,105 @@ func generateVHDLLibSymbol(lib *lib.Library, key string) {
 func generateVHDLEntityContent(ent sym.Symbol, details bool, content *strings.Builder) {
 	if details {
 		content.WriteString("  <details>")
-		content.WriteString(fmt.Sprintf("<summary class=\"summary\">%s</summary>", ent.Filepath()))
+		content.WriteString(fmt.Sprintf("<summary class=\"filepath-summary\">%s</summary>", ent.Filepath()))
 		content.WriteString("  <div class=\"details1\">")
 	} else {
 		content.WriteString(fmt.Sprintf("<p>%s</p>", ent.Filepath()))
 	}
 
-	content.WriteString(
-		fmt.Sprintf("  <p class=\"doc\">%s</p>", ent.Doc()),
-	)
-	content.WriteString(
-		fmt.Sprintf("  <p class=\"code\">%s</p>", utils.VHDLHTMLBold(ent.Code())),
-	)
+	content.WriteString(fmt.Sprintf("  <p class=\"doc\">%s</p>", ent.Doc()))
+	content.WriteString(fmt.Sprintf("  <p class=\"code\">%s</p>", utils.VHDLHTMLBold(ent.Code())))
 
 	if details {
 		content.WriteString("  </div>")
 		content.WriteString("  </details>")
+	}
+}
+
+func genVHDLPkgContent(pkg sym.Symbol, details bool, content *strings.Builder) {
+	if details {
+		content.WriteString("  <details>\n")
+		content.WriteString(fmt.Sprintf("<summary class=\"summary\">%s</summary>\n", pkg.Filepath()))
+		content.WriteString("  <div class=\"details1\">\n")
+	} else {
+		content.WriteString(fmt.Sprintf("<p>%s</p>", pkg.Filepath()))
+	}
+
+	content.WriteString(
+		fmt.Sprintf("  <p class=\"doc\">%s</p>\n", pkg.Doc()),
+	)
+
+	detailsLevel := 1
+	if details {
+		detailsLevel = 2
+	}
+
+	genVHDLPkgUniqueSymbolsContent(pkg.(vhdl.Package), "Constants", detailsLevel, content)
+	genVHDLPkgUniqueSymbolsContent(pkg.(vhdl.Package), "Types", detailsLevel, content)
+	genVHDLPkgUniqueSymbolsContent(pkg.(vhdl.Package), "Subtypes", detailsLevel, content)
+
+	if details {
+		content.WriteString("  </div>\n")
+		content.WriteString("  </details>\n")
+	}
+}
+
+func genVHDLUniqueSymbolContent(sym sym.Symbol, summary string, detailsLevel int, content *strings.Builder) {
+	doc := utils.Deindent(sym.Doc())
+	code := utils.Deindent(sym.Code())
+
+	isSingleLine := utils.IsSingleLine(code)
+
+	if len(doc) > 0 || !isSingleLine {
+		content.WriteString("  <details>\n")
+		content.WriteString(
+			fmt.Sprintf("<summary class=\"code-summary\">%s</summary>\n", utils.VHDLHTMLBold(summary)),
+		)
+		content.WriteString(
+			fmt.Sprintf("  <div class=\"details%d\">\n", detailsLevel),
+		)
+		if len(doc) > 0 {
+			content.WriteString(fmt.Sprintf("  <p class=\"doc\">%s</p>", doc))
+		}
+		if !isSingleLine {
+			content.WriteString(fmt.Sprintf("  <p class=\"code\">%s</p>", utils.VHDLHTMLBold(code)))
+		}
+		content.WriteString("  </div>\n")
+		content.WriteString("  </details>\n")
+	} else {
+		content.WriteString(
+			fmt.Sprintf("<p class=\"code-summary summary-align\">%s</p>\n", " "+utils.VHDLHTMLBold(summary)),
+		)
+	}
+}
+
+func genVHDLPkgUniqueSymbolsContent(pkg vhdl.Package, class string, detailsLevel int, content *strings.Builder) {
+	var keys []string
+	switch class {
+	case "Constants":
+		keys = vhdl.PkgSortedConstKeys(pkg)
+	case "Types":
+		keys = vhdl.PkgSortedTypeKeys(pkg)
+	case "Subtypes":
+		keys = vhdl.PkgSortedSubtypeKeys(pkg)
+	default:
+		panic("should never happen")
+	}
+
+	if len(keys) > 0 {
+		content.WriteString(fmt.Sprintf("  <h3>%s</h3>\n", class))
+	}
+
+	for _, key := range keys {
+		sym := pkg.GetSymbol(key)[0]
+		code := utils.Dewhitespace(sym.Code())
+		var s string
+		if utils.IsSingleLine(code) {
+			s = fmt.Sprintf("%s", code)
+		} else {
+			s = fmt.Sprintf("%s ...\n", utils.FirstLine(code))
+		}
+
+		genVHDLUniqueSymbolContent(sym, s, detailsLevel, content)
 	}
 }
