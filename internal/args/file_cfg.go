@@ -15,6 +15,11 @@ type FileCfg struct {
 		Ignore  []string
 		Fusesoc bool
 		NoBold  bool `yaml:"no-bold"`
+		HTML    struct {
+			Copyright string
+			Path      string
+			Title     string
+		}
 	}
 	Gen struct {
 		Ignore []string
@@ -47,6 +52,10 @@ func (fc FileCfg) String() string {
 	s.WriteString("  Doc:\n")
 	s.WriteString(fmt.Sprintf("    Fusesoc: %t\n", fc.Doc.Fusesoc))
 	s.WriteString(fmt.Sprintf("    No-Bold: %t\n", fc.Doc.NoBold))
+	s.WriteString("    HTML:\n")
+	s.WriteString(fmt.Sprintf("      Copyright: %s\n", fc.Doc.HTML.Copyright))
+	s.WriteString(fmt.Sprintf("      Path: %s\n", fc.Doc.HTML.Path))
+	s.WriteString(fmt.Sprintf("      Title: %s\n", fc.Doc.HTML.Title))
 	s.WriteString("    Ignore:\n")
 	for _, i := range fc.Doc.Ignore {
 		s.WriteString(fmt.Sprintf("      - %s\n", i))

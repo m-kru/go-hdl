@@ -87,6 +87,9 @@ func setFileCfgArgs(fc FileCfg, args *Args) {
 	args.DocArgs.LibMap.libs = fc.Libs
 	args.DocArgs.Fusesoc = fc.Doc.Fusesoc
 	args.DocArgs.NoBold = fc.Doc.NoBold
+	args.DocArgs.HTML.Copyright = fc.Doc.HTML.Copyright
+	args.DocArgs.HTML.Path = fc.Doc.HTML.Path
+	args.DocArgs.HTML.Title = fc.Doc.HTML.Title
 
 	args.GenArgs.IgnoreList.ignore = fc.Gen.Ignore
 }
