@@ -55,6 +55,34 @@ func PkgSortedConstKeys(p Package) []string {
 	return consts
 }
 
+// PkgSortedFuncKeys returns function keys in alphabetical order.
+func PkgSortedFuncKeys(p Package) []string {
+	uniqueFuncs := map[string]bool{}
+	for id, _ := range p.Funcs {
+		uniqueFuncs[id.Key] = true
+	}
+	funcs := []string{}
+	for name, _ := range uniqueFuncs {
+		funcs = append(funcs, name)
+	}
+	sort.Strings(funcs)
+	return funcs
+}
+
+// PkgSortedProcKeys returns procedure keys in alphabetical order.
+func PkgSortedProcKeys(p Package) []string {
+	uniqueProcs := map[string]bool{}
+	for id, _ := range p.Procs {
+		uniqueProcs[id.Key] = true
+	}
+	procs := []string{}
+	for name, _ := range uniqueProcs {
+		procs = append(procs, name)
+	}
+	sort.Strings(procs)
+	return procs
+}
+
 // PkgSortedTypeKeys returns type keys in alphabetical order.
 func PkgSortedTypeKeys(p Package) []string {
 	types := []string{}
@@ -93,73 +121,23 @@ func (p Package) Code() string {
 	}
 
 	// Functions.
-	uniqueFuncs := map[string]bool{}
-	for id, _ := range p.Funcs {
-		uniqueFuncs[id.Key] = true
-	}
-	funcs := []string{}
-	for name, _ := range uniqueFuncs {
-		funcs = append(funcs, name)
-	}
-	sort.Strings(funcs)
+	funcs := PkgSortedFuncKeys(p)
 	if len(funcs) > 0 && b.Len() > 0 {
 		b.WriteRune('\n')
 	}
 	for _, key := range funcs {
 		fs := p.GetFunc(key)
-		var s string
-		if len(fs) == 1 {
-			code := utils.Dewhitespace(fs[0].Code())
-			if utils.IsSingleLine(code) {
-				s = fmt.Sprintf("%s", code)
-			} else {
-				s = fmt.Sprintf("%s ...\n", utils.FirstLine(code))
-			}
-		} else {
-			impureCount := 0
-			for _, f := range fs {
-				if f.(Function).impure {
-					impureCount += 1
-				}
-			}
-			impurePrefix := ""
-			if impureCount == len(fs) {
-				impurePrefix = "impure "
-			} else if impureCount > 0 {
-				impurePrefix = "(impure)? "
-			}
-			s = fmt.Sprintf("%sfunction %s ... (%d)\n", impurePrefix, fs[0].Name(), len(fs))
-		}
-		b.WriteString(s)
+		b.WriteString(FuncsCodeSummary(fs))
 	}
 
 	// Procedures.
-	uniqueProcs := map[string]bool{}
-	for id, _ := range p.Procs {
-		uniqueProcs[id.Key] = true
-	}
-	procs := []string{}
-	for name, _ := range uniqueProcs {
-		procs = append(procs, name)
-	}
-	sort.Strings(procs)
+	procs := PkgSortedProcKeys(p)
 	if len(procs) > 0 && b.Len() > 0 {
 		b.WriteRune('\n')
 	}
 	for _, key := range procs {
 		ps := p.GetProc(key)
-		var s string
-		if len(ps) == 1 {
-			code := utils.Dewhitespace(ps[0].Code())
-			if utils.IsSingleLine(code) {
-				s = fmt.Sprintf("%s", code)
-			} else {
-				s = fmt.Sprintf("procedure %s ...\n", ps[0].Name())
-			}
-		} else {
-			s = fmt.Sprintf("procedure %s ... (%d)\n", ps[0].Name(), len(ps))
-		}
-		b.WriteString(s)
+		b.WriteString(ProcsCodeSummary(ps))
 	}
 
 	// Types.

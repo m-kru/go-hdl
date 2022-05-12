@@ -268,6 +268,8 @@ func genVHDLPkgContent(pkg sym.Symbol, details bool, content *strings.Builder) {
 	)
 
 	genVHDLPkgUniqueSymbolsContent(pkg.(vhdl.Package), "Constants", content)
+	genVHDLPkgOverloadedSymbolsContent(pkg.(vhdl.Package), "Functions", content)
+	genVHDLPkgOverloadedSymbolsContent(pkg.(vhdl.Package), "Procedures", content)
 	genVHDLPkgUniqueSymbolsContent(pkg.(vhdl.Package), "Types", content)
 	genVHDLPkgUniqueSymbolsContent(pkg.(vhdl.Package), "Subtypes", content)
 
@@ -332,5 +334,78 @@ func genVHDLPkgUniqueSymbolsContent(pkg vhdl.Package, class string, content *str
 		}
 
 		genVHDLUniqueSymbolContent(sym, s, content)
+	}
+}
+
+func genVHDLOverloadedSymbolContent(syms []sym.Symbol, summary string, content *strings.Builder) {
+	if len(syms) == 1 && utils.IsSingleLine(syms[0].Code()) && len(syms[0].Doc()) == 0 {
+		content.WriteString(
+			fmt.Sprintf("<p class=\"code-summary summary-align\">%s</p>\n", " "+utils.VHDLHTMLBold(summary)),
+		)
+	} else if len(syms) == 1 && utils.IsSingleLine(syms[0].Code()) {
+		doc := syms[0].Doc()
+
+		content.WriteString("  <details>\n")
+		content.WriteString(
+			fmt.Sprintf("<summary class=\"code-summary\">%s</summary>\n", utils.VHDLHTMLBold(summary)),
+		)
+		content.WriteString("  <div class=\"details\">\n")
+		if len(doc) > 0 {
+			content.WriteString(fmt.Sprintf("  <p class=\"doc\">%s</p>", utils.VHDLDeindentDecomment(doc)))
+		}
+		content.WriteString("  </div>\n")
+		content.WriteString("  </details>\n")
+	} else {
+		sym.SortByLineNum(syms)
+		content.WriteString("  <details>\n")
+		content.WriteString(
+			fmt.Sprintf("<summary class=\"code-summary\">%s</summary>\n", utils.VHDLHTMLBold(summary)),
+		)
+		content.WriteString("  <div class=\"details\">\n")
+
+		for _, sym := range syms {
+			doc := sym.Doc()
+			code := utils.Deindent(sym.Code())
+			if len(doc) > 0 {
+				content.WriteString(fmt.Sprintf("  <p class=\"doc\">%s</p>", utils.VHDLDeindentDecomment(doc)))
+			}
+			content.WriteString(fmt.Sprintf("  <p class=\"code\">%s</p>", utils.VHDLHTMLBold(code)))
+		}
+
+		content.WriteString("  </div>\n")
+		content.WriteString("  </details>\n")
+	}
+}
+
+func genVHDLPkgOverloadedSymbolsContent(pkg vhdl.Package, class string, content *strings.Builder) {
+	var keys []string
+	switch class {
+	case "Functions":
+		keys = vhdl.PkgSortedFuncKeys(pkg)
+	case "Procedures":
+		keys = vhdl.PkgSortedProcKeys(pkg)
+	default:
+		panic("should never happen")
+	}
+
+	if len(keys) > 0 {
+		content.WriteString(fmt.Sprintf("  <h4>%s</h4>\n", class))
+	}
+
+	var summary string
+	var syms []sym.Symbol
+	for _, key := range keys {
+		switch class {
+		case "Functions":
+			syms = pkg.GetFunc(key)
+			summary = vhdl.FuncsCodeSummary(syms)
+		case "Procedures":
+			syms = pkg.GetProc(key)
+			summary = vhdl.ProcsCodeSummary(syms)
+		default:
+			panic("should never happen")
+		}
+
+		genVHDLOverloadedSymbolContent(syms, summary, content)
 	}
 }
