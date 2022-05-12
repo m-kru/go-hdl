@@ -82,3 +82,53 @@ func VHDLTerminalBold(s string) string {
 func VHDLHTMLBold(s string) string {
 	return vhdlBold(s, "<b>", "</b>")
 }
+
+// VHDLDecomment assumes that string has already passed Deindent() process.
+func VHDLDecomment(s string) string {
+	b := strings.Builder{}
+
+	lineStart := true
+	firstSpace := false
+	potentialComment := false
+
+	for _, r := range s {
+		if r == '\n' || r == '\r' {
+			lineStart = true
+			firstSpace = false
+			potentialComment = false
+			b.WriteRune(r)
+		} else if lineStart {
+			if r == '-' {
+				potentialComment = true
+			} else {
+				_, _ = b.WriteRune(r)
+			}
+			lineStart = false
+		} else if potentialComment {
+			if r != '-' {
+				b.WriteRune('-')
+				b.WriteRune(r)
+				firstSpace = false
+			} else {
+				firstSpace = true
+			}
+			potentialComment = false
+		} else if firstSpace {
+			if r != ' ' {
+				b.WriteRune(r)
+			}
+			firstSpace = false
+		} else {
+			b.WriteRune(r)
+		}
+	}
+
+	return b.String()
+}
+
+func VHDLDeindentDecomment(s string) string {
+	// NOTE: This is not optimal implementation, as it iterates over
+	// the string twice. However, currently it is not performance
+	// bottleneck, so there is no need to optimize it.
+	return VHDLDecomment(Deindent(s))
+}

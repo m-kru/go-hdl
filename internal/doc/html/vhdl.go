@@ -239,7 +239,9 @@ func generateVHDLEntityContent(ent sym.Symbol, details bool, content *strings.Bu
 		content.WriteString(fmt.Sprintf("<p>%s</p>", ent.Filepath()))
 	}
 
-	content.WriteString(fmt.Sprintf("  <p class=\"doc\">%s</p>", ent.Doc()))
+	content.WriteString(
+		fmt.Sprintf("  <p class=\"doc\">%s</p>", utils.VHDLDeindentDecomment(ent.Doc())),
+	)
 	content.WriteString(fmt.Sprintf("  <p class=\"code\">%s</p>", utils.VHDLHTMLBold(ent.Code())))
 
 	if details {
@@ -288,7 +290,7 @@ func genVHDLUniqueSymbolContent(sym sym.Symbol, summary string, content *strings
 		)
 		content.WriteString("  <div class=\"details\">\n")
 		if len(doc) > 0 {
-			content.WriteString(fmt.Sprintf("  <p class=\"doc\">%s</p>", doc))
+			content.WriteString(fmt.Sprintf("  <p class=\"doc\">%s</p>", utils.VHDLDecomment(doc)))
 		}
 		if !isSingleLine {
 			content.WriteString(fmt.Sprintf("  <p class=\"code\">%s</p>", utils.VHDLHTMLBold(code)))
