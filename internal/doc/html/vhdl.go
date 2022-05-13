@@ -264,7 +264,7 @@ func genVHDLPkgContent(pkg sym.Symbol, details bool, content *strings.Builder) {
 	)
 
 	content.WriteString(
-		fmt.Sprintf("  <p class=\"doc\">%s</p>\n", pkg.Doc()),
+		fmt.Sprintf("  <p class=\"doc\">%s</p>\n", utils.VHDLDeindentDecomment(pkg.Doc())),
 	)
 
 	genVHDLPkgUniqueSymbolsContent(pkg.(vhdl.Package), "Constants", content)
