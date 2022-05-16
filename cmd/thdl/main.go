@@ -35,13 +35,11 @@ func main() {
 
 	printDebug = args.Debug
 
-	if args.Cmd == "vet" {
+	if args.Cmd == "doc" {
+		doc.Doc(args.DocArgs)
+	} else if args.Cmd == "vet" {
 		vet.Vet(args.VetArgs)
 		if rprt.ViolationCount() > 0 {
-			os.Exit(1)
-		}
-	} else if args.Cmd == "doc" {
-		if doc.Doc(args.DocArgs) > 0 {
 			os.Exit(1)
 		}
 	}

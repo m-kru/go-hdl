@@ -14,14 +14,13 @@ import (
 
 var docArgs args.DocArgs
 
-func Doc(args args.DocArgs) uint8 {
+func Doc(args args.DocArgs) {
 	docArgs = args
 
 	ScanFiles()
 
 	if docArgs.GenHTML {
 		html.Generate(docArgs.HTML)
-		return 0
 	}
 
 	symbolPaths := resolveSymbolPath(args.SymbolPath)
@@ -70,8 +69,6 @@ func Doc(args args.DocArgs) uint8 {
 		}
 		log.Fatalf("%s", msg)
 	}
-
-	return 0
 }
 
 func ScanFiles() {
