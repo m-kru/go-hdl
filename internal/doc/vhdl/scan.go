@@ -13,6 +13,7 @@ import (
 	"github.com/m-kru/go-thdl/internal/doc/lib"
 	"github.com/m-kru/go-thdl/internal/doc/sym"
 	"github.com/m-kru/go-thdl/internal/utils"
+	"github.com/m-kru/go-thdl/internal/vhdl/re"
 )
 
 var docArgs args.DocArgs
@@ -59,13 +60,13 @@ func scanFile(filepath string, wg *sync.WaitGroup) {
 		var err error
 		var sym sym.Symbol
 
-		if sm := entityDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
+		if sm := re.EntityDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
 			name := string(sCtx.line[sm[2]:sm[3]])
 			sym, err = scanEntityDeclaration(filepath, name, &sCtx)
-		} else if sm := packageInstantiation.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
+		} else if sm := re.PackageInstantiation.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
 			name := string(sCtx.line[sm[2]:sm[3]])
 			sym, err = scanPackageInstantiation(filepath, name, &sCtx)
-		} else if sm := packageDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
+		} else if sm := re.PackageDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
 			name := string(sCtx.line[sm[2]:sm[3]])
 			sym, err = scanPackageDeclaration(filepath, name, &sCtx)
 		}
@@ -96,7 +97,7 @@ func scanEntityDeclaration(filepath string, name string, sCtx *scanContext) (sym
 	}
 
 	for sCtx.proceed() {
-		if len(end.FindIndex(sCtx.line)) > 0 {
+		if len(re.End.FindIndex(sCtx.line)) > 0 {
 			e.codeEnd = sCtx.endIdx
 			return e, nil
 		}
@@ -128,7 +129,7 @@ func scanPackageDeclaration(filepath string, name string, sCtx *scanContext) (sy
 		var err error
 		var syms []sym.Symbol
 
-		if sm := constantDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
+		if sm := re.ConstantDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
 			names := []string{}
 			for i := 1; i < len(sm)/2; i++ {
 				if sm[2*i] < 0 {
@@ -141,37 +142,37 @@ func scanPackageDeclaration(filepath string, name string, sCtx *scanContext) (sy
 				names = append(names, name)
 			}
 			syms, err = scanConstantDeclaration(filepath, names, sCtx)
-		} else if sm := arrayTypeDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
+		} else if sm := re.ArrayTypeDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
 			name := string(sCtx.line[sm[2]:sm[3]])
 			syms, err = scanArrayTypeDeclaration(filepath, name, sCtx)
-		} else if sm := enumTypeDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
+		} else if sm := re.EnumTypeDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
 			name := string(sCtx.line[sm[2]:sm[3]])
 			syms, err = scanEnumTypeDeclaration(filepath, name, sCtx)
-		} else if sm := functionDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
+		} else if sm := re.FunctionDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
 			impure := false
 			if sm[2] > 0 && string(sCtx.line[sm[2]:sm[3]]) == "impure" {
 				impure = true
 			}
 			name := string(sCtx.line[sm[4]:sm[5]])
 			syms, err = scanFunctionDeclaration(filepath, impure, name, sCtx)
-		} else if sm := procedureDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
+		} else if sm := re.ProcedureDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
 			name := string(sCtx.line[sm[2]:sm[3]])
 			syms, err = scanProcedureDeclaration(filepath, name, sCtx)
-		} else if sm := protectedTypeDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
+		} else if sm := re.ProtectedTypeDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
 			name := string(sCtx.line[sm[2]:sm[3]])
 			syms, err = scanProtectedTypeDeclaration(filepath, name, sCtx)
-		} else if sm := recordTypeDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
+		} else if sm := re.RecordTypeDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
 			name := string(sCtx.line[sm[2]:sm[3]])
 			syms, err = scanRecordTypeDeclaration(filepath, name, sCtx)
-		} else if sm := subtypeDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
+		} else if sm := re.SubtypeDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
 			name := string(sCtx.line[sm[2]:sm[3]])
 			syms, err = scanSubtypeDeclaration(filepath, name, sCtx)
-		} else if sm := someTypeDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
+		} else if sm := re.SomeTypeDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
 			name := string(sCtx.line[sm[2]:sm[3]])
 			syms, err = scanSomeTypeDeclaration(filepath, name, sCtx)
-		} else if (len(end.FindIndex(sCtx.line)) > 0 && bytes.Contains(bytes.ToLower(sCtx.line), []byte(strings.ToLower(name)))) ||
-			(len(endPackage.FindIndex(sCtx.line)) > 0) ||
-			(len(endWithSemicolon.FindIndex(sCtx.line)) > 0) {
+		} else if (len(re.End.FindIndex(sCtx.line)) > 0 && bytes.Contains(bytes.ToLower(sCtx.line), []byte(strings.ToLower(name)))) ||
+			(len(re.EndPackage.FindIndex(sCtx.line)) > 0) ||
+			(len(re.EndWithSemicolon.FindIndex(sCtx.line)) > 0) {
 			pkg.codeEnd = sCtx.endIdx
 			return pkg, nil
 		}
@@ -209,7 +210,7 @@ func scanPackageInstantiation(filepath string, name string, sCtx *scanContext) (
 	}
 
 	for sCtx.proceed() {
-		if len(endsWithSemicolon.FindIndex(sCtx.line)) > 0 {
+		if len(re.EndsWithSemicolon.FindIndex(sCtx.line)) > 0 {
 			pi.codeEnd = sCtx.endIdx
 			return pi, nil
 		}
@@ -236,7 +237,7 @@ func scanEnumTypeDeclaration(filepath string, name string, sCtx *scanContext) ([
 	}
 
 	for {
-		if len(endsWithSemicolon.FindIndex(sCtx.line)) > 0 {
+		if len(re.EndsWithSemicolon.FindIndex(sCtx.line)) > 0 {
 			t.codeEnd = sCtx.endIdx
 			return []sym.Symbol{t}, nil
 		}
@@ -267,7 +268,7 @@ func scanArrayTypeDeclaration(filepath string, name string, sCtx *scanContext) (
 	}
 
 	for {
-		if len(endsWithSemicolon.FindIndex(sCtx.line)) > 0 {
+		if len(re.EndsWithSemicolon.FindIndex(sCtx.line)) > 0 {
 			t.codeEnd = sCtx.endIdx
 			return []sym.Symbol{t}, nil
 		}
@@ -300,19 +301,19 @@ func scanProtectedTypeDeclaration(filepath string, name string, sCtx *scanContex
 		var err error
 		var syms []sym.Symbol
 
-		if sm := functionDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
+		if sm := re.FunctionDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
 			impure := false
 			if sm[2] > 0 && string(sCtx.line[sm[2]:sm[3]]) == "impure" {
 				impure = true
 			}
 			name := string(sCtx.line[sm[4]:sm[5]])
 			syms, err = scanFunctionDeclaration(filepath, impure, name, sCtx)
-		} else if sm := procedureDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
+		} else if sm := re.ProcedureDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
 			name := string(sCtx.line[sm[2]:sm[3]])
 			syms, err = scanProcedureDeclaration(filepath, name, sCtx)
-		} else if (len(end.FindIndex(sCtx.line)) > 0 && bytes.Contains(bytes.ToLower(sCtx.line), []byte(strings.ToLower(name)))) ||
-			(len(endProtected.FindIndex(sCtx.line)) > 0) ||
-			(len(endWithSemicolon.FindIndex(sCtx.line)) > 0) {
+		} else if (len(re.End.FindIndex(sCtx.line)) > 0 && bytes.Contains(bytes.ToLower(sCtx.line), []byte(strings.ToLower(name)))) ||
+			(len(re.EndProtected.FindIndex(sCtx.line)) > 0) ||
+			(len(re.EndWithSemicolon.FindIndex(sCtx.line)) > 0) {
 			prot.codeEnd = sCtx.endIdx
 			return []sym.Symbol{prot}, nil
 		}
@@ -356,9 +357,9 @@ func scanRecordTypeDeclaration(filepath string, name string, sCtx *scanContext) 
 	}
 
 	for {
-		if (len(end.FindIndex(sCtx.line)) > 0 && bytes.Contains(bytes.ToLower(sCtx.line), []byte(strings.ToLower(name)))) ||
-			(len(endRecord.FindIndex(sCtx.line)) > 0) ||
-			(len(endWithSemicolon.FindIndex(sCtx.line)) > 0) {
+		if (len(re.End.FindIndex(sCtx.line)) > 0 && bytes.Contains(bytes.ToLower(sCtx.line), []byte(strings.ToLower(name)))) ||
+			(len(re.EndRecord.FindIndex(sCtx.line)) > 0) ||
+			(len(re.EndWithSemicolon.FindIndex(sCtx.line)) > 0) {
 			t.codeEnd = sCtx.endIdx
 			return []sym.Symbol{t}, nil
 		}
@@ -375,13 +376,13 @@ func scanSomeTypeDeclaration(filepath string, name string, sCtx *scanContext) ([
 		return nil, fmt.Errorf("some type declaration line with type kind not found")
 	}
 
-	if len(startsWithProtected.FindIndex(sCtx.lookaheadLine)) > 0 {
+	if len(re.StartsWithProtected.FindIndex(sCtx.lookaheadLine)) > 0 {
 		return scanProtectedTypeDeclaration(filepath, name, sCtx)
-	} else if len(startsWithRecord.FindIndex(sCtx.lookaheadLine)) > 0 {
+	} else if len(re.StartsWithRecord.FindIndex(sCtx.lookaheadLine)) > 0 {
 		return scanRecordTypeDeclaration(filepath, name, sCtx)
-	} else if len(startsWithRoundBracket.FindIndex(sCtx.lookaheadLine)) > 0 {
+	} else if len(re.StartsWithRoundBracket.FindIndex(sCtx.lookaheadLine)) > 0 {
 		return scanEnumTypeDeclaration(filepath, name, sCtx)
-	} else if len(startsWithArray.FindIndex(sCtx.lookaheadLine)) > 0 {
+	} else if len(re.StartsWithArray.FindIndex(sCtx.lookaheadLine)) > 0 {
 		return scanArrayTypeDeclaration(filepath, name, sCtx)
 	}
 
@@ -405,7 +406,7 @@ func scanConstantDeclaration(filepath string, names []string, sCtx *scanContext)
 	syms := []sym.Symbol{}
 
 	for {
-		if len(endsWithSemicolon.FindIndex(sCtx.line)) > 0 {
+		if len(re.EndsWithSemicolon.FindIndex(sCtx.line)) > 0 {
 			c.codeEnd = sCtx.endIdx
 			for _, n := range names {
 				c.key = strings.ToLower(n)
@@ -440,7 +441,7 @@ func scanFunctionDeclaration(filepath string, impure bool, name string, sCtx *sc
 	}
 
 	for {
-		if len(endsWithReturn.FindIndex(sCtx.line)) > 0 {
+		if len(re.EndsWithReturn.FindIndex(sCtx.line)) > 0 {
 			f.codeEnd = sCtx.endIdx
 			return []sym.Symbol{f}, nil
 		}
@@ -475,12 +476,12 @@ func scanProcedureDeclaration(filepath string, name string, sCtx *scanContext) (
 
 	for {
 		if hasParams {
-			if len(endsWithRoundBracketAndSemicolon.FindIndex(sCtx.line)) > 0 {
+			if len(re.EndsWithRoundBracketAndSemicolon.FindIndex(sCtx.line)) > 0 {
 				p.codeEnd = sCtx.endIdx
 				return []sym.Symbol{p}, nil
 			}
 		} else {
-			if len(endsWithSemicolon.FindIndex(sCtx.line)) > 0 {
+			if len(re.EndsWithSemicolon.FindIndex(sCtx.line)) > 0 {
 				p.codeEnd = sCtx.endIdx
 				return []sym.Symbol{p}, nil
 			}
@@ -510,7 +511,7 @@ func scanSubtypeDeclaration(filepath string, name string, sCtx *scanContext) ([]
 	}
 
 	for {
-		if len(endsWithSemicolon.FindIndex(sCtx.line)) > 0 {
+		if len(re.EndsWithSemicolon.FindIndex(sCtx.line)) > 0 {
 			t.codeEnd = sCtx.endIdx
 			return []sym.Symbol{t}, nil
 		}

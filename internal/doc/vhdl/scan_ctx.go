@@ -2,6 +2,7 @@ package vhdl
 
 import (
 	"bufio"
+	"github.com/m-kru/go-thdl/internal/vhdl/re"
 )
 
 type scanContext struct {
@@ -36,10 +37,10 @@ GETLINE:
 	sc.startIdx = sc.endIdx
 	sc.endIdx += uint32(len(sc.line)) + 1
 
-	if len(emptyLine.FindIndex(sc.line)) > 0 {
+	if len(re.EmptyLine.FindIndex(sc.line)) > 0 {
 		sc.docPresent = false
 		goto GETLINE
-	} else if len(commentLine.FindIndex(sc.line)) > 0 {
+	} else if len(re.CommentLine.FindIndex(sc.line)) > 0 {
 		sc.docEnd = sc.endIdx
 		if !sc.docPresent {
 			sc.docStart = sc.startIdx

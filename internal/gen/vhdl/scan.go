@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/m-kru/go-thdl/internal/gen/gen"
+	"github.com/m-kru/go-thdl/internal/vhdl/re"
 	_ "log"
 	_ "os"
 )
@@ -33,7 +34,7 @@ func scanGenerable(sCtx *scanContext) (gen.Generable, error) {
 		return nil, fmt.Errorf("cannot scan generable, EOF")
 	}
 
-	if sm := enumTypeDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
+	if sm := re.EnumTypeDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
 		name := string(sCtx.line[sm[2]:sm[3]])
 		return scanEnumTypeDeclaration(sCtx, name)
 	}
