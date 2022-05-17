@@ -21,14 +21,14 @@ func Vet(filepaths []string, wg *sync.WaitGroup) {
 
 	for _, fp := range filepaths {
 		filesWg.Add(1)
-		go checkFile(fp, &filesWg)
+		go vetFile(fp, &filesWg)
 	}
 
 	filesWg.Wait()
 	wg.Done()
 }
 
-func checkFile(filepath string, wg *sync.WaitGroup) {
+func vetFile(filepath string, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	if utils.IsIgnoredVHDLFile(filepath) {

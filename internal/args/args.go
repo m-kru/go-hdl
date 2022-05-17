@@ -67,9 +67,6 @@ type DocArgs struct {
 
 type GenArgs struct {
 	IgnoreList
-	Fusesoc    bool
-	NoBold     bool
-	SymbolPath string
 }
 
 type Args struct {

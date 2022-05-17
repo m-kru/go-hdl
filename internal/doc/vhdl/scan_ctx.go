@@ -22,10 +22,7 @@ type scanContext struct {
 	lookaheadLine       []byte
 }
 
-// proceed returns false on EOF, architecture declaration or package
-// body declaration. There is no point in scanning architecture
-// declarations and package bodies, as they either contain private symbols
-// or they implement symbols declared in the package declaration.
+// proceed returns false on EOF.
 func (sc *scanContext) proceed() bool {
 GETLINE:
 	if sc.lookaheadLine != nil {

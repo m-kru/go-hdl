@@ -7,6 +7,7 @@ import (
 
 	"github.com/m-kru/go-thdl/internal/args"
 	"github.com/m-kru/go-thdl/internal/doc"
+	"github.com/m-kru/go-thdl/internal/gen"
 	"github.com/m-kru/go-thdl/internal/vet"
 	"github.com/m-kru/go-thdl/internal/vet/rprt"
 )
@@ -35,9 +36,12 @@ func main() {
 
 	printDebug = args.Debug
 
-	if args.Cmd == "doc" {
+	switch args.Cmd {
+	case "doc":
 		doc.Doc(args.DocArgs)
-	} else if args.Cmd == "vet" {
+	case "gen":
+		gen.Gen(args.GenArgs)
+	case "vet":
 		vet.Vet(args.VetArgs)
 		if rprt.ViolationCount() > 0 {
 			os.Exit(1)
