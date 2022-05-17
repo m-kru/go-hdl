@@ -21,6 +21,7 @@ func Doc(args args.DocArgs) {
 
 	if docArgs.GenHTML {
 		html.Generate(docArgs.HTML)
+		return
 	}
 
 	symbolPaths := resolveSymbolPath(args.SymbolPath)

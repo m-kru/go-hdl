@@ -60,13 +60,13 @@ func scanFile(filepath string, wg *sync.WaitGroup) {
 		var sym sym.Symbol
 
 		if sm := entityDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
-			name := string(sCtx.actualLine[sm[2]:sm[3]])
+			name := string(sCtx.line[sm[2]:sm[3]])
 			sym, err = scanEntityDeclaration(filepath, name, &sCtx)
 		} else if sm := packageInstantiation.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
-			name := string(sCtx.actualLine[sm[2]:sm[3]])
+			name := string(sCtx.line[sm[2]:sm[3]])
 			sym, err = scanPackageInstantiation(filepath, name, &sCtx)
 		} else if sm := packageDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
-			name := string(sCtx.actualLine[sm[2]:sm[3]])
+			name := string(sCtx.line[sm[2]:sm[3]])
 			sym, err = scanPackageDeclaration(filepath, name, &sCtx)
 		}
 
@@ -142,34 +142,34 @@ func scanPackageDeclaration(filepath string, name string, sCtx *scanContext) (sy
 			}
 			syms, err = scanConstantDeclaration(filepath, names, sCtx)
 		} else if sm := arrayTypeDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
-			name := string(sCtx.actualLine[sm[2]:sm[3]])
+			name := string(sCtx.line[sm[2]:sm[3]])
 			syms, err = scanArrayTypeDeclaration(filepath, name, sCtx)
 		} else if sm := enumTypeDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
-			name := string(sCtx.actualLine[sm[2]:sm[3]])
+			name := string(sCtx.line[sm[2]:sm[3]])
 			syms, err = scanEnumTypeDeclaration(filepath, name, sCtx)
 		} else if sm := functionDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
 			impure := false
-			if sm[2] > 0 && string(sCtx.actualLine[sm[2]:sm[3]]) == "impure" {
+			if sm[2] > 0 && string(sCtx.line[sm[2]:sm[3]]) == "impure" {
 				impure = true
 			}
-			name := string(sCtx.actualLine[sm[4]:sm[5]])
+			name := string(sCtx.line[sm[4]:sm[5]])
 			syms, err = scanFunctionDeclaration(filepath, impure, name, sCtx)
 		} else if sm := procedureDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
-			name := string(sCtx.actualLine[sm[2]:sm[3]])
+			name := string(sCtx.line[sm[2]:sm[3]])
 			syms, err = scanProcedureDeclaration(filepath, name, sCtx)
 		} else if sm := protectedTypeDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
-			name := string(sCtx.actualLine[sm[2]:sm[3]])
+			name := string(sCtx.line[sm[2]:sm[3]])
 			syms, err = scanProtectedTypeDeclaration(filepath, name, sCtx)
 		} else if sm := recordTypeDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
-			name := string(sCtx.actualLine[sm[2]:sm[3]])
+			name := string(sCtx.line[sm[2]:sm[3]])
 			syms, err = scanRecordTypeDeclaration(filepath, name, sCtx)
 		} else if sm := subtypeDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
-			name := string(sCtx.actualLine[sm[2]:sm[3]])
+			name := string(sCtx.line[sm[2]:sm[3]])
 			syms, err = scanSubtypeDeclaration(filepath, name, sCtx)
 		} else if sm := someTypeDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
-			name := string(sCtx.actualLine[sm[2]:sm[3]])
+			name := string(sCtx.line[sm[2]:sm[3]])
 			syms, err = scanSomeTypeDeclaration(filepath, name, sCtx)
-		} else if (len(end.FindIndex(sCtx.line)) > 0 && bytes.Contains(sCtx.line, []byte(strings.ToLower(name)))) ||
+		} else if (len(end.FindIndex(sCtx.line)) > 0 && bytes.Contains(bytes.ToLower(sCtx.line), []byte(strings.ToLower(name)))) ||
 			(len(endPackage.FindIndex(sCtx.line)) > 0) ||
 			(len(endWithSemicolon.FindIndex(sCtx.line)) > 0) {
 			pkg.codeEnd = sCtx.endIdx
@@ -302,15 +302,15 @@ func scanProtectedTypeDeclaration(filepath string, name string, sCtx *scanContex
 
 		if sm := functionDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
 			impure := false
-			if sm[2] > 0 && string(sCtx.actualLine[sm[2]:sm[3]]) == "impure" {
+			if sm[2] > 0 && string(sCtx.line[sm[2]:sm[3]]) == "impure" {
 				impure = true
 			}
-			name := string(sCtx.actualLine[sm[4]:sm[5]])
+			name := string(sCtx.line[sm[4]:sm[5]])
 			syms, err = scanFunctionDeclaration(filepath, impure, name, sCtx)
 		} else if sm := procedureDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
-			name := string(sCtx.actualLine[sm[2]:sm[3]])
+			name := string(sCtx.line[sm[2]:sm[3]])
 			syms, err = scanProcedureDeclaration(filepath, name, sCtx)
-		} else if (len(end.FindIndex(sCtx.line)) > 0 && bytes.Contains(sCtx.line, []byte(strings.ToLower(name)))) ||
+		} else if (len(end.FindIndex(sCtx.line)) > 0 && bytes.Contains(bytes.ToLower(sCtx.line), []byte(strings.ToLower(name)))) ||
 			(len(endProtected.FindIndex(sCtx.line)) > 0) ||
 			(len(endWithSemicolon.FindIndex(sCtx.line)) > 0) {
 			prot.codeEnd = sCtx.endIdx
@@ -356,7 +356,7 @@ func scanRecordTypeDeclaration(filepath string, name string, sCtx *scanContext) 
 	}
 
 	for {
-		if (len(end.FindIndex(sCtx.line)) > 0 && bytes.Contains(sCtx.line, []byte(strings.ToLower(name)))) ||
+		if (len(end.FindIndex(sCtx.line)) > 0 && bytes.Contains(bytes.ToLower(sCtx.line), []byte(strings.ToLower(name)))) ||
 			(len(endRecord.FindIndex(sCtx.line)) > 0) ||
 			(len(endWithSemicolon.FindIndex(sCtx.line)) > 0) {
 			t.codeEnd = sCtx.endIdx

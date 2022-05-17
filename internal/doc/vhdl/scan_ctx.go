@@ -2,14 +2,12 @@ package vhdl
 
 import (
 	"bufio"
-	"bytes"
 )
 
 type scanContext struct {
-	scanner    *bufio.Scanner
-	actualLine []byte
-	line       []byte // Lowercase actual line.
-	lineNum    uint32
+	scanner *bufio.Scanner
+	line    []byte // Lowercase actual line.
+	lineNum uint32
 
 	startIdx uint32 // Line start index.
 	endIdx   uint32 // Line end index.
@@ -18,22 +16,19 @@ type scanContext struct {
 	docStart   uint32
 	docEnd     uint32
 
-	lookaheadActualLine []byte
-	lookaheadLine       []byte
+	lookaheadLine []byte
 }
 
 // proceed returns false on EOF.
 func (sc *scanContext) proceed() bool {
 GETLINE:
 	if sc.lookaheadLine != nil {
-		sc.actualLine = sc.lookaheadActualLine
 		sc.line = sc.lookaheadLine
 		sc.lookaheadLine = nil
 	} else if ok := sc.scanner.Scan(); !ok {
 		return false
 	} else {
-		sc.actualLine = sc.scanner.Bytes()
-		sc.line = bytes.ToLower(sc.actualLine)
+		sc.line = sc.scanner.Bytes()
 	}
 
 	sc.lineNum += 1
@@ -64,8 +59,7 @@ func (sc *scanContext) lookahead() bool {
 		return false
 	}
 
-	sc.lookaheadActualLine = sc.scanner.Bytes()
-	sc.lookaheadLine = bytes.ToLower(sc.lookaheadActualLine)
+	sc.lookaheadLine = sc.scanner.Bytes()
 
 	return true
 }
