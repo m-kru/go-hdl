@@ -2,6 +2,8 @@ package vhdl
 
 import (
 	"github.com/m-kru/go-thdl/internal/utils"
+	"log"
+	"os"
 	"sync"
 )
 
@@ -22,6 +24,20 @@ func genFile(filepath string, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	if utils.IsIgnoredVHDLFile(filepath) {
+		return
+	}
+
+	fileContent, err := os.ReadFile(filepath)
+	if err != nil {
+		log.Fatalf("reading %s: %v", filepath, err)
+	}
+
+	gens, err := scanFile(fileContent)
+	if err != nil {
+		log.Fatalf("scanning file %s: %v", filepath, err)
+	}
+
+	if len(gens) == 0 {
 		return
 	}
 }

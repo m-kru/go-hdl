@@ -5,30 +5,27 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/m-kru/go-thdl/internal/gen/gen"
-	"log"
-	"os"
+	_ "log"
+	_ "os"
 )
 
-func scanFile(filepath string) (gens map[string]gen.Generable) {
-	f, err := os.ReadFile(filepath)
-	if err != nil {
-		log.Fatalf("reading %s: %v", filepath, err)
-	}
+func scanFile(fileContent []byte) (map[string]gen.Generable, error) {
+	gens := map[string]gen.Generable{}
 
-	scanner := bufio.NewScanner(bytes.NewReader(f))
+	scanner := bufio.NewScanner(bytes.NewReader(fileContent))
 	sCtx := scanContext{scanner: scanner}
 
 	for sCtx.proceed() {
 		if len(thdlGenLine.FindIndex(sCtx.line)) > 0 {
 			gen, err := scanGenerable(&sCtx)
 			if err != nil {
-				log.Fatalf("scanning file %s: %v", filepath, err)
+				return nil, err
 			}
 			gens[gen.Name()] = gen
 		}
 	}
 
-	return
+	return gens, nil
 }
 
 func scanGenerable(sCtx *scanContext) (gen.Generable, error) {
