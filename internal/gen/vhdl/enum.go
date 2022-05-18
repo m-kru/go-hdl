@@ -5,18 +5,18 @@ import (
 	"strings"
 )
 
-type Enum struct {
+type enum struct {
 	name   string
 	values []string
 }
 
-func (e Enum) Name() string { return e.name }
+func (e enum) Name() string { return e.name }
 
-func (e Enum) Width() uint {
+func (e enum) Width() uint {
 	return uint(math.Ceil(math.Log2(float64(len(e.values)))))
 }
 
-func (e Enum) GenDeclaration(args []string) string {
+func (e enum) GenDeclaration(args []string) string {
 	b := strings.Builder{}
 
 	e.genToEnumDeclaration(&b)
@@ -26,19 +26,19 @@ func (e Enum) GenDeclaration(args []string) string {
 	return b.String()
 }
 
-func (e Enum) genToEnumDeclaration(b *strings.Builder) {
+func (e enum) genToEnumDeclaration(b *strings.Builder) {
 	b.WriteString("genToEnumDeclaration\n")
 }
 
-func (e Enum) genToSlvDeclaration(b *strings.Builder) {
+func (e enum) genToSlvDeclaration(b *strings.Builder) {
 	b.WriteString("genToSlvDeclaration\n")
 }
 
-func (e Enum) genToStrDeclaration(b *strings.Builder) {
+func (e enum) genToStrDeclaration(b *strings.Builder) {
 	b.WriteString("genToStrDeclaration\n")
 }
 
-func (e Enum) GenDefinition(args []string) string {
+func (e enum) GenDefinition(args []string) string {
 	b := strings.Builder{}
 
 	e.genToEnumDefinition(&b)
@@ -48,14 +48,14 @@ func (e Enum) GenDefinition(args []string) string {
 	return b.String()
 }
 
-func (e Enum) genToEnumDefinition(b *strings.Builder) {
+func (e enum) genToEnumDefinition(b *strings.Builder) {
 	b.WriteString("genToEnumDefinition\n")
 }
 
-func (e Enum) genToSlvDefinition(b *strings.Builder) {
+func (e enum) genToSlvDefinition(b *strings.Builder) {
 	b.WriteString("genToSlvDefinition\n")
 }
 
-func (e Enum) genToStrDefinition(b *strings.Builder) {
+func (e enum) genToStrDefinition(b *strings.Builder) {
 	b.WriteString("genToStrDefinition")
 }

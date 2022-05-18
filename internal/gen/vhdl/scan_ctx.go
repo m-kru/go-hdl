@@ -7,7 +7,7 @@ import (
 
 type scanContext struct {
 	scanner *bufio.Scanner
-	lineNum uint32
+	lineNum uint
 	line    []byte
 }
 

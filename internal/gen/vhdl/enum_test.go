@@ -9,20 +9,20 @@ import (
 func TestEnumScanning(t *testing.T) {
 	var tests = []struct {
 		code   string
-		enum   Enum
+		enum   enum
 		width  uint
 		values []string
 	}{
 		{
 			code:   `type t_state is (ONE, TWO);`,
-			enum:   Enum{name: "t_state", values: []string{"ONE", "TWO"}},
+			enum:   enum{name: "t_state", values: []string{"ONE", "TWO"}},
 			width:  1,
 			values: []string{"ONE", "TWO"},
 		},
 		{
 			code: `type t_state is (
                       ONE, TWO ) ;`,
-			enum:   Enum{name: "t_state", values: []string{"ONE", "TWO"}},
+			enum:   enum{name: "t_state", values: []string{"ONE", "TWO"}},
 			width:  1,
 			values: []string{"ONE", "TWO"},
 		},
@@ -30,7 +30,7 @@ func TestEnumScanning(t *testing.T) {
 			code: `type t_state is ( ONE
                      TWO, THREE
                    );  `,
-			enum:   Enum{name: "t_state", values: []string{"ONE", "TWO"}},
+			enum:   enum{name: "t_state", values: []string{"ONE", "TWO"}},
 			width:  2,
 			values: []string{"ONE", "TWO", "THREE"},
 		},
@@ -40,7 +40,7 @@ func TestEnumScanning(t *testing.T) {
                       TWO,
                       THREE
                    );  `,
-			enum:   Enum{name: "t_state", values: []string{"ONE", "TWO"}},
+			enum:   enum{name: "t_state", values: []string{"ONE", "TWO"}},
 			width:  2,
 			values: []string{"ONE", "TWO", "THREE"},
 		},

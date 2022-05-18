@@ -13,7 +13,7 @@ var EndsWithRoundBracketAndSemicolon *re.Regexp = re.MustCompile(`(?i)\)\s*;\s*(
 var ConstantDeclaration *re.Regexp = re.MustCompile(`(?i)^\s*constant\s+(\w+)\s*(,\s*\w+)?\s*(,\s*\w+)?`)
 
 var EntityDeclaration *re.Regexp = re.MustCompile(`(?i)^\s*entity\s+(\w*)\s+is`)
-var ArchitectureDeclaration *re.Regexp = re.MustCompile(`(?i)^\s*architecture\s+\w+\s+of\s*\w+\s+is\b`)
+var ArchitectureDeclaration *re.Regexp = re.MustCompile(`(?i)^\s*architecture\s+(\w+)\s+of\s*\w+\s+is\b`)
 
 var FunctionDeclaration *re.Regexp = re.MustCompile(`(?i)^\s*(pure\b|impure\b)?\s*function\s+(\w+)`)
 var EndsWithReturn *re.Regexp = re.MustCompile(`(?i)\breturn\s+\w+\s*;`)
