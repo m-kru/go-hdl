@@ -20,11 +20,12 @@ Parameters:
   -html-path       Output path for the generated HTML documentation.
   -html-title      HTML title.
 
+
 Description
 -----------
 
-The doc command prints the documentation comment associated with the symbol
-identified by its arguments followed by the source code of the symbol.
+The doc command prints the documentation comment associated with the symbol,
+followed by the source code of the symbol.
 
 The following kinds of symbols are supported by the doc command:
 

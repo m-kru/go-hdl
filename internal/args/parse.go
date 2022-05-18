@@ -56,6 +56,8 @@ func Parse() Args {
 			os.Exit(1)
 		} else if os.Args[2] == "doc" {
 			fmt.Printf(docHelpMsg)
+		} else if os.Args[2] == "gen" {
+			fmt.Printf(genHelpMsg)
 		} else if os.Args[2] == "help" {
 			fmt.Printf(helpHelpMsg)
 		} else if os.Args[2] == "ver" {
