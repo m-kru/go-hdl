@@ -6,7 +6,7 @@ var vetHelpMsg string = `Vet command
 Usage
 -----
 
-thdl vet [flags]
+  thdl vet [flags]
 
 Flags:
   -no-config  Don't read .thdl.yml config file.

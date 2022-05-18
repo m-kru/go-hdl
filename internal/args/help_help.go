@@ -6,7 +6,7 @@ var helpHelpMsg string = `Help command
 Usage
 -----
 
-thdl help <command>
+  thdl help <command>
 
 Description
 -----------

@@ -6,7 +6,7 @@ var verHelpMsg string = `Ver command
 Usage
 -----
 
-thdl ver
+  thdl ver
 
 Description
 -----------
