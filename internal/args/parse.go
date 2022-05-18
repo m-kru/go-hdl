@@ -67,6 +67,10 @@ func Parse() Args {
 		}
 		os.Exit(0)
 	case "vet":
+	case "gen":
+		if argsLen > 2 {
+			args.GenArgs.Filepath = os.Args[argsLen-1]
+		}
 	case "doc":
 		if argsLen < 3 {
 			fmt.Printf("missing symbol path\n")

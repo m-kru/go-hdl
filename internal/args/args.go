@@ -67,6 +67,7 @@ type DocArgs struct {
 
 type GenArgs struct {
 	IgnoreList
+	Filepath string
 }
 
 type Args struct {

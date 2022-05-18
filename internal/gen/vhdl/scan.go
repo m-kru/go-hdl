@@ -21,7 +21,7 @@ func scanFile(fileContent []byte) ([]unit, error) {
 	sCtx := scanContext{scanner: scanner}
 
 	appendUnit := func() {
-		if unit.name != "" {
+		if unit.name != "" && len(unit.gens) > 0 {
 			units = append(units, unit)
 		}
 	}
@@ -33,7 +33,7 @@ func scanFile(fileContent []byte) ([]unit, error) {
 			unit.lineNum = sCtx.lineNum
 			unit.typ = "architecture"
 			unit.gens = map[string]gen.Generable{}
-		} else if sm := re.PackageDeclaration.FindIndex(sCtx.line); len(sm) > 0 {
+		} else if sm := re.PackageDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
 			appendUnit()
 			unit.name = string(sCtx.line[sm[2]:sm[3]])
 			unit.lineNum = sCtx.lineNum
@@ -67,7 +67,7 @@ func scanGenerable(sCtx *scanContext) (gen.Generable, error) {
 		return scanEnumTypeDeclaration(sCtx, name)
 	}
 
-	panic("should never happen")
+	return nil, fmt.Errorf("line %d: cannot process line\n%s", sCtx.lineNum, sCtx.line)
 }
 
 // scanEnumTypeDeclaration assumes that current line in the scanContext contains the '(' character.

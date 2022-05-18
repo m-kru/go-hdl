@@ -42,4 +42,10 @@ Naming symbols
 It doesn't matter whether type symbol name has 't_' prefix.
 For example, the names of the generated functions are the same for both
 'type t_status is (A, B);' and 'type status is (A, B);'.
+
+
+Constraints
+-----------
+File may contain multile design symbols, however package body must always
+follow package declaration.
 `
