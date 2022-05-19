@@ -108,11 +108,24 @@ func genDesignUnit(u unit, sCtx *scanContext, b *strings.Builder) error {
 			if u.typ == "architecture" {
 			} else if u.typ == "package" {
 				if len(thdlStartLine.FindIndex(sCtx.line)) > 0 {
-					genPackage(u.gens, false, b)
+					genPackage(u.gens, false, false, b)
 					gotoThdlEnd = true
 					continue
-				} else if len(re.EndPackage.FindIndex(sCtx.line)) > 0 {
-					genPackage(u.gens, true, b)
+				} else if len(re.EndPackage.FindIndex(sCtx.line)) > 0 ||
+					(len(re.End.FindIndex(sCtx.line)) > 0 && bytes.Contains(bytes.ToLower(sCtx.line), []byte(strings.ToLower(u.name)))) {
+					genPackage(u.gens, false, true, b)
+					b.Write(sCtx.line)
+					b.WriteRune('\n')
+					break
+				}
+			} else if u.typ == "package body" {
+				if len(thdlStartLine.FindIndex(sCtx.line)) > 0 {
+					genPackage(u.gens, true, false, b)
+					gotoThdlEnd = true
+					continue
+				} else if len(re.EndPackageBody.FindIndex(sCtx.line)) > 0 ||
+					(len(re.End.FindIndex(sCtx.line)) > 0 && bytes.Contains(bytes.ToLower(sCtx.line), []byte(strings.ToLower(u.name)))) {
+					genPackage(u.gens, true, true, b)
 					b.Write(sCtx.line)
 					b.WriteRune('\n')
 					break
@@ -129,14 +142,21 @@ func genDesignUnit(u unit, sCtx *scanContext, b *strings.Builder) error {
 	return nil
 }
 
-func genPackage(gens map[string]gen.Generable, extraEmptyLines bool, b *strings.Builder) {
+// body is false for package and true for package body.
+func genPackage(gens map[string]gen.Generable, body bool, extraEmptyLines bool, b *strings.Builder) {
 	if extraEmptyLines {
 		b.WriteRune('\n')
 	}
 
 	b.WriteString(startCommentMsg)
 	for _, g := range gens {
-		b.WriteString(g.GenDeclaration([]string{}))
+		var s string
+		if body {
+			s = g.GenDefinition([]string{})
+		} else {
+			s = g.GenDeclaration([]string{})
+		}
+		b.WriteString(s)
 	}
 	b.WriteString(endCommentMsg)
 

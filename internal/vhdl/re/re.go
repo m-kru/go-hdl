@@ -21,7 +21,8 @@ var EndsWithReturn *re.Regexp = re.MustCompile(`(?i)\breturn\s+\w+\s*;`)
 var PackageDeclaration *re.Regexp = re.MustCompile(`(?i)^\s*package\s+(\w+)\s+is`)
 var PackageInstantiation *re.Regexp = re.MustCompile(`(?i)^\s*package\s+(\w+)\s+is\s+new\b`)
 var EndPackage *re.Regexp = re.MustCompile(`(?i)^\s*end\s+package\b`)
-var PackageBodyDeclaration *re.Regexp = re.MustCompile(`(?i)^\s*package\s+body\s+\w+\s+is\b`)
+var PackageBodyDeclaration *re.Regexp = re.MustCompile(`(?i)^\s*package\s+body\s+(\w+)\s+is\b`)
+var EndPackageBody *re.Regexp = re.MustCompile(`(?i)^\s*end\s+package\s+body\b`)
 
 var ProcedureDeclaration *re.Regexp = re.MustCompile(`(?i)^\s*procedure\s+(\w+)`)
 

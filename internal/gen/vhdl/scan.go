@@ -6,8 +6,7 @@ import (
 	"fmt"
 	"github.com/m-kru/go-thdl/internal/gen/gen"
 	"github.com/m-kru/go-thdl/internal/vhdl/re"
-	_ "log"
-	_ "os"
+	"strings"
 )
 
 // scanFile returns a list of units containing Generables within single file.
@@ -39,6 +38,16 @@ func scanFile(fileContent []byte) ([]unit, error) {
 			unit.lineNum = sCtx.lineNum
 			unit.typ = "package"
 			unit.gens = map[string]gen.Generable{}
+		} else if sm := re.PackageBodyDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
+			name := string(sCtx.line[sm[2]:sm[3]])
+			if strings.ToLower(name) == strings.ToLower(unit.name) {
+				if len(unit.gens) > 0 {
+					appendUnit()
+					unit.name = name
+					unit.lineNum = sCtx.lineNum
+					unit.typ = "package body"
+				}
+			}
 		} else if len(thdlGenLine.FindIndex(sCtx.line)) > 0 {
 			gen, err := scanGenerable(&sCtx)
 			if err != nil {
