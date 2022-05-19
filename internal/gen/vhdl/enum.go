@@ -1,6 +1,7 @@
 package vhdl
 
 import (
+	"fmt"
 	"math"
 	"strings"
 )
@@ -27,15 +28,46 @@ func (e enum) GenDeclaration(args []string) string {
 }
 
 func (e enum) genToEnumDeclaration(b *strings.Builder) {
-	b.WriteString("genToEnumDeclaration\n")
+	name := e.name
+	if strings.HasPrefix(name, "t_") {
+		name = name[2:]
+	}
+	b.WriteString(
+		fmt.Sprintf(
+			"   function to_%s(slv : std_logic_vector(%d downto 0)) return %s;\n",
+			name, e.Width()-1, e.name,
+		),
+	)
 }
 
 func (e enum) genToSlvDeclaration(b *strings.Builder) {
-	b.WriteString("genToSlvDeclaration\n")
+	name := e.name
+	if strings.HasPrefix(name, "t_") {
+		name = name[2:]
+	} else {
+		name = name[0:1]
+	}
+	b.WriteString(
+		fmt.Sprintf(
+			"   function to_slv(%s : %s) return std_logic_vector;\n",
+			name, e.name,
+		),
+	)
 }
 
 func (e enum) genToStrDeclaration(b *strings.Builder) {
-	b.WriteString("genToStrDeclaration\n")
+	name := e.name
+	if strings.HasPrefix(name, "t_") {
+		name = name[2:]
+	} else {
+		name = name[0:1]
+	}
+	b.WriteString(
+		fmt.Sprintf(
+			"   function to_str(%s : %s) return string;\n",
+			name, e.name,
+		),
+	)
 }
 
 func (e enum) GenDefinition(args []string) string {
