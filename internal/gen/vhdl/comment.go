@@ -7,4 +7,4 @@ var startCommentMsg string = `   --thdl:start
 
 `
 
-var endCommentMsg string = "\n   --thdl:end\n"
+var endCommentMsg string = "   --thdl:end\n"

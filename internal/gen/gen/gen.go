@@ -6,5 +6,5 @@ type Generable interface {
 	GenDeclaration(args []string) string
 	GenDefinition(args []string) string
 	Name() string
-	Width() uint
+	Width() int
 }

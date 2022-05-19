@@ -25,7 +25,7 @@ adding an empty line between the '--thdl:gen' line and symbol line.
 The code generation currently supports following kinds of symbols:
 
   VHDL:
-    - enumeration types
+    - enumeration type
 
         Example:
           --thdl:gen
@@ -35,6 +35,11 @@ The code generation currently supports following kinds of symbols:
           - function to_status(slv : std_logic_vector(0 downto 0)) return t_status;
           - function to_slv(status : t_status) return std_logic_vector;
           - function to_str(status : t_status) return string;
+
+        Flags:
+          -one-hot  Use one-hot encoding.
+
+        The default encoding is sequential.
 
 
 Naming symbols

@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/m-kru/go-thdl/internal/gen/gen"
+	"github.com/m-kru/go-thdl/internal/utils"
 	"github.com/m-kru/go-thdl/internal/vhdl/re"
 	"strings"
 )
@@ -65,6 +66,8 @@ func scanFile(fileContent []byte) ([]unit, error) {
 }
 
 func scanGenerable(sCtx *scanContext) (gen.Generable, error) {
+	args := utils.ThdlGenArgs(sCtx.line)
+
 	if !sCtx.scan() {
 		return nil, fmt.Errorf("cannot scan generable, EOF")
 	}
@@ -73,15 +76,20 @@ func scanGenerable(sCtx *scanContext) (gen.Generable, error) {
 		return nil, nil
 	} else if sm := re.EnumTypeDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
 		name := string(sCtx.line[sm[2]:sm[3]])
-		return scanEnumTypeDeclaration(sCtx, name)
+		return scanEnumTypeDeclaration(sCtx, name, args)
 	}
 
 	return nil, fmt.Errorf("line %d: cannot process line\n%s", sCtx.lineNum, sCtx.line)
 }
 
 // scanEnumTypeDeclaration assumes that current line in the scanContext contains the '(' character.
-func scanEnumTypeDeclaration(sCtx *scanContext, name string) (enum, error) {
+func scanEnumTypeDeclaration(sCtx *scanContext, name string, args []string) (enum, error) {
 	enum := enum{name: name, values: []string{}}
+
+	err := enum.parseArgs(args)
+	if err != nil {
+		return enum, fmt.Errorf("line %d: enum '%s': %v", sCtx.lineNum, name, err)
+	}
 
 	sCtx.line = bytes.Split((sCtx.line), []byte("("))[1]
 	for {

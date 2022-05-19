@@ -157,6 +157,7 @@ func genPackage(gens map[string]gen.Generable, body bool, extraEmptyLines bool, 
 			s = g.GenDeclaration([]string{})
 		}
 		b.WriteString(s)
+		b.WriteRune('\n')
 	}
 	b.WriteString(endCommentMsg)
 
