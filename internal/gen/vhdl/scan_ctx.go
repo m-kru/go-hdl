@@ -11,8 +11,8 @@ type scanContext struct {
 	line    []byte
 }
 
-// proceed returns false on EOF.
-func (sc *scanContext) proceed() bool {
+// scan returns false on EOF.
+func (sc *scanContext) scan() bool {
 	sc.lineNum += 1
 
 	if !sc.scanner.Scan() {

@@ -48,7 +48,7 @@ func TestEnumScanning(t *testing.T) {
 
 	for i, test := range tests {
 		sCtx := scanContext{scanner: bufio.NewScanner(bytes.NewReader([]byte(test.code)))}
-		sCtx.proceed()
+		sCtx.scan()
 		enum, err := scanEnumTypeDeclaration(&sCtx, test.enum.name)
 		if err != nil {
 			t.Errorf("[%d]: %v", i, err)

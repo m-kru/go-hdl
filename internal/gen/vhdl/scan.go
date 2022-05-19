@@ -26,7 +26,7 @@ func scanFile(fileContent []byte) ([]unit, error) {
 		}
 	}
 
-	for sCtx.proceed() {
+	for sCtx.scan() {
 		if sm := re.ArchitectureDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
 			appendUnit()
 			unit.name = string(sCtx.line[sm[2]:sm[3]])
@@ -56,7 +56,7 @@ func scanFile(fileContent []byte) ([]unit, error) {
 }
 
 func scanGenerable(sCtx *scanContext) (gen.Generable, error) {
-	if !sCtx.proceed() {
+	if !sCtx.scan() {
 		return nil, fmt.Errorf("cannot scan generable, EOF")
 	}
 
@@ -101,7 +101,7 @@ func scanEnumTypeDeclaration(sCtx *scanContext, name string) (enum, error) {
 			break
 		}
 
-		sCtx.proceed()
+		sCtx.scan()
 	}
 
 	return enum, nil

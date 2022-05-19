@@ -60,70 +60,73 @@ func processFile(filepath string, wg *sync.WaitGroup) {
 }
 
 func genNewFileContent(fileContent []byte, units []unit) ([]byte, error) {
-	scanner := bufio.NewScanner(bytes.NewReader(fileContent))
-	newContent := strings.Builder{}
+	sCtx := scanContext{scanner: bufio.NewScanner(bytes.NewReader(fileContent))}
+	b := strings.Builder{}
 
 	write := func(line []byte) {
-		newContent.Write(line)
-		newContent.WriteRune('\n')
+		b.Write(line)
+		b.WriteRune('\n')
 	}
 
-	var inUnit bool
-	var gotoThdlEnd bool
-	lineNum := uint(0)
-	for _, unit := range units {
-		inUnit = false
-		gotoThdlEnd = false
-		for {
-			if !scanner.Scan() {
-				if gotoThdlEnd {
-					return nil, fmt.Errorf(
-						"%s %s, '--thdl:end' line not found", unit.typ, unit.name,
-					)
-				}
-				break
-			}
-
-			lineNum += 1
-			line := scanner.Bytes()
-
-			if gotoThdlEnd {
-				if len(thdlEndLine.FindIndex(line)) > 0 {
-					break
-				}
-				continue
-			}
-
-			if lineNum == unit.lineNum {
-				inUnit = true
-			}
-
-			if inUnit {
-				if unit.typ == "architecture" {
-				} else if unit.typ == "package" {
-					if len(thdlStartLine.FindIndex(line)) > 0 {
-						genPackage(unit.gens, false, &newContent)
-						gotoThdlEnd = true
-						continue
-					} else if len(re.EndPackage.FindIndex(line)) > 0 {
-						genPackage(unit.gens, true, &newContent)
-						write(line)
-						break
-					}
-				} else {
-					panic("should never happen")
-				}
-			}
-
-			write(line)
+	for _, u := range units {
+		err := genDesignUnit(u, &sCtx, &b)
+		if err != nil {
+			return nil, fmt.Errorf("%s %s: %v", u.typ, u.name, err)
 		}
 	}
 
-	for scanner.Scan() {
-		write(scanner.Bytes())
+	for sCtx.scan() {
+		write(sCtx.line)
 	}
 
-	return []byte(newContent.String()), nil
+	return []byte(b.String()), nil
+}
+
+func genDesignUnit(u unit, sCtx *scanContext, b *strings.Builder) error {
+	inUnit := false
+	gotoThdlEnd := false
+	for {
+		if !sCtx.scan() {
+			if gotoThdlEnd {
+				return fmt.Errorf("'--thdl:end' line not found")
+			}
+			break
+		}
+
+		if gotoThdlEnd {
+			if len(thdlEndLine.FindIndex(sCtx.line)) > 0 {
+				break
+			}
+			continue
+		}
+
+		if sCtx.lineNum == u.lineNum {
+			inUnit = true
+		}
+
+		if inUnit {
+			if u.typ == "architecture" {
+			} else if u.typ == "package" {
+				if len(thdlStartLine.FindIndex(sCtx.line)) > 0 {
+					genPackage(u.gens, false, b)
+					gotoThdlEnd = true
+					continue
+				} else if len(re.EndPackage.FindIndex(sCtx.line)) > 0 {
+					genPackage(u.gens, true, b)
+					b.Write(sCtx.line)
+					b.WriteRune('\n')
+					break
+				}
+			} else {
+				panic("should never happen")
+			}
+		}
+
+		b.Write(sCtx.line)
+		b.WriteRune('\n')
+	}
+
+	return nil
 }
 
 func genPackage(gens map[string]gen.Generable, extraEmptyLines bool, b *strings.Builder) {
