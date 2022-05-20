@@ -13,9 +13,9 @@ type enum struct {
 	encoding string
 }
 
-func (e enum) Name() string { return e.name }
+func (e *enum) Name() string { return e.name }
 
-func (e enum) Width() int {
+func (e *enum) Width() int {
 	switch e.encoding {
 	case "one-hot":
 		return len(e.values)
@@ -28,7 +28,7 @@ func (e enum) Width() int {
 	}
 }
 
-func (e enum) GenDeclaration(args []string) string {
+func (e *enum) GenDeclarations() string {
 	b := strings.Builder{}
 
 	e.genToEnumDeclaration(&b)
@@ -38,7 +38,7 @@ func (e enum) GenDeclaration(args []string) string {
 	return b.String()
 }
 
-func (e enum) genToEnumDeclaration(b *strings.Builder) {
+func (e *enum) genToEnumDeclaration(b *strings.Builder) {
 	name := e.toEnumName()
 	b.WriteString(
 		fmt.Sprintf(
@@ -48,7 +48,7 @@ func (e enum) genToEnumDeclaration(b *strings.Builder) {
 	)
 }
 
-func (e enum) genToSlvDeclaration(b *strings.Builder) {
+func (e *enum) genToSlvDeclaration(b *strings.Builder) {
 	name := e.paramName()
 	b.WriteString(
 		fmt.Sprintf(
@@ -58,7 +58,7 @@ func (e enum) genToSlvDeclaration(b *strings.Builder) {
 	)
 }
 
-func (e enum) genToStrDeclaration(b *strings.Builder) {
+func (e *enum) genToStrDeclaration(b *strings.Builder) {
 	name := e.paramName()
 	b.WriteString(
 		fmt.Sprintf(
@@ -68,7 +68,7 @@ func (e enum) genToStrDeclaration(b *strings.Builder) {
 	)
 }
 
-func (e enum) GenDefinition(args []string) string {
+func (e *enum) GenDefinitions() string {
 	b := strings.Builder{}
 
 	e.genToEnumDefinition(&b)
@@ -80,7 +80,7 @@ func (e enum) GenDefinition(args []string) string {
 	return b.String()
 }
 
-func (e enum) genToEnumDefinition(b *strings.Builder) {
+func (e *enum) genToEnumDefinition(b *strings.Builder) {
 	name := e.toEnumName()
 	b.WriteString(
 		fmt.Sprintf(
@@ -100,7 +100,7 @@ func (e enum) genToEnumDefinition(b *strings.Builder) {
 	b.WriteString("   end function;\n")
 }
 
-func (e enum) genToSlvDefinition(b *strings.Builder) {
+func (e *enum) genToSlvDefinition(b *strings.Builder) {
 	name := e.paramName()
 	b.WriteString(
 		fmt.Sprintf(
@@ -121,7 +121,7 @@ func (e enum) genToSlvDefinition(b *strings.Builder) {
 	b.WriteString("   end function;\n")
 }
 
-func (e enum) genToStrDefinition(b *strings.Builder) {
+func (e *enum) genToStrDefinition(b *strings.Builder) {
 	name := e.paramName()
 	b.WriteString(
 		fmt.Sprintf(
@@ -143,7 +143,7 @@ func (e enum) genToStrDefinition(b *strings.Builder) {
 }
 
 // toEnumName returns name for the function converting std_logic_vector to enum type.
-func (e enum) toEnumName() string {
+func (e *enum) toEnumName() string {
 	name := e.name
 	if strings.HasPrefix(name, "t_") {
 		name = name[2:]
@@ -153,7 +153,7 @@ func (e enum) toEnumName() string {
 
 // paramName returns the name of the parameter that should be used when enum
 // type is passed to the function.
-func (e enum) paramName() string {
+func (e *enum) paramName() string {
 	name := e.name
 	if strings.HasPrefix(name, "t_") {
 		name = name[2:]
@@ -163,7 +163,7 @@ func (e enum) paramName() string {
 	return name
 }
 
-func (e *enum) parseArgs(args []string) error {
+func (e *enum) ParseArgs(args []string) error {
 	validFlags := map[string]bool{
 		"-gray": true, "-one-hot": true,
 	}
@@ -198,7 +198,7 @@ func (e *enum) parseArgs(args []string) error {
 }
 
 // slv returns std_logic_vector value for enum value of given index.
-func (e enum) slv(idx int) string {
+func (e *enum) slv(idx int) string {
 	var s string
 	switch e.encoding {
 	case "one-hot":

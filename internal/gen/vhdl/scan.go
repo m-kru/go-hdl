@@ -83,12 +83,12 @@ func scanGenerable(sCtx *scanContext) (gen.Generable, error) {
 }
 
 // scanEnumTypeDeclaration assumes that current line in the scanContext contains the '(' character.
-func scanEnumTypeDeclaration(sCtx *scanContext, name string, args []string) (enum, error) {
+func scanEnumTypeDeclaration(sCtx *scanContext, name string, args []string) (*enum, error) {
 	enum := enum{name: name, values: []string{}}
 
-	err := enum.parseArgs(args)
+	err := enum.ParseArgs(args)
 	if err != nil {
-		return enum, fmt.Errorf("line %d: enum '%s': %v", sCtx.lineNum, name, err)
+		return nil, fmt.Errorf("line %d: enum '%s': %v", sCtx.lineNum, name, err)
 	}
 
 	sCtx.line = bytes.Split((sCtx.line), []byte("("))[1]
@@ -121,5 +121,5 @@ func scanEnumTypeDeclaration(sCtx *scanContext, name string, args []string) (enu
 		sCtx.scan()
 	}
 
-	return enum, nil
+	return &enum, nil
 }
