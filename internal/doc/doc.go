@@ -42,7 +42,7 @@ func Doc(args args.DocArgs) {
 	foundCount := len(foundSymbols)
 
 	if foundCount == 0 {
-		log.Fatalf("no symbol matching path '%s' found", args.SymbolPath)
+		log.Fatalf("found no symbol matching path '%s'", args.SymbolPath)
 	} else if foundCount == 1 {
 		for path, syms := range foundSymbols {
 			fmt.Printf("%s\n", path)

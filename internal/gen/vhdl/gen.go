@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"github.com/m-kru/go-thdl/internal/args"
 	"github.com/m-kru/go-thdl/internal/gen/gen"
 	"github.com/m-kru/go-thdl/internal/utils"
 	"github.com/m-kru/go-thdl/internal/vhdl/re"
@@ -13,7 +14,11 @@ import (
 	"sync"
 )
 
-func Gen(filepaths []string, wg *sync.WaitGroup) {
+var genArgs args.GenArgs
+
+func Gen(args args.GenArgs, filepaths []string, wg *sync.WaitGroup) {
+	genArgs = args
+
 	var filesWg sync.WaitGroup
 
 	for _, fp := range filepaths {
@@ -50,6 +55,11 @@ func processFile(filepath string, wg *sync.WaitGroup) {
 	newContent, err := genNewFileContent(fileContent, units)
 	if err != nil {
 		log.Fatalf("%s: %v", filepath, err)
+	}
+
+	if genArgs.ToStdout {
+		fmt.Printf("%s", string(newContent))
+		return
 	}
 
 	// We can assume that the file already exists so the perm is discarded anyway.

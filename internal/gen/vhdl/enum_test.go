@@ -10,7 +10,7 @@ func TestEnumScanning(t *testing.T) {
 	var tests = []struct {
 		code   string
 		enum   enum
-		width  uint
+		width  int
 		values []string
 	}{
 		{
@@ -49,7 +49,7 @@ func TestEnumScanning(t *testing.T) {
 	for i, test := range tests {
 		sCtx := scanContext{scanner: bufio.NewScanner(bytes.NewReader([]byte(test.code)))}
 		sCtx.scan()
-		enum, err := scanEnumTypeDeclaration(&sCtx, test.enum.name)
+		enum, err := scanEnumTypeDeclaration(&sCtx, test.enum.name, []string{})
 		if err != nil {
 			t.Errorf("[%d]: %v", i, err)
 		}

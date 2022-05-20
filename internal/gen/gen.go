@@ -32,5 +32,5 @@ func Gen(args args.GenArgs) {
 	}
 
 	wg.Add(1)
-	vhdl.Gen(vhdlFiles, &wg)
+	vhdl.Gen(args, vhdlFiles, &wg)
 }

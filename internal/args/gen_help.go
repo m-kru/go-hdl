@@ -8,6 +8,9 @@ Usage
 
   thdl gen [path/to/file]
 
+Flags
+  -to-stdout  Print to stdout instead of replacing file in place (useful for tests).
+
 If path to file is not provided, thdl will scan all HDL files located in the tree
 of working directory.
 

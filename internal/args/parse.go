@@ -37,19 +37,19 @@ func Parse() Args {
 	args := Args{}
 	setFileCfgArgs(fileCfg, &args)
 
-	argsLen := len(os.Args)
-	if argsLen == 1 {
+	if len(os.Args) == 1 {
 		log.Fatalf("missing command, run 'thdl help' for more information")
 	}
 
 	args.Cmd = os.Args[1]
 
 	switch args.Cmd {
-	case "ver":
-		fmt.Printf("thdl version %s\n", Version)
-		os.Exit(0)
+	case "doc":
+		parseDocArgs(&args)
+	case "gen":
+		parseGenArgs(&args)
 	case "help":
-		if argsLen < 3 {
+		if len(os.Args) < 3 {
 			printHelp()
 		} else if !isValidCommand(os.Args[2]) {
 			printHelp()
@@ -66,71 +66,85 @@ func Parse() Args {
 			fmt.Printf(vetHelpMsg)
 		}
 		os.Exit(0)
+	case "ver":
+		fmt.Printf("thdl version %s\n", Version)
+		os.Exit(0)
 	case "vet":
-	case "gen":
-		if argsLen > 2 {
-			args.GenArgs.Filepath = os.Args[argsLen-1]
-		}
-	case "doc":
-		if argsLen < 3 {
-			fmt.Printf("missing symbol path\n")
-			os.Exit(1)
-		}
-
-		iterLen := argsLen - 1
-		if isPresent("-html") {
-			iterLen = argsLen
-			args.DocArgs.GenHTML = true
-		}
-		for i := 2; i < iterLen; i++ {
-			arg := os.Args[i]
-
-			switch arg {
-			case "-debug":
-				args.Debug = true
-			case "-fusesoc":
-				args.DocArgs.Fusesoc = true
-			case "-no-bold":
-				args.DocArgs.NoBold = true
-			// HTML arguments.
-			case "-html":
-			case "-html-copyright":
-				args.DocArgs.HTML.Copyright = os.Args[i+1]
-				i++
-			case "-html-title":
-				args.DocArgs.HTML.Title = os.Args[i+1]
-				i++
-			case "-html-path":
-				args.DocArgs.HTML.Path = os.Args[i+1]
-				i++
-			default:
-				fmt.Printf("invalid doc command flag '%s'\n", arg)
-				os.Exit(1)
-			}
-		}
-
-		// Path to symbol is always the last argument, if there is no '-html' flag.
-		if args.DocArgs.GenHTML {
-			if args.DocArgs.HTML.Path == "" {
-				args.DocArgs.HTML.Path = "./"
-			} else {
-				args.DocArgs.HTML.Path += "/"
-			}
-		} else {
-			symbolPath := os.Args[argsLen-1]
-			if symbolPath[0] == '-' {
-				if isValidDocFlag(symbolPath) {
-					fmt.Printf("missing symbol path\n")
-				} else {
-					fmt.Printf("invalid symbol path '%s'\n", symbolPath)
-				}
-				os.Exit(1)
-			}
-			args.DocArgs.SymbolPath = symbolPath
-		}
 	default:
 		log.Fatalf(fmt.Sprintf("invalid command '%s', run 'thdl help' for more information", args.Cmd))
 	}
 
 	return args
+}
+
+func parseDocArgs(args *Args) {
+	var param string
+	var expectArg bool
+
+	for i, a := range os.Args[2:] {
+		if expectArg {
+			switch param {
+			case "-html-copyright":
+				args.DocArgs.HTML.Copyright = a
+			case "-html-path":
+				args.DocArgs.HTML.Path = a
+			case "-html-title":
+				args.DocArgs.HTML.Title = a
+			}
+			expectArg = false
+			continue
+		}
+		switch a {
+		case "-debug":
+			args.Debug = true
+		case "-fusesoc":
+			args.DocArgs.Fusesoc = true
+		case "-no-bold":
+			args.DocArgs.NoBold = true
+		// HTML arguments.
+		case "-html":
+			args.DocArgs.GenHTML = true
+		case "-html-copyright", "-html-path", "-html-title":
+			param = a
+			expectArg = true
+		default:
+			if i == len(os.Args) - 3 {
+				args.DocArgs.SymbolPath = a
+			} else {
+				log.Fatalf("invalid doc command flag '%s'\n", a)
+			}
+		}
+	}
+
+	if expectArg {
+		log.Fatalf("missing argument for parameter '%s'", param)
+	}
+
+	// HTML path post-processing.
+	if args.DocArgs.GenHTML {
+		if args.DocArgs.HTML.Path == "" {
+			args.DocArgs.HTML.Path = "./"
+		} else {
+			args.DocArgs.HTML.Path += "/"
+		}
+	} else {
+		if args.DocArgs.SymbolPath == "" {
+			log.Fatalf("missing symbol path\n")
+		}
+	}
+}
+
+func parseGenArgs(args *Args) {
+	for i, a := range os.Args[2:] {
+		switch a {
+		case "-to-stdout":
+			args.GenArgs.ToStdout = true
+		default:
+			if i == len(os.Args) - 3 {
+				args.GenArgs.Filepath = a
+			} else {
+				log.Fatalf("invalid gen command flag '%s'\n", a)
+			}
+		}
+	}
 }
