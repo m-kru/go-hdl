@@ -108,7 +108,7 @@ func parseDocArgs(args *Args) {
 			param = a
 			expectArg = true
 		default:
-			if i == len(os.Args) - 3 {
+			if i == len(os.Args)-3 {
 				args.DocArgs.SymbolPath = a
 			} else {
 				log.Fatalf("invalid doc command flag '%s'\n", a)
@@ -140,7 +140,7 @@ func parseGenArgs(args *Args) {
 		case "-to-stdout":
 			args.GenArgs.ToStdout = true
 		default:
-			if i == len(os.Args) - 3 {
+			if i == len(os.Args)-3 {
 				args.GenArgs.Filepath = a
 			} else {
 				log.Fatalf("invalid gen command flag '%s'\n", a)

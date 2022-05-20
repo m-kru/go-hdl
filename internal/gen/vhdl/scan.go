@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/m-kru/go-thdl/internal/gen/gen"
 	"github.com/m-kru/go-thdl/internal/utils"
+	"github.com/m-kru/go-thdl/internal/vhdl"
 	"github.com/m-kru/go-thdl/internal/vhdl/re"
 	"strings"
 )
@@ -77,6 +78,9 @@ func scanGenerable(sCtx *scanContext) (gen.Generable, error) {
 	} else if sm := re.EnumTypeDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
 		name := string(sCtx.line[sm[2]:sm[3]])
 		return scanEnumTypeDeclaration(sCtx, name, args)
+	} else if sm := re.RecordTypeDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
+		name := string(sCtx.line[sm[2]:sm[3]])
+		return scanRecordTypeDeclaration(sCtx, name, args)
 	}
 
 	return nil, fmt.Errorf("line %d: cannot process line\n%s", sCtx.lineNum, sCtx.line)
@@ -122,4 +126,49 @@ func scanEnumTypeDeclaration(sCtx *scanContext, name string, args []string) (*en
 	}
 
 	return &enum, nil
+}
+
+func scanRecordTypeDeclaration(sCtx *scanContext, name string, args []string) (*record, error) {
+	record := record{name: name}
+
+	err := record.ParseArgs(args)
+	if err != nil {
+		return nil, fmt.Errorf("line %d: record '%s': %v", sCtx.lineNum, name, err)
+	}
+
+	for {
+		sCtx.scan()
+		if len(re.EmptyLine.FindIndex(sCtx.line)) > 0 ||
+			len(re.CommentLine.FindIndex(sCtx.line)) > 0 {
+			continue
+		} else if len(re.EndRecord.FindIndex(sCtx.line)) > 0 {
+			break
+		} else {
+			err := parseRecordFieldLine(sCtx.line, &record)
+			if err != nil {
+				return nil, fmt.Errorf("line %d: record '%s': %v", sCtx.lineNum, name, err)
+			}
+		}
+	}
+
+	return &record, nil
+}
+
+func parseRecordFieldLine(line []byte, r *record) error {
+	line = bytes.Trim(line, " \t")
+	splits := bytes.Split(line, []byte(":"))
+
+	f := field{name: string(bytes.Trim(splits[0], " \t"))}
+
+	splits = bytes.Split(splits[1], []byte(";"))
+	typ := string(bytes.ToLower(bytes.Trim(splits[0], " \t")))
+
+	if vhdl.IsSingleBitStdType(typ) {
+		f.typ = typ
+		f.width = 1
+	}
+
+	r.fields = append(r.fields, f)
+
+	return nil
 }

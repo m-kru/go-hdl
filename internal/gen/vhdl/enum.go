@@ -39,7 +39,7 @@ func (e *enum) GenDeclarations() string {
 }
 
 func (e *enum) genToEnumDeclaration(b *strings.Builder) {
-	name := e.toEnumName()
+	name := toTypeFuncName(e.name)
 	b.WriteString(
 		fmt.Sprintf(
 			"   function %s(slv : std_logic_vector(%d downto 0)) return %s;\n",
@@ -49,7 +49,7 @@ func (e *enum) genToEnumDeclaration(b *strings.Builder) {
 }
 
 func (e *enum) genToSlvDeclaration(b *strings.Builder) {
-	name := e.paramName()
+	name := funcParamName(e.name)
 	b.WriteString(
 		fmt.Sprintf(
 			"   function to_slv(%s : %s) return std_logic_vector;\n",
@@ -59,7 +59,7 @@ func (e *enum) genToSlvDeclaration(b *strings.Builder) {
 }
 
 func (e *enum) genToStrDeclaration(b *strings.Builder) {
-	name := e.paramName()
+	name := funcParamName(e.name)
 	b.WriteString(
 		fmt.Sprintf(
 			"   function to_str(%s : %s) return string;\n",
@@ -81,7 +81,7 @@ func (e *enum) GenDefinitions() string {
 }
 
 func (e *enum) genToEnumDefinition(b *strings.Builder) {
-	name := e.toEnumName()
+	name := toTypeFuncName(e.name)
 	b.WriteString(
 		fmt.Sprintf(
 			"   function %s(slv : std_logic_vector(%d downto 0)) return %s is\n",
@@ -101,7 +101,7 @@ func (e *enum) genToEnumDefinition(b *strings.Builder) {
 }
 
 func (e *enum) genToSlvDefinition(b *strings.Builder) {
-	name := e.paramName()
+	name := funcParamName(e.name)
 	b.WriteString(
 		fmt.Sprintf(
 			"   function to_slv(%s : %s) return std_logic_vector is\n",
@@ -122,7 +122,7 @@ func (e *enum) genToSlvDefinition(b *strings.Builder) {
 }
 
 func (e *enum) genToStrDefinition(b *strings.Builder) {
-	name := e.paramName()
+	name := funcParamName(e.name)
 	b.WriteString(
 		fmt.Sprintf(
 			"   function to_str(%s : %s) return string is\n",
@@ -140,27 +140,6 @@ func (e *enum) genToStrDefinition(b *strings.Builder) {
 	}
 	b.WriteString("      end case;\n")
 	b.WriteString("   end function;\n")
-}
-
-// toEnumName returns name for the function converting std_logic_vector to enum type.
-func (e *enum) toEnumName() string {
-	name := e.name
-	if strings.HasPrefix(name, "t_") {
-		name = name[2:]
-	}
-	return "to_" + name
-}
-
-// paramName returns the name of the parameter that should be used when enum
-// type is passed to the function.
-func (e *enum) paramName() string {
-	name := e.name
-	if strings.HasPrefix(name, "t_") {
-		name = name[2:]
-	} else {
-		name = name[0:1]
-	}
-	return name
 }
 
 func (e *enum) ParseArgs(args []string) error {
