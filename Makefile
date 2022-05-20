@@ -48,7 +48,7 @@ test-gen:
 test-vet:
 	@./scripts/test-vet.sh
 
-test-all: test test-vet
+test-all: test test-gen test-vet
 
 
 # Installation targets
