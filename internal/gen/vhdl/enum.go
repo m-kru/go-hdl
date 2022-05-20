@@ -135,28 +135,34 @@ func (e *enum) genToStrDefinition(b *strings.Builder) {
 }
 
 func (e *enum) ParseArgs(args []string) error {
-	validFlags := map[string]bool{
-		"-gray": true, "-one-hot": true,
+	validParams := map[string]bool{
+		"encoding": true,
+	}
+	validEncodings := map[string]bool{
+		"gray": true, "one-hot": true, "sequential": true,
 	}
 
 	encoding := ""
 
-	for _, a := range args {
-		if a[0] != '-' {
-			return fmt.Errorf("invalid argument '%s'", a)
-		} else {
-			if _, ok := validFlags[a]; !ok {
-				return fmt.Errorf("invalid argument '%s'", a)
+	for _, arg := range args {
+		splits := strings.Split(arg, "=")
+		param := splits[0]
+
+		if _, ok := validParams[param]; !ok {
+			return fmt.Errorf("invalid parameter '%s'", param)
+		}
+
+		if len(splits) == 1 {
+			return fmt.Errorf("missing argument for '%s' parameter", param)
+		}
+		a := splits[1]
+
+		switch param {
+		case "encoding":
+			if _, ok := validEncodings[a]; !ok {
+				return fmt.Errorf("invalid argument '%s' for 'encoding' parameter", a)
 			}
-			switch a {
-			case "-one-hot", "-gray":
-				if encoding != "" {
-					return fmt.Errorf(
-						"cannot set '%s' encoding, as '%s' encoding is already set", a[1:], encoding,
-					)
-				}
-				encoding = a[1:]
-			}
+			encoding = a
 		}
 	}
 

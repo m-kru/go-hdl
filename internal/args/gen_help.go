@@ -39,14 +39,25 @@ The code generation currently supports following kinds of symbols:
           - function to_slv(status : t_status) return std_logic_vector;
           - function to_str(status : t_status) return string;
 
-        Flags:
-          -one-hot  Use one-hot encoding.
+        Parameters:
+          - encoding  Encoding type. Valid encodings are: gray, one-hot, sequential.
+                      The default encoding is sequential.
 
-        The default encoding is sequential.
+
+Arguments passing
+-----------------
+
+To pass an argument to the 'thdl:gen' or 'thdl:' simply write parameter name
+followed by the '=' character and actual argument value.
+
+Examples:
+  --thd:gen encoding=one-hot
+  record_field : t_external_type; --thdl: width=8
 
 
 Naming symbols
 --------------
+
 It doesn't matter whether type symbol name has 't_' prefix.
 For example, the names of the generated functions are the same for both
 'type t_status is (A, B);' and 'type status is (A, B);'.
@@ -54,6 +65,7 @@ For example, the names of the generated functions are the same for both
 
 Constraints
 -----------
+
 File may contain multile design symbols, however package body must always
 follow package declaration.
 `
