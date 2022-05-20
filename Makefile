@@ -13,6 +13,7 @@ help:
 	@echo "  errcheck  Examine go sources with errcheck."
 	@echo "Test targets:"
 	@echo "  test      Run go test."
+	@echo "  test-gen  Run gen command tests."
 	@echo "  test-vet  Run vet command tests."
 	@echo "  test-all  Run all tests."
 	@echo "Other targets:"
@@ -41,6 +42,9 @@ errcheck:
 test:
 	go test ./...
 
+test-gen:
+	@./scripts/test-gen.sh
+	
 test-vet:
 	@./scripts/test-vet.sh
 

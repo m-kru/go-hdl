@@ -38,6 +38,17 @@ jobs:
       - run: go install github.com/kisielk/errcheck@latest
       - run: make errcheck
 
+  Gen-Tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '^1.17.1'
+      - run: go version
+      - run: make build
+      - run: make test-gen
+
   Vet-Tests:
     runs-on: ubuntu-latest
     steps:
@@ -47,4 +58,4 @@ jobs:
           go-version: '^1.17.1'
       - run: go version
       - run: make build
-      - run: ./scripts/test-vet.sh
+      - run: make test-vet
