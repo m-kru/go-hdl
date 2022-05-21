@@ -110,10 +110,11 @@ func (r *record) fieldToSlv(idx int, b *strings.Builder, width int) int {
 	f := r.fields[idx]
 	typ := f.typ
 
-	if typ == "std_logic" || typ == "std_ulogic" {
+	switch typ {
+	case "std_logic", "std_ulogic":
 		bws(spf("      %s.%s := slv(%d);\n", varName, f.name, width))
 		width--
-	} else if typ == "bit" || typ == "boolean" {
+	case "bit", "boolean":
 		one := "'1'"
 		zero := "'0'"
 		if typ == "boolean" {
@@ -132,6 +133,11 @@ func (r *record) fieldToSlv(idx int, b *strings.Builder, width int) int {
 		)
 		bws("      end if;\n")
 		width--
+	case "std_logic_vector", "std_ulogic_vector":
+		bws(spf("      %s.%s := slv(%d downto %d);\n", varName, f.name, width, width-f.width+1))
+		width -= f.width
+	default:
+		panic("not yet implemented")
 	}
 
 	return width

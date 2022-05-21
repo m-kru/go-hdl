@@ -43,3 +43,5 @@ var StartsWithArray *re.Regexp = re.MustCompile(`(?i)^\s*(is\s+)?array`)
 var StartsWithProtected *re.Regexp = re.MustCompile(`(?i)^\s*(is\s+)?protected`)
 var StartsWithRecord *re.Regexp = re.MustCompile(`(?i)^\s*(is\s+)?record`)
 var StartsWithRoundBracket *re.Regexp = re.MustCompile(`(?i)^\s*(is\s+)?\(`)
+
+var SimpleRange *re.Regexp = re.MustCompile(`(?i)\s*(.+)\s+(downto|to)\s+(.+)\s*`)

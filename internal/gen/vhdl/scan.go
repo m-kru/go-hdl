@@ -8,6 +8,7 @@ import (
 	"github.com/m-kru/go-thdl/internal/utils"
 	"github.com/m-kru/go-thdl/internal/vhdl"
 	"github.com/m-kru/go-thdl/internal/vhdl/re"
+	"strconv"
 	"strings"
 )
 
@@ -166,9 +167,50 @@ func parseRecordFieldLine(line []byte, r *record) error {
 	if vhdl.IsSingleBitStdType(typ) {
 		f.typ = typ
 		f.width = 1
+	} else if strings.Contains(typ, "(") {
+		err := parseRecordVectorFieldType(typ, &f, r)
+		if err != nil {
+			return fmt.Errorf("field '%s': %v", f.name, err)
+		}
 	}
 
 	r.fields = append(r.fields, f)
+
+	return nil
+}
+
+func parseRecordVectorFieldType(typ string, f *field, r *record) error {
+	splits := strings.Split(typ, "(")
+	f.typ = strings.Trim(splits[0], " \t")
+	range_ := strings.Trim(splits[1], " \t")
+	if range_[len(range_)-1] == ')' {
+		range_ = range_[:len(range_)-1]
+	}
+
+	if sm := re.SimpleRange.FindStringSubmatchIndex(range_); len(sm) > 0 {
+		expr1 := string(range_[sm[2]:sm[3]])
+		dir := strings.ToLower(string(range_[sm[4]:sm[5]]))
+		expr2 := string(range_[sm[6]:sm[7]])
+
+		val1, err := strconv.ParseInt(expr1, 0, 32)
+		if err != nil {
+			return fmt.Errorf("cannot parse '%s' expression to int", expr1)
+		}
+		val2, err := strconv.ParseInt(expr2, 0, 32)
+		if err != nil {
+			return fmt.Errorf("cannot parse '%s' expression to int", expr2)
+		}
+
+		if dir == "downto" {
+			f.width = int(val1 - val2 + 1)
+		} else if dir == "to" {
+			f.width = int(val2 - val1 + 1)
+		} else {
+			panic("should never happen")
+		}
+	} else {
+		panic("not yet implemented")
+	}
 
 	return nil
 }
