@@ -43,6 +43,24 @@ The code generation currently supports following kinds of symbols:
           - encoding  Encoding type. Valid encodings are: gray, one-hot, sequential.
                       The default encoding is sequential.
 
+    - record type
+
+        Example:
+          --thdl:gen
+          type t_data is record
+             reverse : boolean;
+             int     : integer;
+             crc     : std_logic_vector(7 downto 0);
+          end record;
+
+        Thdl will generate following functions:
+          - function to_data(slv : std_logic_vector(40 downto 0)) return t_data;
+          - function to_slv(data : t_data) return std_logic_vector;
+          - function to_str(data : t_data) return string;
+
+        Flags:
+          - no-to-str  Do not generate to_str function.
+
 
 Arguments passing
 -----------------

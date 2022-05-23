@@ -1,6 +1,7 @@
 package vhdl
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -13,8 +14,9 @@ type field struct {
 }
 
 type record struct {
-	name   string
-	fields []field
+	name    string
+	fields  []field
+	noToStr bool
 }
 
 func (r *record) Name() string { return r.name }
@@ -32,7 +34,9 @@ func (r *record) GenDeclarations() string {
 
 	r.genToRecordDeclaration(&b)
 	r.genToSlvDeclaration(&b)
-	r.genToStrDeclaration(&b)
+	if !r.noToStr {
+		r.genToStrDeclaration(&b)
+	}
 
 	return b.String()
 }
@@ -72,8 +76,10 @@ func (r *record) GenDefinitions() string {
 
 	r.genToRecordDefinition(&b)
 	/*
-		e.genToSlvDefinition(&b)
-		e.genToStrDefinition(&b)
+			e.genToSlvDefinition(&b)
+		if !r.noToStr {
+			e.genToStrDefinition(&b)
+		}
 	*/
 
 	return b.String()
@@ -149,5 +155,20 @@ func (r *record) slvToField(idx int, b *strings.Builder, width int) int {
 }
 
 func (r *record) ParseArgs(args []string) error {
+	validFlags := map[string]bool{
+		"no-to-str": true,
+	}
+
+	for _, arg := range args {
+		if _, ok := validFlags[arg]; !ok {
+			return fmt.Errorf("invalid flag '%s'", arg)
+		}
+
+		switch arg {
+		case "no-to-str":
+			r.noToStr = true
+		}
+	}
+
 	return nil
 }
