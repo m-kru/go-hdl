@@ -164,14 +164,19 @@ func parseRecordFieldLine(line []byte, r *record) error {
 	splits = bytes.Split(splits[1], []byte(";"))
 	typ := string(bytes.ToLower(bytes.Trim(splits[0], " \t")))
 
+	var err error
 	if vhdl.IsSingleBitStdType(typ) {
 		f.typ = typ
 		f.width = 1
 	} else if strings.Contains(typ, "(") {
-		err := parseRecordVectorFieldType(typ, &f, r)
-		if err != nil {
-			return fmt.Errorf("field '%s': %v", f.name, err)
-		}
+		err = parseRecordVectorField(typ, &f, r)
+	} else if strings.HasPrefix(typ, "integer") ||
+		strings.HasPrefix(typ, "natural") ||
+		strings.HasPrefix(typ, "positive") {
+		err = parseRecordIntegerField(typ, &f, r)
+	}
+	if err != nil {
+		return fmt.Errorf("field '%s': %v", f.name, err)
 	}
 
 	r.fields = append(r.fields, f)
@@ -179,7 +184,7 @@ func parseRecordFieldLine(line []byte, r *record) error {
 	return nil
 }
 
-func parseRecordVectorFieldType(typ string, f *field, r *record) error {
+func parseRecordVectorField(typ string, f *field, r *record) error {
 	splits := strings.Split(typ, "(")
 	f.typ = strings.Trim(splits[0], " \t")
 	range_ := strings.Trim(splits[1], " \t")
@@ -210,6 +215,25 @@ func parseRecordVectorFieldType(typ string, f *field, r *record) error {
 		}
 	} else {
 		panic("not yet implemented")
+	}
+
+	return nil
+}
+
+func parseRecordIntegerField(typ string, f *field, r *record) error {
+	ranged := strings.Contains(typ, "range")
+
+	if ranged {
+		panic("not yet supported")
+	} else {
+		if typ[0:3] == "int" {
+			f.typ = "integer"
+		} else if typ[0:3] == "nat" {
+			f.typ = "natural"
+		} else if typ[0:3] == "pos" {
+			f.typ = "positive"
+		}
+		f.width = 32
 	}
 
 	return nil

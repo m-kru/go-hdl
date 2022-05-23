@@ -113,7 +113,6 @@ func (r *record) slvToField(idx int, b *strings.Builder, width int) int {
 	switch typ {
 	case "std_logic", "std_ulogic":
 		bws(spf("      %s.%s := slv(%d);\n", varName, f.name, width))
-		width--
 	case "bit", "boolean":
 		one := "'1'"
 		zero := "'0'"
@@ -132,16 +131,19 @@ func (r *record) slvToField(idx int, b *strings.Builder, width int) int {
 			),
 		)
 		bws("      end if;\n")
-		width--
+	case "integer":
+		bws(spf("      %s.%s := to_integer(signed(slv(%d downto %d)));\n", varName, f.name, width, width-f.width+1))
+	case "natural", "positive":
+		bws(spf("      %s.%s := to_integer(unsigned(slv(%d downto %d)));\n", varName, f.name, width, width-f.width+1))
 	case "std_logic_vector", "std_ulogic_vector":
 		bws(spf("      %s.%s := slv(%d downto %d);\n", varName, f.name, width, width-f.width+1))
-		width -= f.width
 	case "signed", "unsigned":
 		bws(spf("      %s.%s := %s(slv(%d downto %d));\n", varName, f.name, typ, width, width-f.width+1))
-		width -= f.width
 	default:
 		panic("not yet implemented")
 	}
+
+	width -= f.width
 
 	return width
 }
