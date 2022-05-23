@@ -96,14 +96,14 @@ func (r *record) genToRecordDefinition(b *strings.Builder) {
 	bws("   begin\n")
 
 	for i, _ := range r.fields {
-		width = r.fieldToSlv(i, b, width)
+		width = r.slvToField(i, b, width)
 	}
 
 	bws(spf("      return %s;\n", varName))
 	bws("   end function;\n")
 }
 
-func (r *record) fieldToSlv(idx int, b *strings.Builder, width int) int {
+func (r *record) slvToField(idx int, b *strings.Builder, width int) int {
 	bws := b.WriteString
 	varName := funcParamName(r.name)
 
@@ -135,6 +135,9 @@ func (r *record) fieldToSlv(idx int, b *strings.Builder, width int) int {
 		width--
 	case "std_logic_vector", "std_ulogic_vector":
 		bws(spf("      %s.%s := slv(%d downto %d);\n", varName, f.name, width, width-f.width+1))
+		width -= f.width
+	case "signed", "unsigned":
+		bws(spf("      %s.%s := %s(slv(%d downto %d));\n", varName, f.name, typ, width, width-f.width+1))
 		width -= f.width
 	default:
 		panic("not yet implemented")
