@@ -325,15 +325,7 @@ func genVHDLPkgUniqueSymbolsContent(pkg vhdl.Package, class string, content *str
 
 	for _, key := range keys {
 		sym := pkg.GetSymbol(key)[0]
-		code := utils.Dewhitespace(sym.Code())
-		var s string
-		if utils.IsSingleLine(code) {
-			s = fmt.Sprintf("%s", code)
-		} else {
-			s = fmt.Sprintf("%s ...\n", utils.FirstLine(code))
-		}
-
-		genVHDLUniqueSymbolContent(sym, s, content)
+		genVHDLUniqueSymbolContent(sym, sym.OneLineSummary(), content)
 	}
 }
 

@@ -115,7 +115,6 @@ func scanPackageDeclaration(filepath string, name string, sCtx *scanContext) (sy
 		Consts:    map[sym.ID]sym.Symbol{},
 		Funcs:     map[sym.ID]sym.Symbol{},
 		Procs:     map[sym.ID]sym.Symbol{},
-		Prots:     map[sym.ID]sym.Symbol{},
 		Types:     map[sym.ID]sym.Symbol{},
 		Subtypes:  map[sym.ID]sym.Symbol{},
 	}
@@ -220,8 +219,7 @@ func scanPackageInstantiation(filepath string, name string, sCtx *scanContext) (
 }
 
 func scanEnumTypeDeclaration(filepath string, name string, sCtx *scanContext) ([]sym.Symbol, error) {
-	t := Type{
-		kind: "enum",
+	t := Enum{
 		symbol: symbol{
 			filepath:  filepath,
 			key:       strings.ToLower(name),
@@ -251,8 +249,7 @@ func scanEnumTypeDeclaration(filepath string, name string, sCtx *scanContext) ([
 }
 
 func scanArrayTypeDeclaration(filepath string, name string, sCtx *scanContext) ([]sym.Symbol, error) {
-	t := Type{
-		kind: "array",
+	t := Array{
 		symbol: symbol{
 			filepath:  filepath,
 			key:       strings.ToLower(name),
@@ -340,8 +337,7 @@ func scanProtectedTypeDeclaration(filepath string, name string, sCtx *scanContex
 }
 
 func scanRecordTypeDeclaration(filepath string, name string, sCtx *scanContext) ([]sym.Symbol, error) {
-	t := Type{
-		kind: "record",
+	t := Record{
 		symbol: symbol{
 			filepath:  filepath,
 			key:       strings.ToLower(name),

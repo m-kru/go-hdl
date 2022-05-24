@@ -51,8 +51,7 @@ func topbar(active string, nestingLevel int) string {
 				fmt.Sprintf("        <a href=\"%[1]svhdl/%[2]s/index.html\">%[2]s</a>\n", root, l),
 			)
 		}
-		b.WriteString(`      </div>
-    </div>`)
+		b.WriteString("      </div>\n    </div>\n")
 	}
 
 	b.WriteString(`  </div>`)

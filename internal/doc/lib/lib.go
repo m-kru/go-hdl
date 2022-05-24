@@ -31,6 +31,7 @@ func (l *Library) Key() string               { return l.name }
 func (l *Library) Name() string              { return l.name }
 func (l *Library) Code() string              { return l.libSummary(l) }
 func (l *Library) DocCode() (string, string) { return l.Doc(), l.Code() }
+func (l *Library) OneLineSummary() string    { panic("not yet implemented") }
 func (l *Library) LineNum() uint32           { panic("should never happen") }
 
 func MakeLibrary(lang string, name string, ls LibrarySummary) Library {

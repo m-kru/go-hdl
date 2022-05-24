@@ -1,9 +1,7 @@
 package vhdl
 
 import (
-	"fmt"
 	"github.com/m-kru/go-thdl/internal/doc/sym"
-	"github.com/m-kru/go-thdl/internal/utils"
 	"log"
 	"os"
 	"sort"
@@ -25,16 +23,16 @@ type Package struct {
 	Consts   map[sym.ID]sym.Symbol
 	Funcs    map[sym.ID]sym.Symbol
 	Procs    map[sym.ID]sym.Symbol
-	Prots    map[sym.ID]sym.Symbol
 	Types    map[sym.ID]sym.Symbol
 	Subtypes map[sym.ID]sym.Symbol
 }
 
-func (p Package) Filepath() string { return p.filepath }
-func (p Package) Key() string      { return p.key }
-func (p Package) Name() string     { return p.name }
-func (p Package) Files() []string  { panic("should never happen") }
-func (p Package) LineNum() uint32  { return p.lineNum }
+func (p Package) Filepath() string       { return p.filepath }
+func (p Package) Key() string            { return p.key }
+func (p Package) Name() string           { return p.name }
+func (p Package) Files() []string        { panic("should never happen") }
+func (p Package) LineNum() uint32        { return p.lineNum }
+func (p Package) OneLineSummary() string { panic("not yet implemented") }
 
 func (p Package) Doc() string {
 	f, err := os.ReadFile(p.filepath)
@@ -110,14 +108,7 @@ func (p Package) Code() string {
 	consts := PkgSortedConstKeys(p)
 	for _, key := range consts {
 		c := p.GetSymbol(key)[0]
-		code := utils.Dewhitespace(c.Code())
-		var s string
-		if utils.IsSingleLine(code) {
-			s = fmt.Sprintf("%s", code)
-		} else {
-			s = fmt.Sprintf("%s ...\n", utils.FirstLine(code))
-		}
-		b.WriteString(s)
+		b.WriteString(c.OneLineSummary())
 	}
 
 	// Functions.
@@ -147,14 +138,7 @@ func (p Package) Code() string {
 	}
 	for _, key := range types {
 		t := p.GetSymbol(key)[0]
-		code := utils.Dewhitespace(t.Code())
-		var s string
-		if utils.IsSingleLine(code) {
-			s = fmt.Sprintf("%s", code)
-		} else {
-			s = fmt.Sprintf("%s ...\n", utils.FirstLine(code))
-		}
-		b.WriteString(s)
+		b.WriteString(t.OneLineSummary())
 	}
 
 	// Subtypes.
@@ -163,15 +147,8 @@ func (p Package) Code() string {
 		b.WriteRune('\n')
 	}
 	for _, key := range subtypes {
-		t := p.GetSymbol(key)[0]
-		code := utils.Dewhitespace(t.Code())
-		var s string
-		if utils.IsSingleLine(code) {
-			s = fmt.Sprintf("%s", code)
-		} else {
-			s = fmt.Sprintf("%s ...\n", utils.FirstLine(code))
-		}
-		b.WriteString(s)
+		s := p.GetSymbol(key)[0]
+		b.WriteString(s.OneLineSummary())
 	}
 
 	return b.String()
@@ -198,8 +175,6 @@ func (p Package) AddSymbol(s sym.Symbol) error {
 		p.Funcs[id] = s
 	case Procedure:
 		p.Procs[id] = s
-	case Protected:
-		p.Prots[id] = s
 	case Type:
 		p.Types[id] = s
 	case Subtype:
@@ -221,9 +196,6 @@ func (p Package) InnerKeys() []string {
 		names = append(names, id.Key)
 	}
 	for id, _ := range p.Procs {
-		names = append(names, id.Key)
-	}
-	for id, _ := range p.Prots {
 		names = append(names, id.Key)
 	}
 	for id, _ := range p.Types {
@@ -250,11 +222,6 @@ func (p Package) GetSymbol(key string) []sym.Symbol {
 		}
 	}
 	for id, s := range p.Procs {
-		if id.Key == key {
-			syms = append(syms, s)
-		}
-	}
-	for id, s := range p.Prots {
 		if id.Key == key {
 			syms = append(syms, s)
 		}

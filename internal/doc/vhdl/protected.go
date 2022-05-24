@@ -32,6 +32,8 @@ func (p Protected) Name() string     { return p.name }
 func (p Protected) Files() []string  { panic("should never happen") }
 func (p Protected) LineNum() uint32  { return p.lineNum }
 
+func (p Protected) kind() string { return "protected" }
+
 func (p Protected) AddSymbol(s sym.Symbol) error {
 	id := sym.ID{Key: s.Key(), LineNum: s.LineNum()}
 
@@ -195,4 +197,18 @@ func (p Protected) DocCode() (string, string) {
 	doc := string(f[p.docStart:p.docEnd])
 
 	return doc, p.Code()
+}
+
+func (p Protected) OneLineSummary() string {
+	f, err := os.ReadFile(p.filepath)
+	if err != nil {
+		log.Fatalf("error reading file %s: %v", p.filepath, err)
+	}
+
+	code := utils.Dewhitespace(string(f[p.codeStart:p.codeEnd]))
+
+	if utils.IsSingleLine(code) {
+		return fmt.Sprintf("%s", code)
+	}
+	return fmt.Sprintf("%s ...\n", utils.FirstLine(code))
 }

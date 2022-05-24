@@ -19,6 +19,7 @@ type Symbol interface {
 	Doc() string
 	Code() string
 	DocCode() (string, string) // Get Doc and Code in one call, no need to read file twice.
+	OneLineSummary() string
 }
 
 // ID is a unique symbol identifier.

@@ -1,6 +1,8 @@
 package vhdl
 
 import (
+	"fmt"
+	"github.com/m-kru/go-thdl/internal/utils"
 	"log"
 	"os"
 )
@@ -54,4 +56,12 @@ func (s symbol) DocCode() (string, string) {
 	code := string(f[s.codeStart:s.codeEnd])
 
 	return doc, code
+}
+
+func (s symbol) OneLineSummary() string {
+	code := utils.Dewhitespace(s.Code())
+	if utils.IsSingleLine(code) {
+		return fmt.Sprintf("%s", code)
+	}
+	return fmt.Sprintf("%s ...\n", utils.FirstLine(code))
 }
