@@ -2,7 +2,6 @@ package html
 
 import (
 	_ "embed"
-	"fmt"
 	"github.com/m-kru/go-thdl/internal/doc/lib"
 	"github.com/m-kru/go-thdl/internal/doc/sym"
 	"github.com/m-kru/go-thdl/internal/doc/vhdl"
@@ -37,9 +36,7 @@ func generateVHDLIndex() {
 	libList.WriteString("    <ul class=\"symbol-list\">\n")
 	for _, l := range vhdlLibs {
 		libList.WriteString(
-			fmt.Sprintf(
-				"      <li><a href=\"%[1]s/index.html\">%[1]s</a></li>\n", l,
-			),
+			spf("      <li><a href=\"%[1]s/index.html\">%[1]s</a></li>\n", l),
 		)
 	}
 	libList.WriteString("    </ul>")
@@ -111,40 +108,40 @@ func generateVHDLLibIndex(name string) {
 	ulEndStr := "    </ul>\n"
 
 	if len(ents) > 0 {
-		smblList.WriteString(fmt.Sprintf("    <h3>Entities (%d)</h3>\n", len(ents)))
+		smblList.WriteString(spf("    <h3>Entities (%d)</h3>\n", len(ents)))
 		smblList.WriteString(ulStr)
 		for _, e := range entNames {
 			count := ""
 			if entUniqueNames[e] > 1 {
-				count = fmt.Sprintf(" (%d)", entUniqueNames[e])
+				count = spf(" (%d)", entUniqueNames[e])
 			}
-			smblList.WriteString(fmt.Sprintf(liStr, strings.ToLower(e), e, count))
+			smblList.WriteString(spf(liStr, strings.ToLower(e), e, count))
 		}
 		smblList.WriteString(ulEndStr)
 	}
 
 	if len(pkgs) > 0 {
-		smblList.WriteString(fmt.Sprintf("    <h3>Packages (%d)</h3>\n", len(pkgs)))
+		smblList.WriteString(spf("    <h3>Packages (%d)</h3>\n", len(pkgs)))
 		smblList.WriteString(ulStr)
 		for _, p := range pkgNames {
 			count := ""
 			if pkgUniqueNames[p] > 1 {
-				count = fmt.Sprintf(" (%d)", pkgUniqueNames[p])
+				count = spf(" (%d)", pkgUniqueNames[p])
 			}
-			smblList.WriteString(fmt.Sprintf(liStr, strings.ToLower(p), p, count))
+			smblList.WriteString(spf(liStr, strings.ToLower(p), p, count))
 		}
 		smblList.WriteString(ulEndStr)
 	}
 
 	if len(tbs) > 0 {
-		smblList.WriteString(fmt.Sprintf("    <h3>Testbenches (%d)</h3>\n", len(tbs)))
+		smblList.WriteString(spf("    <h3>Testbenches (%d)</h3>\n", len(tbs)))
 		smblList.WriteString(ulStr)
 		for _, t := range tbNames {
 			count := ""
 			if tbUniqueNames[t] > 1 {
-				count = fmt.Sprintf(" (%d)", tbUniqueNames[t])
+				count = spf(" (%d)", tbUniqueNames[t])
 			}
-			smblList.WriteString(fmt.Sprintf(liStr, strings.ToLower(t), t, count))
+			smblList.WriteString(spf(liStr, strings.ToLower(t), t, count))
 		}
 		smblList.WriteString(ulEndStr)
 	}
@@ -206,13 +203,13 @@ func generateVHDLLibSymbol(lib *lib.Library, key string) {
 
 	symFmts := SymbolFormatters{
 		Copyright: htmlArgs.Copyright,
-		Path:      fmt.Sprintf("vhdl:%s:%s", lib.Key(), key),
+		Path:      spf("vhdl:%s:%s", lib.Key(), key),
 		Content:   content.String(),
 		Title:     htmlArgs.Title,
 		Topbar:    topbar("vhdl", 2),
 	}
 
-	path := fmt.Sprintf("%svhdl/%s/%s.html", htmlArgs.Path, lib.Name(), key)
+	path := spf("%svhdl/%s/%s.html", htmlArgs.Path, lib.Name(), key)
 	f, err := os.Create(path)
 	if err != nil {
 		log.Fatalf("creating %s file: %v", path, err)
@@ -230,79 +227,81 @@ func generateVHDLLibSymbol(lib *lib.Library, key string) {
 }
 
 // If details is true, the content is put into the html <details> element.
-func generateVHDLEntityContent(ent sym.Symbol, details bool, content *strings.Builder) {
+func generateVHDLEntityContent(ent sym.Symbol, details bool, b *strings.Builder) {
+	bws := b.WriteString
+
 	if details {
-		content.WriteString("  <details>")
-		content.WriteString(fmt.Sprintf("<summary class=\"filepath-summary\">%s</summary>", ent.Filepath()))
-		content.WriteString("  <div class=\"details\">")
+		bws(" <details>")
+		bws(spf("<summary class=\"filepath-summary\">%s</summary>", ent.Filepath()))
+		bws("  <div class=\"details\">")
 	} else {
-		content.WriteString(fmt.Sprintf("<p>%s</p>", ent.Filepath()))
+		bws(spf("<p>%s</p>", ent.Filepath()))
 	}
 
-	content.WriteString(
-		fmt.Sprintf("  <p class=\"doc\">%s</p>", utils.VHDLDeindentDecomment(ent.Doc())),
+	bws(
+		spf("  <p class=\"doc\">%s</p>", utils.VHDLDeindentDecomment(ent.Doc())),
 	)
-	content.WriteString(fmt.Sprintf("  <p class=\"code\">%s</p>", utils.VHDLHTMLBold(ent.Code())))
+	bws(spf("  <p class=\"code\">%s</p>", utils.VHDLHTMLBold(ent.Code())))
 
 	if details {
-		content.WriteString("  </div>")
-		content.WriteString("  </details>")
+		bws("  </div>")
+		bws("  </details>")
 	}
 }
 
-func genVHDLPkgContent(pkg sym.Symbol, details bool, content *strings.Builder) {
+func genVHDLPkgContent(pkg sym.Symbol, details bool, b *strings.Builder) {
+	bws := b.WriteString
+
 	if details {
-		content.WriteString("  <details>\n")
-		content.WriteString(fmt.Sprintf("<summary class=\"filepath-summary\">%s</summary>\n", pkg.Filepath()))
-		content.WriteString("  <div class=\"details\">\n")
+		bws("  <details>\n")
+		bws(spf("<summary class=\"filepath-summary\">%s</summary>\n", pkg.Filepath()))
+		bws("  <div class=\"details\">\n")
 	} else {
-		content.WriteString(fmt.Sprintf("<p>%s</p>", pkg.Filepath()))
+		bws(spf("<p>%s</p>", pkg.Filepath()))
 	}
 
-	content.WriteString(
-		fmt.Sprintf("  <h3>Package %s</h3>\n", pkg.Name()),
+	bws(
+		spf("  <h3>Package %s</h3>\n", pkg.Name()),
 	)
 
-	content.WriteString(
-		fmt.Sprintf("  <p class=\"doc\">%s</p>\n", utils.VHDLDeindentDecomment(pkg.Doc())),
+	bws(
+		spf("  <p class=\"doc\">%s</p>\n", utils.VHDLDeindentDecomment(pkg.Doc())),
 	)
 
-	genVHDLPkgUniqueSymbolsContent(pkg.(vhdl.Package), "Constants", content)
-	genVHDLPkgOverloadedSymbolsContent(pkg.(vhdl.Package), "Functions", content)
-	genVHDLPkgOverloadedSymbolsContent(pkg.(vhdl.Package), "Procedures", content)
-	genVHDLPkgUniqueSymbolsContent(pkg.(vhdl.Package), "Types", content)
-	genVHDLPkgUniqueSymbolsContent(pkg.(vhdl.Package), "Subtypes", content)
+	genVHDLPkgUniqueSymbolsContent(pkg.(vhdl.Package), "Constants", b)
+	genVHDLPkgOverloadedSymbolsContent(pkg.(vhdl.Package), "Functions", b)
+	genVHDLPkgOverloadedSymbolsContent(pkg.(vhdl.Package), "Procedures", b)
+	genVHDLPkgUniqueSymbolsContent(pkg.(vhdl.Package), "Types", b)
+	genVHDLPkgUniqueSymbolsContent(pkg.(vhdl.Package), "Subtypes", b)
 
 	if details {
-		content.WriteString("  </div>\n")
-		content.WriteString("  </details>\n")
+		bws("  </div>\n")
+		bws("  </details>\n")
 	}
 }
 
-func genVHDLUniqueSymbolContent(sym sym.Symbol, summary string, content *strings.Builder) {
+func genVHDLUniqueSymbolContent(sym sym.Symbol, summary string, b *strings.Builder) {
 	doc := utils.Deindent(sym.Doc())
 	code := utils.Deindent(sym.Code())
 
 	isSingleLine := utils.IsSingleLine(code)
 
+	bws := b.WriteString
+
 	if len(doc) > 0 || !isSingleLine {
-		content.WriteString("  <details>\n")
-		content.WriteString(
-			fmt.Sprintf("<summary class=\"code-summary\">%s</summary>\n", utils.VHDLHTMLBold(summary)),
-		)
-		content.WriteString("  <div class=\"details\">\n")
+		bws("<details>\n")
+		bws(spf("<summary class=\"code-summary\">%s</summary>\n", utils.VHDLHTMLBold(summary)))
+		bws("<div class=\"details\">\n")
 		if len(doc) > 0 {
-			content.WriteString(fmt.Sprintf("  <p class=\"doc\">%s</p>", utils.VHDLDecomment(doc)))
+			bws(spf("<p class=\"doc\">%s</p>\n", utils.VHDLDecomment(doc)))
 		}
 		if !isSingleLine {
-			content.WriteString(fmt.Sprintf("  <p class=\"code\">%s</p>", utils.VHDLHTMLBold(code)))
+			bws(spf("<p class=\"code\">%s</p>\n", utils.VHDLHTMLBold(code)))
 		}
-		content.WriteString("  </div>\n")
-		content.WriteString("  </details>\n")
+		bws("</div>\n")
+		bws("</details>\n")
 	} else {
-		content.WriteString(
-			fmt.Sprintf("<p class=\"code-summary summary-align\">%s</p>\n", " "+utils.VHDLHTMLBold(summary)),
-		)
+		bws(spf("<p class=\"code-summary summary-align\">%s</p>\n", " "+utils.VHDLHTMLBold(summary)))
 	}
 }
 
@@ -320,7 +319,7 @@ func genVHDLPkgUniqueSymbolsContent(pkg vhdl.Package, class string, content *str
 	}
 
 	if len(keys) > 0 {
-		content.WriteString(fmt.Sprintf("  <h4>%s</h4>\n", class))
+		content.WriteString(spf("  <h4>%s</h4>\n", class))
 	}
 
 	for _, key := range keys {
@@ -329,43 +328,41 @@ func genVHDLPkgUniqueSymbolsContent(pkg vhdl.Package, class string, content *str
 	}
 }
 
-func genVHDLOverloadedSymbolContent(syms []sym.Symbol, summary string, content *strings.Builder) {
+func genVHDLOverloadedSymbolContent(syms []sym.Symbol, summary string, b *strings.Builder) {
+	bws := b.WriteString
+
 	if len(syms) == 1 && utils.IsSingleLine(syms[0].Code()) && len(syms[0].Doc()) == 0 {
-		content.WriteString(
-			fmt.Sprintf("<p class=\"code-summary summary-align\">%s</p>\n", " "+utils.VHDLHTMLBold(summary)),
+		bws(
+			spf("<p class=\"code-summary summary-align\">%s</p>\n", " "+utils.VHDLHTMLBold(summary)),
 		)
 	} else if len(syms) == 1 && utils.IsSingleLine(syms[0].Code()) {
 		doc := syms[0].Doc()
 
-		content.WriteString("  <details>\n")
-		content.WriteString(
-			fmt.Sprintf("<summary class=\"code-summary\">%s</summary>\n", utils.VHDLHTMLBold(summary)),
-		)
-		content.WriteString("  <div class=\"details\">\n")
+		bws("  <details>\n")
+		bws(spf("<summary class=\"code-summary\">%s</summary>\n", utils.VHDLHTMLBold(summary)))
+		bws("  <div class=\"details\">\n")
 		if len(doc) > 0 {
-			content.WriteString(fmt.Sprintf("  <p class=\"doc\">%s</p>", utils.VHDLDeindentDecomment(doc)))
+			bws(spf("  <p class=\"doc\">%s</p>", utils.VHDLDeindentDecomment(doc)))
 		}
-		content.WriteString("  </div>\n")
-		content.WriteString("  </details>\n")
+		bws("  </div>\n")
+		bws("  </details>\n")
 	} else {
 		sym.SortByLineNum(syms)
-		content.WriteString("  <details>\n")
-		content.WriteString(
-			fmt.Sprintf("<summary class=\"code-summary\">%s</summary>\n", utils.VHDLHTMLBold(summary)),
-		)
-		content.WriteString("  <div class=\"details\">\n")
+		bws("  <details>\n")
+		bws(spf("<summary class=\"code-summary\">%s</summary>\n", utils.VHDLHTMLBold(summary)))
+		bws("  <div class=\"details\">\n")
 
 		for _, sym := range syms {
 			doc := sym.Doc()
 			code := utils.Deindent(sym.Code())
 			if len(doc) > 0 {
-				content.WriteString(fmt.Sprintf("  <p class=\"doc\">%s</p>", utils.VHDLDeindentDecomment(doc)))
+				bws(spf("  <p class=\"doc\">%s</p>", utils.VHDLDeindentDecomment(doc)))
 			}
-			content.WriteString(fmt.Sprintf("  <p class=\"code\">%s</p>", utils.VHDLHTMLBold(code)))
+			bws(spf("  <p class=\"code\">%s</p>", utils.VHDLHTMLBold(code)))
 		}
 
-		content.WriteString("  </div>\n")
-		content.WriteString("  </details>\n")
+		bws("  </div>\n")
+		bws("  </details>\n")
 	}
 }
 
@@ -381,7 +378,7 @@ func genVHDLPkgOverloadedSymbolsContent(pkg vhdl.Package, class string, content 
 	}
 
 	if len(keys) > 0 {
-		content.WriteString(fmt.Sprintf("  <h4>%s</h4>\n", class))
+		content.WriteString(spf("  <h4>%s</h4>\n", class))
 	}
 
 	var summary string
