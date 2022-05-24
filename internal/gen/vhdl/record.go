@@ -76,8 +76,9 @@ func (r *record) GenDefinitions(gens map[string]gen.Generable) string {
 	b := strings.Builder{}
 
 	r.genToRecordDefinition(&b)
+	b.WriteRune('\n')
+	r.genToSlvDefinition(&b)
 	/*
-			e.genToSlvDefinition(&b)
 		if !r.noToStr {
 			e.genToStrDefinition(&b)
 		}
@@ -107,6 +108,22 @@ func (r *record) genToRecordDefinition(b *strings.Builder) {
 	}
 
 	bws(spf("      return %s;\n", varName))
+	bws("   end function;\n")
+}
+
+func (r *record) genToSlvDefinition(b *strings.Builder) {
+	name := funcParamName(r.name)
+	bws := b.WriteString
+	bws(spf("   function to_slv(%s : %s) return std_logic_vector is\n", name, r.name))
+	width := r.Width() - 1
+	bws(spf("      variable slv : std_logic_vector(%d downto 0);\n", width))
+	bws("   begin\n")
+
+	for i, _ := range r.fields {
+		width = r.fieldToSlv(i, b, width)
+	}
+
+	bws("      return slv;\n")
 	bws("   end function;\n")
 }
 
@@ -146,6 +163,37 @@ func (r *record) slvToField(idx int, b *strings.Builder, width int) int {
 		bws(spf("      %s.%s := slv(%d downto %d);\n", varName, f.name, width, width-f.width+1))
 	case "signed", "unsigned":
 		bws(spf("      %s.%s := %s(slv(%d downto %d));\n", varName, f.name, typ, width, width-f.width+1))
+	default:
+		panic("not yet implemented")
+	}
+
+	width -= f.width
+
+	return width
+}
+
+func (r *record) fieldToSlv(idx int, b *strings.Builder, width int) int {
+	bws := b.WriteString
+	varName := funcParamName(r.name)
+
+	f := r.fields[idx]
+	typ := f.typ
+
+	switch typ {
+	case "std_logic", "std_ulogic":
+		bws(spf("      slv(%d) := %s.%s;\n", width, varName, f.name))
+	case "bit":
+		bws(spf("      if %[1]s.%[2]s = '1' then slv(%[3]d) := '1'; else slv(%[3]d) := '0'; end if;\n", varName, f.name, width))
+	case "boolean":
+		bws(spf("      if %[1]s.%[2]s then slv(%[3]d) := '1'; else slv(%[3]d) := '0'; end if;\n", varName, f.name, width))
+	case "integer":
+		bws(spf("      slv(%d downto %d) := std_logic_vector(to_signed(%s.%s, 32));\n", width, width-f.width+1, varName, f.name))
+	case "natural", "positive":
+		bws(spf("      slv(%d downto %d) := std_logic_vector(to_unsigned(%s.%s, 32));\n", width, width-f.width+1, varName, f.name))
+	case "std_logic_vector", "std_ulogic_vector":
+		bws(spf("      slv(%d downto %d) := %s.%s;\n", width, width-f.width+1, varName, f.name))
+	case "signed", "unsigned":
+		bws(spf("      slv(%d downto %d) := std_logic_vector(%s.%s);\n", width, width-f.width+1, varName, f.name))
 	default:
 		panic("not yet implemented")
 	}

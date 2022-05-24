@@ -1,13 +1,13 @@
 library ieee;
    use ieee.std_logic_1164.all;
+   use ieee.numeric_std.all;
 
 package p is
    --thdl:gen
    type t_rec is record
-      bi : bit;
-      bo : boolean;
-      sl : std_logic;
-      su : std_ulogic;
+      i : integer;
+      n : natural;
+      p : positive;
    end record;
 end package;
 

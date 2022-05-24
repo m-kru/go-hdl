@@ -4,10 +4,10 @@ library ieee;
 package p is
    --thdl:gen
    type t_rec is record
-      bi : bit;
-      bo : boolean;
-      sl : std_logic;
-      su : std_ulogic;
+      slv : std_logic_vector(0 downto 0);
+      suv : std_ulogic_vector(1 downto 0);
+      si  : signed(2 downto 0);
+      su  : unsigned(3 downto 0);
    end record;
 end package;
 
