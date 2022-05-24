@@ -16,7 +16,7 @@ func Generate(args args.HTMLArgs) {
 		log.Fatalf("making html directory: %v", err)
 	}
 
-	generateCSS()
+	genCSS()
 
 	if htmlArgs.Copyright != "" {
 		htmlArgs.Copyright = "&copy; " + htmlArgs.Copyright
@@ -25,6 +25,6 @@ func Generate(args args.HTMLArgs) {
 		htmlArgs.Title = "THDL Documentation"
 	}
 
-	generateIndex()
-	generateVHDL()
+	genIndex()
+	genVHDL()
 }

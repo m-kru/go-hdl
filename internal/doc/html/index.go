@@ -21,7 +21,7 @@ type indexFormatters struct {
 	Topbar      string
 }
 
-func generateIndex() {
+func genIndex() {
 	f, err := os.Create(htmlArgs.Path + "index.html")
 	if err != nil {
 		log.Fatalf("creating index.html file: %v", err)

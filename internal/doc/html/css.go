@@ -13,7 +13,7 @@ var cssStyleTmpl = template.Must(template.New("style.css").Parse(cssStyleStr))
 
 type cssFormatters struct{}
 
-func generateCSS() {
+func genCSS() {
 	err := os.MkdirAll(htmlArgs.Path+"css", 0775)
 	if err != nil {
 		log.Fatalf("making css directory: %v", err)
