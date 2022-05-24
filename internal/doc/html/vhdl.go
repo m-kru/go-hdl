@@ -273,7 +273,10 @@ func genVHDLPkgContent(pkg sym.Symbol, details bool, b *strings.Builder) {
 	}
 }
 
-func genVHDLUniqueSymbolContent(sym sym.Symbol, summary string, b *strings.Builder) {
+func genVHDLUniqueSymbolContent(pkg vhdl.Package, key string, b *strings.Builder) {
+	sym := pkg.GetSymbol(key)[0]
+	summary := sym.OneLineSummary()
+
 	doc := utils.Deindent(sym.Doc())
 	code := utils.Deindent(sym.Code())
 
@@ -284,7 +287,7 @@ func genVHDLUniqueSymbolContent(sym sym.Symbol, summary string, b *strings.Build
 	aPrefix := ""
 	aSuffix := ""
 	if _, ok := sym.(vhdl.Protected); ok {
-		aPrefix = spf("<a href=\"%s\">", sym.Name())
+		aPrefix = spf("<a href=\"%s_%s\">", pkg.Key(), sym.Key())
 		aSuffix = "</a>"
 	}
 
@@ -324,12 +327,11 @@ func genVHDLPkgUniqueSymbolsContent(pkg vhdl.Package, class string, content *str
 	}
 
 	if len(keys) > 0 {
-		content.WriteString(spf("  <h4>%s</h4>", class))
+		content.WriteString(spf("<h4>%s</h4>", class))
 	}
 
 	for _, key := range keys {
-		sym := pkg.GetSymbol(key)[0]
-		genVHDLUniqueSymbolContent(sym, sym.OneLineSummary(), content)
+		genVHDLUniqueSymbolContent(pkg, key, content)
 	}
 }
 
