@@ -3,6 +3,7 @@ package vhdl
 import (
 	"fmt"
 	"github.com/m-kru/go-thdl/internal/enc"
+	"github.com/m-kru/go-thdl/internal/gen/gen"
 	"math"
 	"strings"
 )
@@ -28,7 +29,7 @@ func (e *enum) Width() int {
 	}
 }
 
-func (e *enum) GenDeclarations() string {
+func (e *enum) GenDeclarations(gens map[string]gen.Generable) string {
 	b := strings.Builder{}
 
 	e.genToEnumDeclaration(&b)
@@ -68,7 +69,7 @@ func (e *enum) genToStrDeclaration(b *strings.Builder) {
 	)
 }
 
-func (e *enum) GenDefinitions() string {
+func (e *enum) GenDefinitions(gens map[string]gen.Generable) string {
 	b := strings.Builder{}
 
 	e.genToEnumDefinition(&b)

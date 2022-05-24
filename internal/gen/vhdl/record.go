@@ -2,6 +2,7 @@ package vhdl
 
 import (
 	"fmt"
+	"github.com/m-kru/go-thdl/internal/gen/gen"
 	"strings"
 )
 
@@ -29,7 +30,7 @@ func (r *record) Width() int {
 	return width
 }
 
-func (r *record) GenDeclarations() string {
+func (r *record) GenDeclarations(gens map[string]gen.Generable) string {
 	b := strings.Builder{}
 
 	r.genToRecordDeclaration(&b)
@@ -71,7 +72,7 @@ func (r *record) genToStrDeclaration(b *strings.Builder) {
 	)
 }
 
-func (r *record) GenDefinitions() string {
+func (r *record) GenDefinitions(gens map[string]gen.Generable) string {
 	b := strings.Builder{}
 
 	r.genToRecordDefinition(&b)
