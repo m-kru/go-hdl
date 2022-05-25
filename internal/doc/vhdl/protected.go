@@ -218,3 +218,29 @@ func (p Protected) OneLineSummary() string {
 func (p Protected) Path() string {
 	return p.parent.Path() + "." + p.name
 }
+
+func (p Protected) SortedFuncKeys() []string {
+	uniqueFuncs := map[string]bool{}
+	for id, _ := range p.Funcs {
+		uniqueFuncs[id.Key] = true
+	}
+	funcs := []string{}
+	for name, _ := range uniqueFuncs {
+		funcs = append(funcs, name)
+	}
+	sort.Strings(funcs)
+	return funcs
+}
+
+func (p Protected) SortedProcKeys() []string {
+	uniqueProcs := map[string]bool{}
+	for id, _ := range p.Procs {
+		uniqueProcs[id.Key] = true
+	}
+	procs := []string{}
+	for name, _ := range uniqueProcs {
+		procs = append(procs, name)
+	}
+	sort.Strings(procs)
+	return procs
+}

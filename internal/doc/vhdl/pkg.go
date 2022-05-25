@@ -55,8 +55,7 @@ func PkgSortedConstKeys(p Package) []string {
 	return consts
 }
 
-// PkgSortedFuncKeys returns function keys in alphabetical order.
-func PkgSortedFuncKeys(p Package) []string {
+func (p Package) SortedFuncKeys() []string {
 	uniqueFuncs := map[string]bool{}
 	for id, _ := range p.Funcs {
 		uniqueFuncs[id.Key] = true
@@ -69,8 +68,7 @@ func PkgSortedFuncKeys(p Package) []string {
 	return funcs
 }
 
-// PkgSortedProcKeys returns procedure keys in alphabetical order.
-func PkgSortedProcKeys(p Package) []string {
+func (p Package) SortedProcKeys() []string {
 	uniqueProcs := map[string]bool{}
 	for id, _ := range p.Procs {
 		uniqueProcs[id.Key] = true
@@ -114,7 +112,7 @@ func (p Package) Code() string {
 	}
 
 	// Functions.
-	funcs := PkgSortedFuncKeys(p)
+	funcs := p.SortedFuncKeys()
 	if len(funcs) > 0 && b.Len() > 0 {
 		b.WriteRune('\n')
 	}
@@ -124,7 +122,7 @@ func (p Package) Code() string {
 	}
 
 	// Procedures.
-	procs := PkgSortedProcKeys(p)
+	procs := p.SortedProcKeys()
 	if len(procs) > 0 && b.Len() > 0 {
 		b.WriteRune('\n')
 	}

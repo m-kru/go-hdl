@@ -8,7 +8,9 @@ import (
 	"github.com/m-kru/go-thdl/internal/utils"
 	"golang.org/x/exp/maps"
 	"log"
+	"math/rand"
 	"os"
+	"path"
 	"sort"
 	"strings"
 )
@@ -268,8 +270,8 @@ func genVHDLPkgContent(pkg sym.Symbol, details bool, b *strings.Builder) {
 	bws(spf("<p class=\"doc\">%s</p>", utils.VHDLDeindentDecomment(pkg.Doc())))
 
 	genVHDLPkgUniqueSymbolsContent(pkg.(vhdl.Package), "Constants", b)
-	genVHDLPkgOverloadedSymbolsContent(pkg.(vhdl.Package), "Functions", b)
-	genVHDLPkgOverloadedSymbolsContent(pkg.(vhdl.Package), "Procedures", b)
+	genVHDLOverloadedSymbolsContent(pkg.(vhdl.Package), "Functions", b)
+	genVHDLOverloadedSymbolsContent(pkg.(vhdl.Package), "Procedures", b)
 	genVHDLPkgUniqueSymbolsContent(pkg.(vhdl.Package), "Types", b)
 	genVHDLPkgUniqueSymbolsContent(pkg.(vhdl.Package), "Subtypes", b)
 
@@ -298,6 +300,48 @@ func genVHDLPkgInstContent(pkg sym.Symbol, details bool, b *strings.Builder) {
 	}
 }
 
+func genVHDLProtectedType(prot vhdl.Protected, rand uint32) {
+	b := strings.Builder{}
+	bws := b.WriteString
+
+	bws(spf("<h3>Protected %s</h3>", prot.Name()))
+	bws(spf("<p class=\"doc\">%s</p>", utils.VHDLDeindentDecomment(prot.Doc())))
+
+	genVHDLOverloadedSymbolsContent(prot, "Functions", &b)
+	genVHDLOverloadedSymbolsContent(prot, "Procedures", &b)
+
+	symFmts := SymbolFormatters{
+		Copyright: htmlArgs.Copyright,
+		Path:      prot.Path(),
+		Content:   b.String(),
+		Title:     htmlArgs.Title,
+		Topbar:    topbar("vhdl", 2),
+	}
+
+	filePath := strings.ToLower(prot.Path())
+	filePath = strings.Replace(filePath, ":", ".", -1)
+	elems := strings.Split(filePath, ".")
+	elems = elems[0 : len(elems)-2]
+	elems = append(elems, prot.Key())
+	filePath = path.Join(elems...)
+
+	filePath = spf("%s_%d.html", filePath, rand)
+	f, err := os.Create(htmlArgs.Path + filePath)
+	if err != nil {
+		log.Fatalf("creating %s file: %v", filePath, err)
+	}
+
+	err = symbolTmpl.Execute(f, symFmts)
+	if err != nil {
+		log.Fatalf("generating %s file: %v", filePath, err)
+	}
+
+	err = f.Close()
+	if err != nil {
+		log.Fatalf("closing %s file: %v", filePath, err)
+	}
+}
+
 func genVHDLUniqueSymbolContent(pkg vhdl.Package, key string, b *strings.Builder) {
 	sym := pkg.GetSymbol(key)[0]
 	summary := sym.OneLineSummary()
@@ -312,7 +356,9 @@ func genVHDLUniqueSymbolContent(pkg vhdl.Package, key string, b *strings.Builder
 	aPrefix := ""
 	aSuffix := ""
 	if _, ok := sym.(vhdl.Protected); ok {
-		aPrefix = spf("<a href=\"%s_%s\">", pkg.Key(), sym.Key())
+		rand := rand.Uint32()
+		genVHDLProtectedType(sym.(vhdl.Protected), rand)
+		aPrefix = spf("<a href=\"%s_%d.html\">", sym.Key(), rand)
 		aSuffix = "</a>"
 	}
 
@@ -397,13 +443,13 @@ func genVHDLOverloadedSymbolContent(syms []sym.Symbol, summary string, b *string
 	}
 }
 
-func genVHDLPkgOverloadedSymbolsContent(pkg vhdl.Package, class string, content *strings.Builder) {
+func genVHDLOverloadedSymbolsContent(sc vhdl.SubprogramsContainer, class string, content *strings.Builder) {
 	var keys []string
 	switch class {
 	case "Functions":
-		keys = vhdl.PkgSortedFuncKeys(pkg)
+		keys = sc.SortedFuncKeys()
 	case "Procedures":
-		keys = vhdl.PkgSortedProcKeys(pkg)
+		keys = sc.SortedProcKeys()
 	default:
 		panic("should never happen")
 	}
@@ -417,10 +463,10 @@ func genVHDLPkgOverloadedSymbolsContent(pkg vhdl.Package, class string, content 
 	for _, key := range keys {
 		switch class {
 		case "Functions":
-			syms = pkg.GetFunc(key)
+			syms = sc.GetFunc(key)
 			summary = vhdl.FuncsCodeSummary(syms)
 		case "Procedures":
-			syms = pkg.GetProc(key)
+			syms = sc.GetProc(key)
 			summary = vhdl.ProcsCodeSummary(syms)
 		default:
 			panic("should never happen")
