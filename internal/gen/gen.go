@@ -4,7 +4,6 @@ import (
 	"github.com/m-kru/go-thdl/internal/args"
 	"github.com/m-kru/go-thdl/internal/gen/vhdl"
 	"github.com/m-kru/go-thdl/internal/utils"
-	"log"
 	"strings"
 	"sync"
 )
@@ -17,7 +16,6 @@ func Gen(args args.GenArgs) {
 	var wg sync.WaitGroup
 	defer wg.Wait()
 
-	var err error
 	vhdlFiles := []string{}
 
 	if genArgs.Filepath != "" {
@@ -25,10 +23,7 @@ func Gen(args args.GenArgs) {
 			vhdlFiles = append(vhdlFiles, genArgs.Filepath)
 		}
 	} else {
-		vhdlFiles, err = utils.GetFilePathsByExtension(".vhd", ".")
-		if err != nil {
-			log.Fatalf("%v", err)
-		}
+		vhdlFiles = utils.GetVHDLFilePaths()
 	}
 
 	wg.Add(1)

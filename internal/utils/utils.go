@@ -4,6 +4,7 @@ package utils
 import (
 	"fmt"
 	"io/fs"
+	"log"
 	"path/filepath"
 	"strings"
 )
@@ -38,6 +39,20 @@ func GetFilePathsByExtension(ext string, workDir string) ([]string, error) {
 	}
 
 	return files, nil
+}
+
+func GetVHDLFilePaths() []string {
+	vhdFiles, err := GetFilePathsByExtension(".vhd", ".")
+	if err != nil {
+		log.Fatalf("%v", err)
+	}
+	vhdlFiles, err := GetFilePathsByExtension(".vhdl", ".")
+	if err != nil {
+		log.Fatalf("%v", err)
+	}
+	vhdlFiles = append(vhdlFiles, vhdFiles...)
+
+	return vhdlFiles
 }
 
 // IsIgnoredVHDLFile returns true if given file should be ignored.

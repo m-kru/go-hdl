@@ -76,11 +76,9 @@ func ScanFiles() {
 	var wg sync.WaitGroup
 	defer wg.Wait()
 
-	vhdlFiles, err := utils.GetFilePathsByExtension(".vhd", ".")
-	if err != nil {
-		log.Fatalf("%v", err)
-	}
+	vhdlFiles := utils.GetVHDLFilePaths()
 	vhdlFiles = docArgs.FilterIgnored(vhdlFiles)
+
 	wg.Add(1)
 	vhdl.ScanFiles(docArgs, vhdlFiles, &wg)
 }
