@@ -218,20 +218,20 @@ func genVHDLLibSymbol(lib *lib.Library, key string) {
 		Topbar:    topbar("vhdl", 2),
 	}
 
-	path := path.Join(htmlArgs.Path, "vhdl", lib.Name(), spf("%s.html", key))
-	f, err := os.Create(path)
+	filePath := path.Join(htmlArgs.Path, "vhdl", lib.Name(), spf("%s.html", key))
+	f, err := os.Create(filePath)
 	if err != nil {
-		log.Fatalf("creating %s file: %v", path, err)
+		log.Fatalf("creating %s file: %v", filePath, err)
 	}
 
 	err = symbolTmpl.Execute(f, symFmts)
 	if err != nil {
-		log.Fatalf("generating %s file: %v", path, err)
+		log.Fatalf("generating %s file: %v", filePath, err)
 	}
 
 	err = f.Close()
 	if err != nil {
-		log.Fatalf("closing %s file: %v", path, err)
+		log.Fatalf("closing %s file: %v", filePath, err)
 	}
 }
 
