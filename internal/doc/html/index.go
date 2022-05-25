@@ -6,6 +6,7 @@ import (
 	"github.com/m-kru/go-thdl/internal/doc/vhdl"
 	"log"
 	"os"
+	"path"
 	"strings"
 	"text/template"
 )
@@ -22,7 +23,7 @@ type indexFormatters struct {
 }
 
 func genIndex() {
-	f, err := os.Create(htmlArgs.Path + "index.html")
+	f, err := os.Create(path.Join(htmlArgs.Path + "index.html"))
 	if err != nil {
 		log.Fatalf("creating index.html file: %v", err)
 	}

@@ -22,7 +22,7 @@ func genVHDL() {
 		return
 	}
 
-	err := os.MkdirAll(htmlArgs.Path+"vhdl", 0775)
+	err := os.MkdirAll(path.Join(htmlArgs.Path, "vhdl"), 0775)
 	if err != nil {
 		log.Fatalf("making vhdl directory: %v", err)
 	}
@@ -51,7 +51,7 @@ func genVHDLIndex() {
 		Topbar:      topbar("vhdl", 1),
 	}
 
-	f, err := os.Create(htmlArgs.Path + "vhdl/index.html")
+	f, err := os.Create(path.Join(htmlArgs.Path, "vhdl", "index.html"))
 	if err != nil {
 		log.Fatalf("creating vhdl/index.html file: %v", err)
 	}
@@ -74,7 +74,7 @@ func genVHDLLibs() {
 }
 
 func genVHDLLib(name string) {
-	err := os.MkdirAll(htmlArgs.Path+"vhdl/"+name, 0775)
+	err := os.MkdirAll(path.Join(htmlArgs.Path, "vhdl", name), 0775)
 	if err != nil {
 		log.Fatalf("making vhdl/%s directory: %v", name, err)
 	}
@@ -156,7 +156,7 @@ func genVHDLLibIndex(name string) {
 		Topbar:     topbar("vhdl", 2),
 	}
 
-	f, err := os.Create(htmlArgs.Path + "vhdl/" + name + "/index.html")
+	f, err := os.Create(path.Join(htmlArgs.Path, "vhdl", name, "index.html"))
 	if err != nil {
 		log.Fatalf("creating vhdl/%s/index.html file: %v", name, err)
 	}
@@ -218,7 +218,7 @@ func genVHDLLibSymbol(lib *lib.Library, key string) {
 		Topbar:    topbar("vhdl", 2),
 	}
 
-	path := spf("%svhdl/%s/%s.html", htmlArgs.Path, lib.Name(), key)
+	path := path.Join(htmlArgs.Path, "vhdl", lib.Name(), spf("%s.html", key))
 	f, err := os.Create(path)
 	if err != nil {
 		log.Fatalf("creating %s file: %v", path, err)
@@ -326,7 +326,7 @@ func genVHDLProtectedType(prot vhdl.Protected, rand uint32) {
 	filePath = path.Join(elems...)
 
 	filePath = spf("%s_%d.html", filePath, rand)
-	f, err := os.Create(htmlArgs.Path + filePath)
+	f, err := os.Create(path.Join(htmlArgs.Path, filePath))
 	if err != nil {
 		log.Fatalf("creating %s file: %v", filePath, err)
 	}
