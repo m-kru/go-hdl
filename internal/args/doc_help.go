@@ -92,4 +92,13 @@ To document a library provide 'doc.<langugeExtension>' file within the library.
 For example, to document a VHDL library provide 'doc.vhd' file. Each library
 can have only one doc file. If more than one doc file is found per library,
 then the error is reported.
+
+
+HTML Style
+----------
+Generated HTML style can be customized via style.css file located in the
+generated css directory. One can edit style.css or replace it with
+completely different one. For example, if your company uses particular
+colors and you generate documentation using CI/CD tool, then prepare custom
+style.css file and overwrite the generated one with cp command.
 `
