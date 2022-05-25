@@ -196,8 +196,10 @@ func genVHDLLibSymbol(lib *lib.Library, key string) {
 			genVHDLEntityContent(s, details, &content)
 		case vhdl.Package:
 			genVHDLPkgContent(s, details, &content)
+		case vhdl.PackageInstantiation:
+			genVHDLPkgInstContent(s, details, &content)
 		default:
-			//panic("should never happen")
+			panic("should never happen")
 		}
 	}
 
@@ -243,9 +245,7 @@ func genVHDLEntityContent(ent sym.Symbol, details bool, b *strings.Builder) {
 		bws(spf("<p>%s</p>", ent.Filepath()))
 	}
 
-	bws(
-		spf("<p class=\"doc\">%s</p>", utils.VHDLDeindentDecomment(ent.Doc())),
-	)
+	bws(spf("<p class=\"doc\">%s</p>", utils.VHDLDeindentDecomment(ent.Doc())))
 	bws(spf("<p class=\"code\">%s</p>", utils.VHDLHTMLBold(ent.Code())))
 
 	if details {
@@ -272,6 +272,26 @@ func genVHDLPkgContent(pkg sym.Symbol, details bool, b *strings.Builder) {
 	genVHDLPkgOverloadedSymbolsContent(pkg.(vhdl.Package), "Procedures", b)
 	genVHDLPkgUniqueSymbolsContent(pkg.(vhdl.Package), "Types", b)
 	genVHDLPkgUniqueSymbolsContent(pkg.(vhdl.Package), "Subtypes", b)
+
+	if details {
+		bws("</div></details>")
+	}
+}
+
+func genVHDLPkgInstContent(pkg sym.Symbol, details bool, b *strings.Builder) {
+	bws := b.WriteString
+
+	if details {
+		bws("<details>")
+		bws(spf("<summary class=\"filepath-summary\">%s</summary>", pkg.Filepath()))
+		bws("<div class=\"details\">")
+	} else {
+		bws(spf("<p>%s</p>", pkg.Filepath()))
+	}
+
+	bws(spf("<h3>Package %s</h3>", pkg.Name()))
+	bws(spf("<p class=\"doc\">%s</p>", utils.VHDLDeindentDecomment(pkg.Doc())))
+	bws(spf("<p class=\"code\">%s</p>", utils.VHDLHTMLBold(pkg.Code())))
 
 	if details {
 		bws("</div></details>")
