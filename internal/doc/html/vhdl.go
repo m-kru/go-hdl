@@ -148,7 +148,7 @@ func genVHDLLibIndex(name string) {
 
 	libFmts := LibFormatters{
 		Copyright:  htmlArgs.Copyright,
-		Path:       "vhdl:" + name,
+		Path:       lib.Path(),
 		SymbolList: smblList.String(),
 		Title:      htmlArgs.Title,
 		Topbar:     topbar("vhdl", 2),
@@ -201,9 +201,14 @@ func genVHDLLibSymbol(lib *lib.Library, key string) {
 		}
 	}
 
+	symPath := syms[0].Path()
+	if len(syms) > 1 {
+		symPath = spf("%s.%s", lib.Path(), key)
+	}
+
 	symFmts := SymbolFormatters{
 		Copyright: htmlArgs.Copyright,
-		Path:      spf("vhdl:%s:%s", lib.Key(), key),
+		Path:      symPath,
 		Content:   content.String(),
 		Title:     htmlArgs.Title,
 		Topbar:    topbar("vhdl", 2),

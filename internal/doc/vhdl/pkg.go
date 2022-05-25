@@ -9,6 +9,8 @@ import (
 )
 
 type Package struct {
+	parent sym.Symbol
+
 	filepath string
 	key      string
 	name     string
@@ -262,4 +264,8 @@ func (p Package) GetProc(key string) []sym.Symbol {
 	}
 
 	return syms
+}
+
+func (p Package) Path() string {
+	return p.parent.Path() + "." + p.name
 }

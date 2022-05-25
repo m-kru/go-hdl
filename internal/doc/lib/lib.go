@@ -34,12 +34,12 @@ func (l *Library) DocCode() (string, string) { return l.Doc(), l.Code() }
 func (l *Library) OneLineSummary() string    { panic("not yet implemented") }
 func (l *Library) LineNum() uint32           { panic("should never happen") }
 
-func MakeLibrary(lang string, name string, ls LibrarySummary) Library {
+func MakeLibrary(lang string, name string, ls LibrarySummary) *Library {
 	if !utils.IsValidLang(lang) {
 		panic("invalid language")
 	}
 
-	return Library{
+	return &Library{
 		lang:       lang,
 		name:       name,
 		files:      []string{},
@@ -121,4 +121,8 @@ func (l *Library) Doc() string {
 	}
 
 	return string(f)
+}
+
+func (l *Library) Path() string {
+	return l.lang + ":" + l.name
 }

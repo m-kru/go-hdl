@@ -2,6 +2,7 @@ package vhdl
 
 import (
 	"fmt"
+	"github.com/m-kru/go-thdl/internal/doc/sym"
 	"github.com/m-kru/go-thdl/internal/utils"
 	"log"
 	"os"
@@ -9,6 +10,8 @@ import (
 
 // symbol is a generic common symbol struct.
 type symbol struct {
+	parent sym.Symbol
+
 	filepath string
 	key      string
 	name     string
@@ -64,4 +67,8 @@ func (s symbol) OneLineSummary() string {
 		return fmt.Sprintf("%s", code)
 	}
 	return fmt.Sprintf("%s ...\n", utils.FirstLine(code))
+}
+
+func (s symbol) Path() string {
+	return s.parent.Path() + "." + s.name
 }

@@ -11,6 +11,8 @@ import (
 )
 
 type Protected struct {
+	parent sym.Symbol
+
 	filepath string
 	key      string
 	name     string
@@ -211,4 +213,8 @@ func (p Protected) OneLineSummary() string {
 		return fmt.Sprintf("%s", code)
 	}
 	return fmt.Sprintf("%s ...\n", utils.FirstLine(code))
+}
+
+func (p Protected) Path() string {
+	return p.parent.Path() + "." + p.name
 }

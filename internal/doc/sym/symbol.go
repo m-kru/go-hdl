@@ -14,6 +14,7 @@ type Symbol interface {
 	Key() string
 	Name() string
 	LineNum() uint32
+	Path() string                  // Must return full path to the symbol.
 	InnerKeys() []string           // List of inner symbols keys.
 	GetSymbol(key string) []Symbol // Get inner symbol.
 	Doc() string
