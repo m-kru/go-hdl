@@ -19,8 +19,8 @@ Simply run `thdl help` or `thdl help {command}` to read about particular command
 ## Commands
 
 The commands are:
-* `doc` - show or generate documentation (html generation needs polishing),
-* `gen` - generate HDL files by processing sources (work in progress),
+* `doc` - show or generate documentation,
+* `gen` - generate code by processing sources,
 * `vet` - check for likely mistakes.
 
 ## Installation
