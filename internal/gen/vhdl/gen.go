@@ -162,7 +162,7 @@ func genPackage(gens map[string]gen.Generable, body bool, extraEmptyLines bool, 
 	for _, g := range gens {
 		var s string
 		if body {
-			s = g.GenDefinitions(nil)
+			s = g.GenDefinitions(gens)
 		} else {
 			s = g.GenDeclarations(nil)
 		}

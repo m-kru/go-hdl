@@ -52,7 +52,7 @@ func scanFile(fileContent []byte) ([]unit, error) {
 				}
 			}
 		} else if len(thdlGenLine.FindIndex(sCtx.line)) > 0 {
-			gen, err := scanGenerable(&sCtx)
+			gen, err := scanGenerable(&sCtx, unit.gens)
 			if err != nil {
 				return nil, err
 			}
@@ -67,7 +67,7 @@ func scanFile(fileContent []byte) ([]unit, error) {
 	return units, nil
 }
 
-func scanGenerable(sCtx *scanContext) (gen.Generable, error) {
+func scanGenerable(sCtx *scanContext, gens map[string]gen.Generable) (gen.Generable, error) {
 	args := utils.ThdlGenArgs(sCtx.line)
 
 	if !sCtx.scan() {
@@ -81,7 +81,7 @@ func scanGenerable(sCtx *scanContext) (gen.Generable, error) {
 		return scanEnumTypeDeclaration(sCtx, name, args)
 	} else if sm := re.RecordTypeDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
 		name := string(sCtx.line[sm[2]:sm[3]])
-		return scanRecordTypeDeclaration(sCtx, name, args)
+		return scanRecordTypeDeclaration(sCtx, gens, name, args)
 	}
 
 	return nil, fmt.Errorf("line %d: cannot process line\n%s", sCtx.lineNum, sCtx.line)
@@ -129,7 +129,7 @@ func scanEnumTypeDeclaration(sCtx *scanContext, name string, args []string) (*en
 	return &enum, nil
 }
 
-func scanRecordTypeDeclaration(sCtx *scanContext, name string, args []string) (*record, error) {
+func scanRecordTypeDeclaration(sCtx *scanContext, gens map[string]gen.Generable, name string, args []string) (*record, error) {
 	record := record{name: name}
 
 	err := record.ParseArgs(args)
@@ -145,7 +145,7 @@ func scanRecordTypeDeclaration(sCtx *scanContext, name string, args []string) (*
 		} else if len(re.EndRecord.FindIndex(sCtx.line)) > 0 {
 			break
 		} else {
-			err := parseRecordFieldLine(sCtx.line, &record)
+			err := parseRecordFieldLine(sCtx.line, gens, &record)
 			if err != nil {
 				return nil, fmt.Errorf("line %d: record '%s': %v", sCtx.lineNum, name, err)
 			}
@@ -155,7 +155,7 @@ func scanRecordTypeDeclaration(sCtx *scanContext, name string, args []string) (*
 	return &record, nil
 }
 
-func parseRecordFieldLine(line []byte, r *record) error {
+func parseRecordFieldLine(line []byte, gens map[string]gen.Generable, r *record) error {
 	line = bytes.Trim(line, " \t")
 	splits := bytes.Split(line, []byte(":"))
 
@@ -174,6 +174,13 @@ func parseRecordFieldLine(line []byte, r *record) error {
 		strings.HasPrefix(typ, "natural") ||
 		strings.HasPrefix(typ, "positive") {
 		err = parseRecordIntegerField(typ, &f, r)
+	} else {
+		if g, ok := gens[typ]; ok {
+			f.typ = typ
+			f.width = g.Width()
+		} else {
+			return fmt.Errorf("field '%s' has unknown type '%s'", f.name, typ)
+		}
 	}
 	if err != nil {
 		return fmt.Errorf("field '%s': %v", f.name, err)
