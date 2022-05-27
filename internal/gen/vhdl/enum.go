@@ -29,7 +29,7 @@ func (e *enum) Width() int {
 	}
 }
 
-func (e *enum) GenDeclarations(gens map[string]gen.Generable) string {
+func (e *enum) GenDeclarations() string {
 	b := strings.Builder{}
 
 	e.genToEnumDeclaration(&b)
@@ -69,7 +69,7 @@ func (e *enum) genToStrDeclaration(b *strings.Builder) {
 	)
 }
 
-func (e *enum) GenDefinitions(gens map[string]gen.Generable) string {
+func (e *enum) GenDefinitions(gens gen.Container) string {
 	b := strings.Builder{}
 
 	e.genToEnumDefinition(&b)

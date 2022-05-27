@@ -153,7 +153,7 @@ func genDesignUnit(u unit, sCtx *scanContext, b *strings.Builder) error {
 }
 
 // body is false for package and true for package body.
-func genPackage(gens map[string]gen.Generable, body bool, extraEmptyLines bool, b *strings.Builder) {
+func genPackage(gens gen.Container, body bool, extraEmptyLines bool, b *strings.Builder) {
 	if extraEmptyLines {
 		b.WriteRune('\n')
 	}
@@ -164,7 +164,7 @@ func genPackage(gens map[string]gen.Generable, body bool, extraEmptyLines bool, 
 		if body {
 			s = g.GenDefinitions(gens)
 		} else {
-			s = g.GenDeclarations(nil)
+			s = g.GenDeclarations()
 		}
 		b.WriteString(s)
 		b.WriteRune('\n')

@@ -30,7 +30,7 @@ func (r *record) Width() int {
 	return width
 }
 
-func (r *record) GenDeclarations(gens map[string]gen.Generable) string {
+func (r *record) GenDeclarations() string {
 	b := strings.Builder{}
 
 	r.genToRecordDeclaration(&b)
@@ -72,7 +72,7 @@ func (r *record) genToStrDeclaration(b *strings.Builder) {
 	)
 }
 
-func (r *record) GenDefinitions(gens map[string]gen.Generable) string {
+func (r *record) GenDefinitions(gens gen.Container) string {
 	b := strings.Builder{}
 
 	r.genToRecordDefinition(gens, &b)
@@ -87,7 +87,7 @@ func (r *record) GenDefinitions(gens map[string]gen.Generable) string {
 	return b.String()
 }
 
-func (r *record) genToRecordDefinition(gens map[string]gen.Generable, b *strings.Builder) {
+func (r *record) genToRecordDefinition(gens gen.Container, b *strings.Builder) {
 	name := toTypeFuncName(r.name)
 	width := r.Width() - 1
 
@@ -111,7 +111,7 @@ func (r *record) genToRecordDefinition(gens map[string]gen.Generable, b *strings
 	bws("   end function;\n")
 }
 
-func (r *record) genToSlvDefinition(gens map[string]gen.Generable, b *strings.Builder) {
+func (r *record) genToSlvDefinition(gens gen.Container, b *strings.Builder) {
 	name := funcParamName(r.name)
 	bws := b.WriteString
 	bws(spf("   function to_slv(%s : %s) return std_logic_vector is\n", name, r.name))
@@ -127,7 +127,7 @@ func (r *record) genToSlvDefinition(gens map[string]gen.Generable, b *strings.Bu
 	bws("   end function;\n")
 }
 
-func (r *record) slvToField(idx int, gens map[string]gen.Generable, b *strings.Builder, width int) int {
+func (r *record) slvToField(idx int, gens gen.Container, b *strings.Builder, width int) int {
 	bws := b.WriteString
 	varName := funcParamName(r.name)
 
@@ -164,7 +164,7 @@ func (r *record) slvToField(idx int, gens map[string]gen.Generable, b *strings.B
 	case "signed", "unsigned":
 		bws(spf("      %s.%s := %s(slv(%d downto %d));\n", varName, f.name, typ, width, width-f.width+1))
 	default:
-		if g, ok := gens[typ]; ok {
+		if g, ok := gens.Get(typ); ok {
 			bws(
 				spf(
 					"      %s.%s := %s(slv(%d downto %d));\n", varName, f.name, toTypeFuncName(g.Name()), width, width-f.width+1,
@@ -180,7 +180,7 @@ func (r *record) slvToField(idx int, gens map[string]gen.Generable, b *strings.B
 	return width
 }
 
-func (r *record) fieldToSlv(idx int, gens map[string]gen.Generable, b *strings.Builder, width int) int {
+func (r *record) fieldToSlv(idx int, gens gen.Container, b *strings.Builder, width int) int {
 	bws := b.WriteString
 	varName := funcParamName(r.name)
 
@@ -203,7 +203,7 @@ func (r *record) fieldToSlv(idx int, gens map[string]gen.Generable, b *strings.B
 	case "signed", "unsigned":
 		bws(spf("      slv(%d downto %d) := std_logic_vector(%s.%s);\n", width, width-f.width+1, varName, f.name))
 	default:
-		if _, ok := gens[typ]; ok {
+		if _, ok := gens.Get(typ); ok {
 			bws(
 				spf(
 					"      slv(%d downto %d) := to_slv(%s.%s);\n", width, width-f.width+1, varName, f.name,

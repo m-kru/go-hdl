@@ -13,5 +13,5 @@ type unit struct {
 	name    string
 	lineNum uint
 	typ     string
-	gens    map[string]gen.Generable
+	gens    gen.Container
 }
