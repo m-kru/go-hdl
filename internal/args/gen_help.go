@@ -61,6 +61,24 @@ The code generation currently supports following kinds of symbols:
         Flags:
           - no-to-str  Do not generate to_str function.
 
+        By default thdl will handle all fields of standard types or of types that are also
+        marked for generation and are located within the same scope (the scope is currently)
+        limited to the design unit. To handle foreign types one needs to provide additional
+        information via field arguments. Field arguments are provided at the end of the line
+        with particular field. They are prepended with '--thdl:' tag.
+        Example:
+          --thdl:gen
+          type t_rec is record
+             field : t_foreign; --thdl: width=N [to-type=name] [to-slv=name] [to-str=name]
+          end record;
+        Width is the only mandatory argument. N must be greater than 0. To-type is the name
+        of the function used for the conversion from the std_logic_vector to the t_foreign.
+        To-slv is the name of the function used for the conversion from the t_foreign to the
+        std_logic_vector. To-str is the name of the function used for conversion from the
+        t_foreign to the string. When names of these functions are not provided, then
+        'to_foreign', 'to_slv' and 'to_str' are used respectively. Note that there are no
+        whitespaces between argument name, its value and the '=' character.
+
 
 Arguments passing
 -----------------
