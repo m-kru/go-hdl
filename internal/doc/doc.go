@@ -60,6 +60,11 @@ func Doc(args args.DocArgs) {
 				if !args.NoBold {
 					code = utils.BoldCodeTerminal(path.language, code)
 				}
+				if _, ok := s.(vhdl.Package); ok {
+					if doc != "" {
+						fmt.Println()
+					}
+				}
 				fmt.Printf(utils.Deindent(code))
 			}
 		}

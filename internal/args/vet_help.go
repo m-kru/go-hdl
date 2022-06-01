@@ -54,7 +54,7 @@ The process scope is capable of checking following mistakes:
     EDA tools correctly synthesize such processes, however one might be surprised
     after including such code into simulation.
 
-  Signal/port used with 'rising_edge()' or 'falling_edge()' function is missing in the sensitivity list
+  Signal/port used with 'rising_edge()' or 'falling_edge()' function is missing in the sensitivity list.
 
     I have once used 'foo_clk' in the sensitivity list and 'bar_clk' in the 'rising_edge()' function.
     Xilinx Vivado didn't issue even a regular warning. The design was not working correctly,
