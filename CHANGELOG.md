@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - [VHDL, gen] Support generated enumerations in generated records.
+- [vet] Add possibility to vet only single file.
 
 ## [0.4.0] 2022-25-16
 ### Added
