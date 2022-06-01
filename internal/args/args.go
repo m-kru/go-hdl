@@ -47,6 +47,7 @@ func (lm LibMap) Lib(filepath string) string {
 
 type VetArgs struct {
 	IgnoreList
+	Filepath string
 }
 
 type HTMLArgs struct {

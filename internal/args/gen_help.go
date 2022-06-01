@@ -6,7 +6,7 @@ var genHelpMsg string = `Gen command
 Usage
 -----
 
-  thdl gen [path/to/file]
+  thdl gen [flags] [path/to/file]
 
 Flags
   -to-stdout  Print to stdout instead of replacing file in place (useful for tests).

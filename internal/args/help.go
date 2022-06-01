@@ -17,7 +17,7 @@ The commands are:
   gen   Generate HDL files by processing sources.
   help  Print more information about a specific command.
   ver   Print thdl version.
-  vet   Check for extremely dumb mistakes.
+  vet   Check for likely mistakes.
 
 
 Configuration

@@ -70,6 +70,7 @@ func Parse() Args {
 		fmt.Printf("thdl version %s\n", Version)
 		os.Exit(0)
 	case "vet":
+		parseVetArgs(&args)
 	default:
 		log.Fatalf(fmt.Sprintf("invalid command '%s', run 'thdl help' for more information", args.Cmd))
 	}
@@ -144,6 +145,19 @@ func parseGenArgs(args *Args) {
 				args.GenArgs.Filepath = a
 			} else {
 				log.Fatalf("invalid gen command flag '%s'\n", a)
+			}
+		}
+	}
+}
+
+func parseVetArgs(args *Args) {
+	for i, a := range os.Args[2:] {
+		switch a {
+		default:
+			if i == len(os.Args)-3 {
+				args.VetArgs.Filepath = a
+			} else {
+				log.Fatalf("invalid vet command flag '%s'\n", a)
 			}
 		}
 	}

@@ -6,11 +6,13 @@ var vetHelpMsg string = `Vet command
 Usage
 -----
 
-  thdl vet [flags]
+  thdl vet [flags] [path/to/file]
 
 Flags:
   -no-config  Don't read .thdl.yml config file.
 
+If path to file is not provided, thdl will vet all HDL files located in the tree
+of working directory.
 
 Description
 -----------
