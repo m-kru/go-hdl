@@ -55,7 +55,8 @@ footer {
 .dropdown-content a {
   color: White;
   background-color: Black;
-  padding: 12px 16px;
+  font-size: 14px;
+  padding: 10px 10px;
   text-decoration: none;
   display: block;
 }

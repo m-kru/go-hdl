@@ -318,7 +318,7 @@ func genVHDLProtectedType(prot vhdl.Protected, rand uint32) {
 		Topbar:    topbar("vhdl", 2),
 	}
 
-	filePath := strings.ToLower(prot.Path())
+	filePath := prot.Path()
 	filePath = strings.Replace(filePath, ":", ".", -1)
 	elems := strings.Split(filePath, ".")
 	elems = elems[0 : len(elems)-2]
