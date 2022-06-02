@@ -24,10 +24,13 @@ func (lc libraryContainer) Add(l *lib.Library) {
 }
 
 func (lc libraryContainer) Get(name string) *lib.Library {
+	libContainerMutex.Lock()
 	if _, ok := lc[name]; !ok {
 		panic("should never happen")
 	}
-	return lc[name]
+	l := lc[name]
+	libContainerMutex.Unlock()
+	return l
 }
 
 func (lc libraryContainer) AddSymbol(libName string, s sym.Symbol) {
