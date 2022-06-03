@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- [VHDL, gen] Support unknown types in generated records.
 - [VHDL, gen] Support generated enumerations in generated records.
 - [vet] Add possibility to vet only single file.
 
