@@ -156,6 +156,13 @@ func scanRecordTypeDeclaration(sCtx *scanContext, gens gen.Container, name strin
 }
 
 func parseRecordFieldLine(line []byte, gens gen.Container, r *record) error {
+	args := ""
+	if len(thdlFieldArgs.FindIndex(line)) > 0 {
+		splits := bytes.Split(line, []byte("--thdl:"))
+		line = splits[0]
+		args = string(bytes.Trim(splits[1], " \t"))
+	}
+
 	line = bytes.Trim(line, " \t")
 	splits := bytes.Split(line, []byte(":"))
 
@@ -165,7 +172,9 @@ func parseRecordFieldLine(line []byte, gens gen.Container, r *record) error {
 	typ := string(bytes.ToLower(bytes.Trim(splits[0], " \t")))
 
 	var err error
-	if vhdl.IsSingleBitStdType(typ) {
+	if args != "" {
+		err = parseRecordFieldWithArgs(typ, &f, args, r)
+	} else if vhdl.IsSingleBitStdType(typ) {
 		f.typ = typ
 		f.width = 1
 	} else if strings.Contains(typ, "(") {
@@ -187,6 +196,64 @@ func parseRecordFieldLine(line []byte, gens gen.Container, r *record) error {
 	}
 
 	r.fields = append(r.fields, f)
+
+	return nil
+}
+
+func parseRecordFieldWithArgs(typ string, f *field, args string, r *record) error {
+	validParams := map[string]bool{
+		"width": true, "to-type": true, "to-slv": true, "to-str": true,
+	}
+
+	f.typ = typ
+
+	tmp := strings.Split(args, " ")
+	argv := []string{}
+	for _, a := range tmp {
+		a = strings.Trim(a, " \t")
+		if a != "" {
+			argv = append(argv, a)
+		}
+	}
+
+	widthPresent := false
+
+	for _, a := range argv {
+		if !strings.Contains(a, "=") {
+			if _, ok := validParams[a]; ok {
+				return fmt.Errorf("missing value for parameter '%s'", a)
+			} else {
+				return fmt.Errorf("invalid parameter '%s'", a)
+			}
+		}
+		aux := strings.Split(a, "=")
+		param := aux[0]
+		value := aux[1]
+		if _, ok := validParams[param]; !ok {
+			return fmt.Errorf("invalid parameter '%s'", param)
+		}
+		switch param {
+		case "width":
+			w, err := strconv.Atoi(value)
+			if err != nil {
+				return fmt.Errorf("cannot parse value for 'width' parameter: %v", err)
+			}
+			f.width = w
+			widthPresent = true
+		case "to-type":
+			f.toType = value
+		case "to-slv":
+			f.toSlv = value
+		case "to-str":
+			f.toStr = value
+		default:
+			panic(fmt.Sprintf("missing vlaue handling for parameter '%s'", param))
+		}
+	}
+
+	if !widthPresent {
+		return fmt.Errorf("'width' parameter must be set as type '%s' is unknown", typ)
+	}
 
 	return nil
 }

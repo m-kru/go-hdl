@@ -7,11 +7,12 @@ import (
 )
 
 type field struct {
-	name         string
-	typ          string
-	width        int
-	toRecordFunc string
-	toSlvFunc    string
+	name   string
+	typ    string
+	width  int
+	toType string
+	toSlv  string
+	toStr  string
 }
 
 type record struct {
@@ -170,8 +171,18 @@ func (r *record) slvToField(idx int, gens gen.Container, b *strings.Builder, wid
 					"      %s.%s := %s(slv(%d downto %d));\n", varName, f.name, toTypeFuncName(g.Name()), width, width-f.width+1,
 				),
 			)
+		} else if f.width != 0 {
+			funcName := toTypeFuncName(typ)
+			if f.toType != "" {
+				funcName = f.toType
+			}
+			bws(
+				spf(
+					"      %s.%s := %s(slv(%d downto %d));\n", varName, f.name, funcName, width, width-f.width+1,
+				),
+			)
 		} else {
-			panic("not yet implemented")
+			panic("should never happen")
 		}
 	}
 
@@ -209,8 +220,18 @@ func (r *record) fieldToSlv(idx int, gens gen.Container, b *strings.Builder, wid
 					"      slv(%d downto %d) := to_slv(%s.%s);\n", width, width-f.width+1, varName, f.name,
 				),
 			)
+		} else if f.width != 0 {
+			funcName := "to_slv"
+			if f.toSlv != "" {
+				funcName = f.toSlv
+			}
+			bws(
+				spf(
+					"      slv(%d downto %d) := %s(%s.%s);\n", width, width-f.width+1, funcName, varName, f.name,
+				),
+			)
 		} else {
-			panic("not yet implemented")
+			panic("should never happen")
 		}
 	}
 
