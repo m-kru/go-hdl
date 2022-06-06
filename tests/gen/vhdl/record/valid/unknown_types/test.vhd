@@ -9,7 +9,7 @@ package p is
 
    --thdl:gen
    type t_bar is record
-      f : t_field; --thdl: width=4 to-type=lorem to-slv=ipsum
+      f : t_field; --thdl: width=4 to-type=lorem to-slv=ipsum to-str=dolor
    end record;
 end package;
 

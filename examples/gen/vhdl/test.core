@@ -1,0 +1,17 @@
+CAPI=2:
+
+name: ::test
+
+filesets:
+  test:
+    files:
+      - pkg.vhd
+      - test.vhd
+    file_type: vhdlSource-2008
+
+targets:
+  tb:
+    default_tool: ghdl
+    toplevel: test
+    filesets:
+      - test

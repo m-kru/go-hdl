@@ -64,11 +64,11 @@ func (r *record) genToSlvDeclaration(b *strings.Builder) {
 }
 
 func (r *record) genToStrDeclaration(b *strings.Builder) {
-	name := funcParamName(r.name)
+	paramName := funcParamName(r.name)
 	b.WriteString(
 		spf(
-			"   function to_str(%s : %s) return string;\n",
-			name, r.name,
+			"   function to_str(%s : %s; add_names : boolean := false) return string;\n",
+			paramName, r.name,
 		),
 	)
 }
@@ -79,11 +79,10 @@ func (r *record) GenDefinitions(gens gen.Container) string {
 	r.genToRecordDefinition(gens, &b)
 	b.WriteRune('\n')
 	r.genToSlvDefinition(gens, &b)
-	/*
-		if !r.noToStr {
-			e.genToStrDefinition(&b)
-		}
-	*/
+	if !r.noToStr {
+		b.WriteRune('\n')
+		r.genToStrDefinition(gens, &b)
+	}
 
 	return b.String()
 }
@@ -257,4 +256,59 @@ func (r *record) ParseArgs(args []string) error {
 	}
 
 	return nil
+}
+
+func (r *record) genToStrDefinition(gens gen.Container, b *strings.Builder) {
+	paramName := funcParamName(r.name)
+
+	bws := b.WriteString
+
+	bws(spf("   function to_str(%s : %s; add_names : boolean := false) return string is\n", paramName, r.name))
+	bws("   begin\n")
+	bws("      if add_names then\n")
+	bws("         return \"(\" &")
+	for i, _ := range r.fields {
+		r.fieldToStr(i, gens, true, b)
+	}
+	bws(" & \")\";\n")
+	bws("      end if;\n")
+	bws("      return \"(\" &")
+	for i, _ := range r.fields {
+		r.fieldToStr(i, gens, false, b)
+	}
+	bws(" & \")\";\n")
+	bws("   end function;\n")
+}
+
+func (r *record) fieldToStr(idx int, gens gen.Container, withName bool, b *strings.Builder) {
+	paramName := funcParamName(r.name)
+	bws := b.WriteString
+
+	f := r.fields[idx]
+	typ := f.typ
+
+	if idx != 0 {
+		bws(" & \", \" &")
+	}
+
+	if withName {
+		bws(spf(" \"%s => \" &", f.name))
+	}
+
+	switch typ {
+	case "bit", "boolean", "std_logic", "std_ulogic", "std_logic_vector", "integer", "natural", "positive", "signed", "unsigned":
+		bws(spf(" to_string(%s.%s)", paramName, f.name))
+	default:
+		if _, ok := gens.Get(typ); ok {
+			bws(spf(" to_str(%s.%s)", paramName, f.name))
+		} else if f.width != 0 {
+			toStr := f.toStr
+			if toStr == "" {
+				toStr = "to_str"
+			}
+			bws(spf(" %s(%s.%s)", f.toStr, paramName, f.name))
+		} else {
+			panic("should never happen")
+		}
+	}
 }

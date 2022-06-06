@@ -57,3 +57,5 @@ install:
 
 uninstall:
 	rm /usr/bin/$(PROJECT_NAME)
+
+.PHONY: all build test test-vet test-all test-gen install uninstall

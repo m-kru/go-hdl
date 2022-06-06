@@ -17,7 +17,7 @@ package p is
 
    function to_rec(slv : std_logic_vector(3 downto 0)) return t_rec;
    function to_slv(rec : t_rec) return std_logic_vector;
-   function to_str(rec : t_rec) return string;
+   function to_str(rec : t_rec; add_names : boolean := false) return string;
 
    --thdl:end
 
@@ -60,6 +60,14 @@ package body p is
       slv(1) := rec.sl;
       slv(0) := rec.su;
       return slv;
+   end function;
+
+   function to_str(rec : t_rec; add_names : boolean := false) return string is
+   begin
+      if add_names then
+         return "(" & "bi => " & to_string(rec.bi) & ", " & "bo => " & to_string(rec.bo) & ", " & "sl => " & to_string(rec.sl) & ", " & "su => " & to_string(rec.su) & ")";
+      end if;
+      return "(" & to_string(rec.bi) & ", " & to_string(rec.bo) & ", " & to_string(rec.sl) & ", " & to_string(rec.su) & ")";
    end function;
 
    --thdl:end
