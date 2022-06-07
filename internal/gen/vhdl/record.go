@@ -46,7 +46,7 @@ func (r *record) GenDeclarations() string {
 func (r *record) genToRecordDeclaration(b *strings.Builder) {
 	name := toTypeFuncName(r.name)
 	b.WriteString(
-		spf(
+		fmt.Sprintf(
 			"   function %s(slv : std_logic_vector(%d downto 0)) return %s;\n",
 			name, r.Width()-1, r.name,
 		),
@@ -56,7 +56,7 @@ func (r *record) genToRecordDeclaration(b *strings.Builder) {
 func (r *record) genToSlvDeclaration(b *strings.Builder) {
 	name := funcParamName(r.name)
 	b.WriteString(
-		spf(
+		fmt.Sprintf(
 			"   function to_slv(%s : %s) return std_logic_vector;\n",
 			name, r.name,
 		),
@@ -66,7 +66,7 @@ func (r *record) genToSlvDeclaration(b *strings.Builder) {
 func (r *record) genToStrDeclaration(b *strings.Builder) {
 	paramName := funcParamName(r.name)
 	b.WriteString(
-		spf(
+		fmt.Sprintf(
 			"   function to_str(%s : %s; add_names : boolean := false) return string;\n",
 			paramName, r.name,
 		),
@@ -88,47 +88,53 @@ func (r *record) GenDefinitions(gens gen.Container) string {
 }
 
 func (r *record) genToRecordDefinition(gens gen.Container, b *strings.Builder) {
-	name := toTypeFuncName(r.name)
+	funcName := toTypeFuncName(r.name)
+	varName := funcParamName(r.name)
 	width := r.Width() - 1
 
-	bws := b.WriteString
-
-	bws(
-		spf(
-			"   function %s(slv : std_logic_vector(%d downto 0)) return %s is\n",
-			name, width, r.name,
+	b.WriteString(
+		fmt.Sprintf(
+			"   function %[1]s(slv : std_logic_vector(%[2]d downto 0)) return %[3]s is\n"+
+				"      variable %[4]s : %[3]s;\n"+
+				"   begin\n",
+			funcName, width, r.name, varName,
 		),
 	)
-	varName := funcParamName(r.name)
-	bws(spf("      variable %s : %s;\n", varName, r.name))
-	bws("   begin\n")
 
 	for i, _ := range r.fields {
 		width = r.slvToField(i, gens, b, width)
 	}
 
-	bws(spf("      return %s;\n", varName))
-	bws("   end function;\n")
+	b.WriteString(
+		fmt.Sprintf(
+			"      return %s;\n"+
+				"   end function;\n",
+			varName,
+		),
+	)
 }
 
 func (r *record) genToSlvDefinition(gens gen.Container, b *strings.Builder) {
-	name := funcParamName(r.name)
-	bws := b.WriteString
-	bws(spf("   function to_slv(%s : %s) return std_logic_vector is\n", name, r.name))
+	paramName := funcParamName(r.name)
 	width := r.Width() - 1
-	bws(spf("      variable slv : std_logic_vector(%d downto 0);\n", width))
-	bws("   begin\n")
+
+	b.WriteString(
+		fmt.Sprintf(
+			"   function to_slv(%s : %s) return std_logic_vector is\n"+
+				"      variable slv : std_logic_vector(%d downto 0);\n"+
+				"   begin\n",
+			paramName, r.name, width,
+		),
+	)
 
 	for i, _ := range r.fields {
 		width = r.fieldToSlv(i, gens, b, width)
 	}
 
-	bws("      return slv;\n")
-	bws("   end function;\n")
+	b.WriteString("      return slv;\n   end function;\n")
 }
 
 func (r *record) slvToField(idx int, gens gen.Container, b *strings.Builder, width int) int {
-	bws := b.WriteString
 	varName := funcParamName(r.name)
 
 	f := r.fields[idx]
@@ -136,7 +142,9 @@ func (r *record) slvToField(idx int, gens gen.Container, b *strings.Builder, wid
 
 	switch typ {
 	case "std_logic", "std_ulogic":
-		bws(spf("      %s.%s := slv(%d);\n", varName, f.name, width))
+		b.WriteString(
+			fmt.Sprintf("      %s.%s := slv(%d);\n", varName, f.name, width),
+		)
 	case "bit", "boolean":
 		one := "'1'"
 		zero := "'0'"
@@ -144,30 +152,52 @@ func (r *record) slvToField(idx int, gens gen.Container, b *strings.Builder, wid
 			one = "true"
 			zero = "false"
 		}
-		bws(spf("      if slv(%d) = '1' then\n", width))
-		bws(spf("         %s.%s := %s;\n", varName, f.name, one))
-		bws(spf("      elsif slv(%d) = '0' then\n", width))
-		bws(spf("         %s.%s := %s;\n", varName, f.name, zero))
-		bws("      else\n")
-		bws(
-			spf(
-				"         report \"bit %[1]d: cannot convert \" & to_string(slv(%[1]d)) & \" to %[2]s type\" severity failure;\n", width, typ,
+		b.WriteString(
+			fmt.Sprintf(
+				"      if slv(%[1]d) = '1' then\n"+
+					"         %[2]s.%[3]s := %[4]s;\n"+
+					"      elsif slv(%[1]d) = '0' then\n"+
+					"         %[2]s.%[3]s := %[5]s;\n"+
+					"      else\n"+
+					"         report \"bit %[1]d: cannot convert \" & to_string(slv(%[1]d)) & \" to %[6]s type\" severity failure;\n"+
+					"      end if;\n",
+				width, varName, f.name, one, zero, typ,
 			),
 		)
-		bws("      end if;\n")
 	case "integer":
-		bws(spf("      %s.%s := to_integer(signed(slv(%d downto %d)));\n", varName, f.name, width, width-f.width+1))
+		b.WriteString(
+			fmt.Sprintf(
+				"      %s.%s := to_integer(signed(slv(%d downto %d)));\n",
+				varName, f.name, width, width-f.width+1,
+			),
+		)
 	case "natural", "positive":
-		bws(spf("      %s.%s := to_integer(unsigned(slv(%d downto %d)));\n", varName, f.name, width, width-f.width+1))
+		b.WriteString(
+			fmt.Sprintf(
+				"      %s.%s := to_integer(unsigned(slv(%d downto %d)));\n",
+				varName, f.name, width, width-f.width+1,
+			),
+		)
 	case "std_logic_vector", "std_ulogic_vector":
-		bws(spf("      %s.%s := slv(%d downto %d);\n", varName, f.name, width, width-f.width+1))
+		b.WriteString(
+			fmt.Sprintf(
+				"      %s.%s := slv(%d downto %d);\n",
+				varName, f.name, width, width-f.width+1,
+			),
+		)
 	case "signed", "unsigned":
-		bws(spf("      %s.%s := %s(slv(%d downto %d));\n", varName, f.name, typ, width, width-f.width+1))
+		b.WriteString(
+			fmt.Sprintf(
+				"      %s.%s := %s(slv(%d downto %d));\n",
+				varName, f.name, typ, width, width-f.width+1,
+			),
+		)
 	default:
 		if g, ok := gens.Get(typ); ok {
-			bws(
-				spf(
-					"      %s.%s := %s(slv(%d downto %d));\n", varName, f.name, toTypeFuncName(g.Name()), width, width-f.width+1,
+			b.WriteString(
+				fmt.Sprintf(
+					"      %s.%s := %s(slv(%d downto %d));\n",
+					varName, f.name, toTypeFuncName(g.Name()), width, width-f.width+1,
 				),
 			)
 		} else if f.width != 0 {
@@ -175,9 +205,10 @@ func (r *record) slvToField(idx int, gens gen.Container, b *strings.Builder, wid
 			if f.toType != "" {
 				funcName = f.toType
 			}
-			bws(
-				spf(
-					"      %s.%s := %s(slv(%d downto %d));\n", varName, f.name, funcName, width, width-f.width+1,
+			b.WriteString(
+				fmt.Sprintf(
+					"      %s.%s := %s(slv(%d downto %d));\n",
+					varName, f.name, funcName, width, width-f.width+1,
 				),
 			)
 		} else {
@@ -191,7 +222,6 @@ func (r *record) slvToField(idx int, gens gen.Container, b *strings.Builder, wid
 }
 
 func (r *record) fieldToSlv(idx int, gens gen.Container, b *strings.Builder, width int) int {
-	bws := b.WriteString
 	varName := funcParamName(r.name)
 
 	f := r.fields[idx]
@@ -199,24 +229,57 @@ func (r *record) fieldToSlv(idx int, gens gen.Container, b *strings.Builder, wid
 
 	switch typ {
 	case "std_logic", "std_ulogic":
-		bws(spf("      slv(%d) := %s.%s;\n", width, varName, f.name))
+		b.WriteString(
+			fmt.Sprintf("      slv(%d) := %s.%s;\n", width, varName, f.name),
+		)
 	case "bit":
-		bws(spf("      if %[1]s.%[2]s = '1' then slv(%[3]d) := '1'; else slv(%[3]d) := '0'; end if;\n", varName, f.name, width))
+		b.WriteString(
+			fmt.Sprintf(
+				"      if %[1]s.%[2]s = '1' then slv(%[3]d) := '1'; else slv(%[3]d) := '0'; end if;\n",
+				varName, f.name, width,
+			),
+		)
 	case "boolean":
-		bws(spf("      if %[1]s.%[2]s then slv(%[3]d) := '1'; else slv(%[3]d) := '0'; end if;\n", varName, f.name, width))
+		b.WriteString(
+			fmt.Sprintf(
+				"      if %[1]s.%[2]s then slv(%[3]d) := '1'; else slv(%[3]d) := '0'; end if;\n",
+				varName, f.name, width,
+			),
+		)
 	case "integer":
-		bws(spf("      slv(%d downto %d) := std_logic_vector(to_signed(%s.%s, 32));\n", width, width-f.width+1, varName, f.name))
+		b.WriteString(
+			fmt.Sprintf(
+				"      slv(%d downto %d) := std_logic_vector(to_signed(%s.%s, 32));\n",
+				width, width-f.width+1, varName, f.name,
+			),
+		)
 	case "natural", "positive":
-		bws(spf("      slv(%d downto %d) := std_logic_vector(to_unsigned(%s.%s, 32));\n", width, width-f.width+1, varName, f.name))
+		b.WriteString(
+			fmt.Sprintf(
+				"      slv(%d downto %d) := std_logic_vector(to_unsigned(%s.%s, 32));\n",
+				width, width-f.width+1, varName, f.name,
+			),
+		)
 	case "std_logic_vector", "std_ulogic_vector":
-		bws(spf("      slv(%d downto %d) := %s.%s;\n", width, width-f.width+1, varName, f.name))
+		b.WriteString(
+			fmt.Sprintf(
+				"      slv(%d downto %d) := %s.%s;\n",
+				width, width-f.width+1, varName, f.name,
+			),
+		)
 	case "signed", "unsigned":
-		bws(spf("      slv(%d downto %d) := std_logic_vector(%s.%s);\n", width, width-f.width+1, varName, f.name))
+		b.WriteString(
+			fmt.Sprintf(
+				"      slv(%d downto %d) := std_logic_vector(%s.%s);\n",
+				width, width-f.width+1, varName, f.name,
+			),
+		)
 	default:
 		if _, ok := gens.Get(typ); ok {
-			bws(
-				spf(
-					"      slv(%d downto %d) := to_slv(%s.%s);\n", width, width-f.width+1, varName, f.name,
+			b.WriteString(
+				fmt.Sprintf(
+					"      slv(%d downto %d) := to_slv(%s.%s);\n",
+					width, width-f.width+1, varName, f.name,
 				),
 			)
 		} else if f.width != 0 {
@@ -224,9 +287,10 @@ func (r *record) fieldToSlv(idx int, gens gen.Container, b *strings.Builder, wid
 			if f.toSlv != "" {
 				funcName = f.toSlv
 			}
-			bws(
-				spf(
-					"      slv(%d downto %d) := %s(%s.%s);\n", width, width-f.width+1, funcName, varName, f.name,
+			b.WriteString(
+				fmt.Sprintf(
+					"      slv(%d downto %d) := %s(%s.%s);\n",
+					width, width-f.width+1, funcName, varName, f.name,
 				),
 			)
 		} else {
@@ -261,52 +325,52 @@ func (r *record) ParseArgs(args []string) error {
 func (r *record) genToStrDefinition(gens gen.Container, b *strings.Builder) {
 	paramName := funcParamName(r.name)
 
-	bws := b.WriteString
-
-	bws(spf("   function to_str(%s : %s; add_names : boolean := false) return string is\n", paramName, r.name))
-	bws("   begin\n")
-	bws("      if add_names then\n")
-	bws("         return \"(\" &")
+	b.WriteString(
+		fmt.Sprintf(
+			"   function to_str(%s : %s; add_names : boolean := false) return string is\n"+
+				"   begin\n"+
+				"      if add_names then\n"+
+				"         return \"(\" &",
+			paramName, r.name,
+		),
+	)
 	for i, _ := range r.fields {
 		r.fieldToStr(i, gens, true, b)
 	}
-	bws(" & \")\";\n")
-	bws("      end if;\n")
-	bws("      return \"(\" &")
+	b.WriteString(" & \")\";\n      end if;\n      return \"(\" &")
 	for i, _ := range r.fields {
 		r.fieldToStr(i, gens, false, b)
 	}
-	bws(" & \")\";\n")
-	bws("   end function;\n")
+
+	b.WriteString(" & \")\";\n   end function;\n")
 }
 
 func (r *record) fieldToStr(idx int, gens gen.Container, withName bool, b *strings.Builder) {
 	paramName := funcParamName(r.name)
-	bws := b.WriteString
 
 	f := r.fields[idx]
 	typ := f.typ
 
 	if idx != 0 {
-		bws(" & \", \" &")
+		b.WriteString(" & \", \" &")
 	}
 
 	if withName {
-		bws(spf(" \"%s => \" &", f.name))
+		b.WriteString(fmt.Sprintf(" \"%s => \" &", f.name))
 	}
 
 	switch typ {
 	case "bit", "boolean", "std_logic", "std_ulogic", "std_logic_vector", "integer", "natural", "positive", "signed", "unsigned":
-		bws(spf(" to_string(%s.%s)", paramName, f.name))
+		b.WriteString(fmt.Sprintf(" to_string(%s.%s)", paramName, f.name))
 	default:
 		if _, ok := gens.Get(typ); ok {
-			bws(spf(" to_str(%s.%s)", paramName, f.name))
+			b.WriteString(fmt.Sprintf(" to_str(%s.%s)", paramName, f.name))
 		} else if f.width != 0 {
 			toStr := f.toStr
 			if toStr == "" {
 				toStr = "to_str"
 			}
-			bws(spf(" %s(%s.%s)", f.toStr, paramName, f.name))
+			b.WriteString(fmt.Sprintf(" %s(%s.%s)", f.toStr, paramName, f.name))
 		} else {
 			panic("should never happen")
 		}

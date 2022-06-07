@@ -42,7 +42,7 @@ func (e *enum) GenDeclarations() string {
 func (e *enum) genToEnumDeclaration(b *strings.Builder) {
 	name := toTypeFuncName(e.name)
 	b.WriteString(
-		spf(
+		fmt.Sprintf(
 			"   function %s(slv : std_logic_vector(%d downto 0)) return %s;\n",
 			name, e.Width()-1, e.name,
 		),
@@ -52,7 +52,7 @@ func (e *enum) genToEnumDeclaration(b *strings.Builder) {
 func (e *enum) genToSlvDeclaration(b *strings.Builder) {
 	name := funcParamName(e.name)
 	b.WriteString(
-		spf(
+		fmt.Sprintf(
 			"   function to_slv(%s : %s) return std_logic_vector;\n",
 			name, e.name,
 		),
@@ -62,7 +62,7 @@ func (e *enum) genToSlvDeclaration(b *strings.Builder) {
 func (e *enum) genToStrDeclaration(b *strings.Builder) {
 	name := funcParamName(e.name)
 	b.WriteString(
-		spf(
+		fmt.Sprintf(
 			"   function to_str(%s : %s) return string;\n",
 			name, e.name,
 		),
@@ -82,57 +82,59 @@ func (e *enum) GenDefinitions(gens gen.Container) string {
 }
 
 func (e *enum) genToEnumDefinition(b *strings.Builder) {
-	bws := b.WriteString
 	name := toTypeFuncName(e.name)
-	bws(
-		spf(
-			"   function %s(slv : std_logic_vector(%d downto 0)) return %s is\n",
+	b.WriteString(
+		fmt.Sprintf(
+			"   function %s(slv : std_logic_vector(%d downto 0)) return %s is\n"+
+				"   begin\n"+
+				"      case slv is\n",
 			name, e.Width()-1, e.name,
 		),
 	)
-	bws("   begin\n")
-	bws("      case slv is\n")
 
 	for i, v := range e.values {
-		bws(spf("         when %s => return %s;\n", e.slv(i), v))
+		b.WriteString(fmt.Sprintf("         when %s => return %s;\n", e.slv(i), v))
 	}
 
-	bws("         when others => report \"invalid slv value \" & to_string(slv) severity failure;\n")
-	bws("      end case;\n")
-	bws("   end function;\n")
+	b.WriteString(
+		"         when others => report \"invalid slv value \" & to_string(slv) severity failure;\n" +
+			"      end case;\n" +
+			"   end function;\n",
+	)
 }
 
 func (e *enum) genToSlvDefinition(b *strings.Builder) {
-	bws := b.WriteString
-	name := funcParamName(e.name)
+	paramName := funcParamName(e.name)
 
-	bws(
-		spf(
-			"   function to_slv(%s : %s) return std_logic_vector is\n",
-			name, e.name,
+	b.WriteString(
+		fmt.Sprintf(
+			"   function to_slv(%[1]s : %[2]s) return std_logic_vector is\n"+
+				"   begin\n"+
+				"      case %[1]s is\n",
+			paramName, e.name,
 		),
 	)
-	bws("   begin\n")
-	bws(spf("      case %s is\n", name))
 	for i, v := range e.values {
-		bws(spf("         when %s => return %s;\n", v, e.slv(i)))
+		b.WriteString(fmt.Sprintf("         when %s => return %s;\n", v, e.slv(i)))
 	}
-	bws("      end case;\n")
-	bws("   end function;\n")
+	b.WriteString("      end case;\n   end function;\n")
 }
 
 func (e *enum) genToStrDefinition(b *strings.Builder) {
-	bws := b.WriteString
-	name := funcParamName(e.name)
+	paramName := funcParamName(e.name)
 
-	bws(spf("   function to_str(%s : %s) return string is\n", name, e.name))
-	bws("   begin\n")
-	bws(spf("      case %s is\n", name))
+	b.WriteString(
+		fmt.Sprintf(
+			"   function to_str(%[1]s : %[2]s) return string is\n"+
+				"   begin\n"+
+				"      case %[1]s is\n",
+			paramName, e.name,
+		),
+	)
 	for _, v := range e.values {
-		bws(spf("         when %[1]s => return \"%[1]s\";\n", v))
+		b.WriteString(fmt.Sprintf("         when %[1]s => return \"%[1]s\";\n", v))
 	}
-	bws("      end case;\n")
-	bws("   end function;\n")
+	b.WriteString("      end case;\n   end function;\n")
 }
 
 func (e *enum) ParseArgs(args []string) error {
@@ -184,7 +186,7 @@ func (e *enum) slv(idx int) string {
 	case "gray":
 		panic("not yet implemented")
 	case "sequential":
-		s = spf("%0*b", e.Width(), idx)
+		s = fmt.Sprintf("%0*b", e.Width(), idx)
 	default:
 		panic("should never happen")
 	}
