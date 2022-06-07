@@ -39,7 +39,7 @@ func genVHDLIndex() {
 	libList.WriteString("<ul class=\"symbol-list\">")
 	for _, l := range vhdlLibs {
 		libList.WriteString(
-			spf("<li><a href=\"%[1]s/index.html\">%[1]s</a></li>", l),
+			fmt.Sprintf("<li><a href=\"%[1]s/index.html\">%[1]s</a></li>", l),
 		)
 	}
 	libList.WriteString("</ul>")
@@ -111,40 +111,40 @@ func genVHDLLibIndex(name string) {
 	ulEndStr := "</ul>"
 
 	if len(ents) > 0 {
-		smblList.WriteString(spf("<h3>Entities (%d)</h3>", len(ents)))
+		smblList.WriteString(fmt.Sprintf("<h3>Entities (%d)</h3>", len(ents)))
 		smblList.WriteString(ulStr)
 		for _, e := range entNames {
 			count := ""
 			if entUniqueNames[e] > 1 {
-				count = spf(" (%d)", entUniqueNames[e])
+				count = fmt.Sprintf(" (%d)", entUniqueNames[e])
 			}
-			smblList.WriteString(spf(liStr, strings.ToLower(e), e, count))
+			smblList.WriteString(fmt.Sprintf(liStr, strings.ToLower(e), e, count))
 		}
 		smblList.WriteString(ulEndStr)
 	}
 
 	if len(pkgs) > 0 {
-		smblList.WriteString(spf("<h3>Packages (%d)</h3>", len(pkgs)))
+		smblList.WriteString(fmt.Sprintf("<h3>Packages (%d)</h3>", len(pkgs)))
 		smblList.WriteString(ulStr)
 		for _, p := range pkgNames {
 			count := ""
 			if pkgUniqueNames[p] > 1 {
-				count = spf(" (%d)", pkgUniqueNames[p])
+				count = fmt.Sprintf(" (%d)", pkgUniqueNames[p])
 			}
-			smblList.WriteString(spf(liStr, strings.ToLower(p), p, count))
+			smblList.WriteString(fmt.Sprintf(liStr, strings.ToLower(p), p, count))
 		}
 		smblList.WriteString(ulEndStr)
 	}
 
 	if len(tbs) > 0 {
-		smblList.WriteString(spf("<h3>Testbenches (%d)</h3>", len(tbs)))
+		smblList.WriteString(fmt.Sprintf("<h3>Testbenches (%d)</h3>", len(tbs)))
 		smblList.WriteString(ulStr)
 		for _, t := range tbNames {
 			count := ""
 			if tbUniqueNames[t] > 1 {
-				count = spf(" (%d)", tbUniqueNames[t])
+				count = fmt.Sprintf(" (%d)", tbUniqueNames[t])
 			}
-			smblList.WriteString(spf(liStr, strings.ToLower(t), t, count))
+			smblList.WriteString(fmt.Sprintf(liStr, strings.ToLower(t), t, count))
 		}
 		smblList.WriteString(ulEndStr)
 	}
@@ -208,7 +208,7 @@ func genVHDLLibSymbol(lib *lib.Library, key string) {
 
 	symPath := syms[0].Path()
 	if len(syms) > 1 {
-		symPath = spf("%s.%s", lib.Path(), key)
+		symPath = fmt.Sprintf("%s.%s", lib.Path(), key)
 	}
 
 	symFmts := SymbolFormatters{
@@ -219,7 +219,7 @@ func genVHDLLibSymbol(lib *lib.Library, key string) {
 		Topbar:    topbar("vhdl", 2),
 	}
 
-	filePath := path.Join(htmlArgs.Path, "vhdl", lib.Name(), spf("%s.html", key))
+	filePath := path.Join(htmlArgs.Path, "vhdl", lib.Name(), fmt.Sprintf("%s.html", key))
 	f, err := os.Create(filePath)
 	if err != nil {
 		log.Fatalf("creating %s file: %v", filePath, err)
@@ -326,7 +326,7 @@ func genVHDLProtectedType(prot vhdl.Protected, rand uint32) {
 	elems = append(elems, prot.Key())
 	filePath = path.Join(elems...)
 
-	filePath = spf("%s_%d.html", filePath, rand)
+	filePath = fmt.Sprintf("%s_%d.html", filePath, rand)
 	f, err := os.Create(path.Join(htmlArgs.Path, filePath))
 	if err != nil {
 		log.Fatalf("creating %s file: %v", filePath, err)
@@ -357,7 +357,7 @@ func genVHDLUniqueSymbolContent(pkg vhdl.Package, key string, b *strings.Builder
 	if _, ok := sym.(vhdl.Protected); ok {
 		rand := rand.Uint32()
 		genVHDLProtectedType(sym.(vhdl.Protected), rand)
-		aPrefix = spf("<a href=\"%s_%d.html\">", sym.Key(), rand)
+		aPrefix = fmt.Sprintf("<a href=\"%s_%d.html\">", sym.Key(), rand)
 		aSuffix = "</a>"
 	}
 

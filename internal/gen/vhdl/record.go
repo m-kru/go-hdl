@@ -44,21 +44,21 @@ func (r *record) GenDeclarations() string {
 }
 
 func (r *record) genToRecordDeclaration(b *strings.Builder) {
-	name := toTypeFuncName(r.name)
+	funcName := toTypeFuncName(r.name)
 	b.WriteString(
 		fmt.Sprintf(
 			"   function %s(slv : std_logic_vector(%d downto 0)) return %s;\n",
-			name, r.Width()-1, r.name,
+			funcName, r.Width()-1, r.name,
 		),
 	)
 }
 
 func (r *record) genToSlvDeclaration(b *strings.Builder) {
-	name := funcParamName(r.name)
+	paramName := funcParamName(r.name)
 	b.WriteString(
 		fmt.Sprintf(
 			"   function to_slv(%s : %s) return std_logic_vector;\n",
-			name, r.name,
+			paramName, r.name,
 		),
 	)
 }
