@@ -21,8 +21,8 @@ Description
 The gen command scans HDL files and generates code based on their content.
 The code generation is triggered by adding '--thdl:gen' tag line before symbol
 for which the code should be generated. Note that there is no whitespace
-between '--' and 'thdl:gen'. Putting a whitespace in between is a good method
-to temporarily disable code generation for particular symbol. Another one is
+between '--' and 'thdl:gen'. Inserting a whitespace in between is a good method
+to temporarily disable code generation for a particular symbol. Another one is
 adding an empty line between the '--thdl:gen' line and symbol line.
 
 The code generation currently supports following kinds of symbols:
@@ -62,8 +62,8 @@ The code generation currently supports following kinds of symbols:
           - no-to-str  Do not generate to_str function.
 
         By default thdl will handle all fields of standard types or of types that are also
-        marked for generation and are located within the same scope (the scope is currently)
-        limited to the design unit. To handle foreign types one needs to provide additional
+        marked for generation and are located within the same scope (the scope is currently
+        limited to the design unit). To handle foreign types one needs to provide additional
         information via field arguments. Field arguments are provided at the end of the line
         with particular field. They are prepended with '--thdl:' tag.
         Example:

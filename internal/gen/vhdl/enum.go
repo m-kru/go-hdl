@@ -163,7 +163,12 @@ func (e *enum) ParseArgs(args []string) error {
 		switch param {
 		case "encoding":
 			if _, ok := validEncodings[a]; !ok {
-				return fmt.Errorf("invalid argument '%s' for 'encoding' parameter", a)
+				return fmt.Errorf(
+					"invalid argument '%s' for 'encoding' parameter, "+
+						"valid arguments are: 'gray', 'one-hot' and 'sequential' "+
+						"with 'sequential' being the default one",
+					a,
+				)
 			}
 			encoding = a
 		}
