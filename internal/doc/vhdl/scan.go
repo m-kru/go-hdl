@@ -123,6 +123,7 @@ func scanPackageDeclaration(parent sym.Symbol, filepath string, name string, sCt
 		Procs:     map[sym.ID]sym.Symbol{},
 		Types:     map[sym.ID]sym.Symbol{},
 		Subtypes:  map[sym.ID]sym.Symbol{},
+		Variables: map[sym.ID]sym.Symbol{},
 	}
 
 	if sCtx.docPresent {
@@ -180,6 +181,9 @@ func scanPackageDeclaration(parent sym.Symbol, filepath string, name string, sCt
 			(len(re.EndWithSemicolon.FindIndex(sCtx.line)) > 0) {
 			pkg.codeEnd = sCtx.endIdx
 			return pkg, nil
+		} else if sm := re.VariableDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
+			name := string(sCtx.line[sm[4]:sm[5]])
+			syms, err = scanVariableDeclaration(pkg, filepath, name, sCtx)
 		}
 
 		if err != nil {
@@ -535,4 +539,35 @@ func scanSubtypeDeclaration(parent sym.Symbol, filepath string, name string, sCt
 	}
 
 	return nil, fmt.Errorf("subtype declaration line with ';' not found")
+}
+
+func scanVariableDeclaration(parent sym.Symbol, filepath string, name string, sCtx *scanContext) ([]sym.Symbol, error) {
+	v := Variable{
+		symbol{
+			parent:    parent,
+			filepath:  filepath,
+			key:       strings.ToLower(name),
+			name:      name,
+			lineNum:   sCtx.lineNum,
+			codeStart: sCtx.startIdx,
+		},
+	}
+
+	if sCtx.docPresent {
+		v.docStart = sCtx.docStart
+		v.docEnd = sCtx.docEnd
+	}
+
+	for {
+		if len(re.EndsWithSemicolon.FindIndex(sCtx.line)) > 0 {
+			v.codeEnd = sCtx.endIdx
+			return []sym.Symbol{v}, nil
+		}
+
+		if !sCtx.proceed() {
+			break
+		}
+	}
+
+	return nil, fmt.Errorf("variable declaration line with ';' not found")
 }

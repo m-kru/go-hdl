@@ -22,11 +22,12 @@ type Package struct {
 	codeStart uint32
 	codeEnd   uint32
 
-	Consts   map[sym.ID]sym.Symbol
-	Funcs    map[sym.ID]sym.Symbol
-	Procs    map[sym.ID]sym.Symbol
-	Types    map[sym.ID]sym.Symbol
-	Subtypes map[sym.ID]sym.Symbol
+	Consts    map[sym.ID]sym.Symbol
+	Funcs     map[sym.ID]sym.Symbol
+	Procs     map[sym.ID]sym.Symbol
+	Types     map[sym.ID]sym.Symbol
+	Subtypes  map[sym.ID]sym.Symbol
+	Variables map[sym.ID]sym.Symbol
 }
 
 func (p Package) Filepath() string       { return p.filepath }
@@ -91,7 +92,7 @@ func PkgSortedTypeKeys(p Package) []string {
 	return types
 }
 
-// PkgSortedSubtypeKeys returns type keys in alphabetical order.
+// PkgSortedSubtypeKeys returns subtype keys in alphabetical order.
 func PkgSortedSubtypeKeys(p Package) []string {
 	subtypes := []string{}
 	for id, _ := range p.Subtypes {
@@ -99,6 +100,16 @@ func PkgSortedSubtypeKeys(p Package) []string {
 	}
 	sort.Strings(subtypes)
 	return subtypes
+}
+
+// PkgSortedVariablesKeys returns variables keys in alphabetical order.
+func PkgSortedVariablesKeys(p Package) []string {
+	vars := []string{}
+	for id, _ := range p.Variables {
+		vars = append(vars, id.Key)
+	}
+	sort.Strings(vars)
+	return vars
 }
 
 func (p Package) Code() string {
@@ -151,6 +162,16 @@ func (p Package) Code() string {
 		b.WriteString(s.OneLineSummary())
 	}
 
+	// Variables.
+	vars := PkgSortedVariablesKeys(p)
+	if len(vars) > 0 && b.Len() > 0 {
+		b.WriteRune('\n')
+	}
+	for _, key := range vars {
+		v := p.GetSymbol(key)[0]
+		b.WriteString(v.OneLineSummary())
+	}
+
 	return b.String()
 }
 
@@ -179,6 +200,8 @@ func (p Package) AddSymbol(s sym.Symbol) error {
 		p.Types[id] = s
 	case Subtype:
 		p.Subtypes[id] = s
+	case Variable:
+		p.Variables[id] = s
 	default:
 		panic("should never happen")
 	}
@@ -232,6 +255,11 @@ func (p Package) GetSymbol(key string) []sym.Symbol {
 		}
 	}
 	for id, s := range p.Subtypes {
+		if id.Key == key {
+			syms = append(syms, s)
+		}
+	}
+	for id, s := range p.Variables {
 		if id.Key == key {
 			syms = append(syms, s)
 		}

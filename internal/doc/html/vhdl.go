@@ -273,6 +273,7 @@ func genVHDLPkgContent(pkg sym.Symbol, details bool, b *strings.Builder) {
 	genVHDLOverloadedSymbolsContent(pkg.(vhdl.Package), "Procedures", b)
 	genVHDLPkgUniqueSymbolsContent(pkg.(vhdl.Package), "Types", b)
 	genVHDLPkgUniqueSymbolsContent(pkg.(vhdl.Package), "Subtypes", b)
+	genVHDLPkgUniqueSymbolsContent(pkg.(vhdl.Package), "Variables", b)
 
 	if details {
 		b.WriteString("</div></details>")
@@ -393,6 +394,8 @@ func genVHDLPkgUniqueSymbolsContent(pkg vhdl.Package, class string, content *str
 		keys = vhdl.PkgSortedTypeKeys(pkg)
 	case "Subtypes":
 		keys = vhdl.PkgSortedSubtypeKeys(pkg)
+	case "Variables":
+		keys = vhdl.PkgSortedVariablesKeys(pkg)
 	default:
 		panic("should never happen")
 	}
