@@ -80,7 +80,7 @@ func scanFile(filepath string, wg *sync.WaitGroup) {
 		}
 		if sym != nil {
 			libContainer.AddSymbol(libName, sym)
-			sCtx.symbolAdded()
+			sCtx.docPresent = false
 		}
 	}
 }
@@ -192,7 +192,7 @@ func scanPackageDeclaration(parent sym.Symbol, filepath string, name string, sCt
 			}
 		}
 		if syms != nil {
-			sCtx.symbolAdded()
+			sCtx.docPresent = false
 		}
 	}
 
@@ -213,6 +213,7 @@ func scanPackageInstantiation(parent sym.Symbol, filepath string, name string, s
 	if sCtx.docPresent {
 		pi.docStart = sCtx.docStart
 		pi.docEnd = sCtx.docEnd
+		sCtx.docPresent = false
 	}
 
 	for sCtx.proceed() {
@@ -302,6 +303,7 @@ func scanProtectedTypeDeclaration(parent sym.Symbol, filepath string, name strin
 	if sCtx.docPresent {
 		prot.docStart = sCtx.docStart
 		prot.docEnd = sCtx.docEnd
+		sCtx.docPresent = false
 	}
 
 	for {
@@ -335,7 +337,7 @@ func scanProtectedTypeDeclaration(parent sym.Symbol, filepath string, name strin
 			}
 		}
 		if syms != nil {
-			sCtx.symbolAdded()
+			sCtx.docPresent = false
 		}
 
 		if !sCtx.proceed() {

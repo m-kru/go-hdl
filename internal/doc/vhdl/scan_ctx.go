@@ -64,9 +64,3 @@ func (sc *scanContext) lookahead() bool {
 
 	return true
 }
-
-// symbolAdded function must be called whenever any symbol is added
-// to any symbol container.
-func (sc *scanContext) symbolAdded() {
-	sc.docPresent = false
-}
