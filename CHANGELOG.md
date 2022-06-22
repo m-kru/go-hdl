@@ -6,13 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.5.0] 2022-06-22
 ### Added
 - [VHDL, doc] Support package variables.
 - [VHDL, gen] Support unknown types in generated records.
 - [VHDL, gen] Support generated enumerations in generated records.
 - [vet] Add possibility to vet only single file.
 
-## [0.4.0] 2022-25-16
+## [0.4.0] 2022-05-16
 ### Added
 - [VHDL, doc] Protected types are documented in html.
 - [VHDL, doc] Protected types are included in the package summary.

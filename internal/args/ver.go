@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-const Version string = "0.4.0"
+const Version string = "0.5.0"
 
 func printVersion() {
 	fmt.Println(Version)
