@@ -10,6 +10,8 @@ var EndWithSemicolon *re.Regexp = re.MustCompile(`(?i)^\s*end\s*;`)
 var EndsWithSemicolon *re.Regexp = re.MustCompile(`(?i);\s*($|--)`)
 var EndsWithRoundBracketAndSemicolon *re.Regexp = re.MustCompile(`(?i)\)\s*;\s*($|--)`)
 
+var AliasDeclaration *re.Regexp = re.MustCompile(`^(?i)\s*alias\s+(\w+)\s+is\s+`)
+
 var ConstantDeclaration *re.Regexp = re.MustCompile(`(?i)^\s*constant\s+(\w+)\s*(,\s*\w+)?\s*(,\s*\w+)?`)
 
 var EntityDeclaration *re.Regexp = re.MustCompile(`(?i)^\s*entity\s+(\w*)\s+is`)

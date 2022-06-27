@@ -5,7 +5,7 @@ import (
 )
 
 var VHDLKeywords map[string]bool = map[string]bool{
-	"array": true, "assert": true,
+	"alias": true, "array": true, "assert": true,
 	"begin": true, "boolean": true, "buffer": true,
 	"constant": true,
 	"downto":   true,
@@ -36,7 +36,7 @@ func vhdlBold(s string, prefix string, suffix string) string {
 
 	for i, r := range s {
 		if r == ' ' || r == '\t' || r == '\n' || r == '\r' ||
-			r == ':' || r == ';' || r == ',' || r == '(' || r == ')' {
+			r == ':' || r == ';' || r == ',' || r == '(' || r == ')' || r == '[' || r == ']' {
 			if r == '\n' || r == '\r' {
 				inComment = false
 			}

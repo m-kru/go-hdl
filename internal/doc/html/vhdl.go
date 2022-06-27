@@ -268,6 +268,7 @@ func genVHDLPkgContent(pkg sym.Symbol, details bool, b *strings.Builder) {
 	b.WriteString(fmt.Sprintf("<h3>Package %s</h3>", pkg.Name()))
 	b.WriteString(fmt.Sprintf("<p class=\"doc\">%s</p>", utils.VHDLDeindentDecomment(pkg.Doc())))
 
+	genVHDLPkgUniqueSymbolsContent(pkg.(vhdl.Package), "Aliases", b)
 	genVHDLPkgUniqueSymbolsContent(pkg.(vhdl.Package), "Constants", b)
 	genVHDLOverloadedSymbolsContent(pkg.(vhdl.Package), "Functions", b)
 	genVHDLOverloadedSymbolsContent(pkg.(vhdl.Package), "Procedures", b)
@@ -388,6 +389,8 @@ func genVHDLUniqueSymbolContent(pkg vhdl.Package, key string, b *strings.Builder
 func genVHDLPkgUniqueSymbolsContent(pkg vhdl.Package, class string, content *strings.Builder) {
 	var keys []string
 	switch class {
+	case "Aliases":
+		keys = vhdl.PkgSortedAliasKeys(pkg)
 	case "Constants":
 		keys = vhdl.PkgSortedConstKeys(pkg)
 	case "Types":
@@ -395,7 +398,7 @@ func genVHDLPkgUniqueSymbolsContent(pkg vhdl.Package, class string, content *str
 	case "Subtypes":
 		keys = vhdl.PkgSortedSubtypeKeys(pkg)
 	case "Variables":
-		keys = vhdl.PkgSortedVariablesKeys(pkg)
+		keys = vhdl.PkgSortedVariableKeys(pkg)
 	default:
 		panic("should never happen")
 	}

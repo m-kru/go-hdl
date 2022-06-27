@@ -118,6 +118,7 @@ func scanPackageDeclaration(parent sym.Symbol, filepath string, name string, sCt
 		key:       strings.ToLower(name),
 		name:      name,
 		codeStart: sCtx.startIdx,
+		Aliases:   map[sym.ID]sym.Symbol{},
 		Consts:    map[sym.ID]sym.Symbol{},
 		Funcs:     map[sym.ID]sym.Symbol{},
 		Procs:     map[sym.ID]sym.Symbol{},
@@ -135,7 +136,10 @@ func scanPackageDeclaration(parent sym.Symbol, filepath string, name string, sCt
 		var err error
 		var syms []sym.Symbol
 
-		if sm := re.ConstantDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
+		if sm := re.AliasDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
+			name := string(sCtx.line[sm[2]:sm[3]])
+			syms, err = scanAliasDeclaration(pkg, filepath, name, sCtx)
+		} else if sm := re.ConstantDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
 			names := []string{}
 			for i := 1; i < len(sm)/2; i++ {
 				if sm[2*i] < 0 {
@@ -400,6 +404,37 @@ func scanSomeTypeDeclaration(parent sym.Symbol, filepath string, name string, sC
 	}
 
 	return nil, nil
+}
+
+func scanAliasDeclaration(parent sym.Symbol, filepath string, name string, sCtx *scanContext) ([]sym.Symbol, error) {
+	a := Alias{
+		symbol{
+			parent:    parent,
+			filepath:  filepath,
+			key:       strings.ToLower(name),
+			name:      name,
+			lineNum:   sCtx.lineNum,
+			codeStart: sCtx.startIdx,
+		},
+	}
+
+	if sCtx.docPresent {
+		a.docStart = sCtx.docStart
+		a.docEnd = sCtx.docEnd
+	}
+
+	for {
+		if len(re.EndsWithSemicolon.FindIndex(sCtx.line)) > 0 {
+			a.codeEnd = sCtx.endIdx
+			return []sym.Symbol{a}, nil
+		}
+
+		if !sCtx.proceed() {
+			break
+		}
+	}
+
+	return nil, fmt.Errorf("variable declaration line with ';' not found")
 }
 
 func scanConstantDeclaration(parent sym.Symbol, filepath string, names []string, sCtx *scanContext) ([]sym.Symbol, error) {

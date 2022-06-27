@@ -22,6 +22,7 @@ type Package struct {
 	codeStart uint32
 	codeEnd   uint32
 
+	Aliases   map[sym.ID]sym.Symbol
 	Consts    map[sym.ID]sym.Symbol
 	Funcs     map[sym.ID]sym.Symbol
 	Procs     map[sym.ID]sym.Symbol
@@ -44,6 +45,16 @@ func (p Package) Doc() string {
 	}
 
 	return string(f[p.docStart:p.docEnd])
+}
+
+// PkgSortedAliasKeys returns alias keys in alphabetical order.
+func PkgSortedAliasKeys(p Package) []string {
+	vars := []string{}
+	for id, _ := range p.Aliases {
+		vars = append(vars, id.Key)
+	}
+	sort.Strings(vars)
+	return vars
 }
 
 // PkgSortedConstKeys returns constant keys in alphabetical order.
@@ -102,8 +113,8 @@ func PkgSortedSubtypeKeys(p Package) []string {
 	return subtypes
 }
 
-// PkgSortedVariablesKeys returns variables keys in alphabetical order.
-func PkgSortedVariablesKeys(p Package) []string {
+// PkgSortedVariableKeys returns variable keys in alphabetical order.
+func PkgSortedVariableKeys(p Package) []string {
 	vars := []string{}
 	for id, _ := range p.Variables {
 		vars = append(vars, id.Key)
@@ -115,8 +126,18 @@ func PkgSortedVariablesKeys(p Package) []string {
 func (p Package) Code() string {
 	b := strings.Builder{}
 
+	// Aliases.
+	aliases := PkgSortedAliasKeys(p)
+	for _, key := range aliases {
+		a := p.GetSymbol(key)[0]
+		b.WriteString(a.OneLineSummary())
+	}
+
 	// Constants.
 	consts := PkgSortedConstKeys(p)
+	if len(consts) > 0 && b.Len() > 0 {
+		b.WriteRune('\n')
+	}
 	for _, key := range consts {
 		c := p.GetSymbol(key)[0]
 		b.WriteString(c.OneLineSummary())
@@ -163,7 +184,7 @@ func (p Package) Code() string {
 	}
 
 	// Variables.
-	vars := PkgSortedVariablesKeys(p)
+	vars := PkgSortedVariableKeys(p)
 	if len(vars) > 0 && b.Len() > 0 {
 		b.WriteRune('\n')
 	}
@@ -190,6 +211,8 @@ func (p Package) AddSymbol(s sym.Symbol) error {
 	id := sym.ID{Key: s.Key(), LineNum: s.LineNum()}
 
 	switch s.(type) {
+	case Alias:
+		p.Aliases[id] = s
 	case Constant:
 		p.Consts[id] = s
 	case Function:
@@ -212,6 +235,9 @@ func (p Package) AddSymbol(s sym.Symbol) error {
 func (p Package) InnerKeys() []string {
 	names := []string{}
 
+	for id, _ := range p.Aliases {
+		names = append(names, id.Key)
+	}
 	for id, _ := range p.Consts {
 		names = append(names, id.Key)
 	}
@@ -227,6 +253,9 @@ func (p Package) InnerKeys() []string {
 	for id, _ := range p.Subtypes {
 		names = append(names, id.Key)
 	}
+	for id, _ := range p.Variables {
+		names = append(names, id.Key)
+	}
 
 	return names
 }
@@ -234,6 +263,11 @@ func (p Package) InnerKeys() []string {
 func (p Package) GetSymbol(key string) []sym.Symbol {
 	syms := []sym.Symbol{}
 
+	for id, s := range p.Aliases {
+		if id.Key == key {
+			syms = append(syms, s)
+		}
+	}
 	for id, s := range p.Consts {
 		if id.Key == key {
 			syms = append(syms, s)
