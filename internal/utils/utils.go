@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/fs"
 	"log"
+	"os"
 	"path/filepath"
 	"strings"
 )
@@ -30,6 +31,14 @@ func GetFilePathsByExtension(ext string, workDir string) ([]string, error) {
 
 	err := filepath.Walk(workDir, func(path string, info fs.FileInfo, err error) error {
 		if filepath.Ext(path) == ext {
+			fileInfo, err := os.Stat(path)
+			if err != nil {
+				log.Fatalf("error getting file status: %v", err)
+			}
+			if fileInfo.IsDir() {
+				return nil
+			}
+
 			files = append(files, path)
 		}
 		return nil
