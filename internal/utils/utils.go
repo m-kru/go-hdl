@@ -61,6 +61,8 @@ func GetVHDLFilePaths() []string {
 	}
 	vhdlFiles = append(vhdlFiles, vhdFiles...)
 
+	log.Printf("debug: discovered %d VHDL files", len(vhdFiles))
+
 	return vhdlFiles
 }
 

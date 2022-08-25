@@ -25,9 +25,9 @@ func Doc(args args.DocArgs) {
 	}
 
 	symbolPaths := resolveSymbolPath(args.SymbolPath)
-	log.Printf("debug: looking for following sym paths:\n")
+	log.Printf("debug: looking for following symbol paths:\n")
 	for _, p := range symbolPaths {
-		log.Printf("debug: %s", p.DebugString())
+		log.Printf("debug:   %s", p.DebugString())
 	}
 
 	foundSymbols := map[symbolPath][]sym.Symbol{}
