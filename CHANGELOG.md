@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - [VHDL, doc] Support alias in package.
+- [VHDL, doc] Highlight more standard types.
 ### Fixed
 - [VHDL] Ignore directories having \.vhdl? extension in name.
 
