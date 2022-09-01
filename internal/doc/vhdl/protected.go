@@ -54,10 +54,10 @@ func (p Protected) AddSymbol(s sym.Symbol) error {
 func (p Protected) InnerKeys() []string {
 	names := []string{}
 
-	for id, _ := range p.Funcs {
+	for id := range p.Funcs {
 		names = append(names, id.Key)
 	}
-	for id, _ := range p.Procs {
+	for id := range p.Procs {
 		names = append(names, id.Key)
 	}
 
@@ -119,11 +119,11 @@ func (p Protected) Code() string {
 
 	// Functions.
 	uniqueFuncs := map[string]bool{}
-	for id, _ := range p.Funcs {
+	for id := range p.Funcs {
 		uniqueFuncs[id.Key] = true
 	}
 	funcs := []string{}
-	for name, _ := range uniqueFuncs {
+	for name := range uniqueFuncs {
 		funcs = append(funcs, name)
 	}
 	sort.Strings(funcs)
@@ -136,7 +136,7 @@ func (p Protected) Code() string {
 		if len(fs) == 1 {
 			code := utils.Dewhitespace(fs[0].Code())
 			if utils.IsSingleLine(code) {
-				s = fmt.Sprintf("%s", code)
+				s = code
 			} else {
 				s = fmt.Sprintf("%s ...\n", utils.FirstLine(code))
 			}
@@ -160,11 +160,11 @@ func (p Protected) Code() string {
 
 	// Procedures.
 	uniqueProcs := map[string]bool{}
-	for id, _ := range p.Procs {
+	for id := range p.Procs {
 		uniqueProcs[id.Key] = true
 	}
 	procs := []string{}
-	for name, _ := range uniqueProcs {
+	for name := range uniqueProcs {
 		procs = append(procs, name)
 	}
 	sort.Strings(procs)
@@ -177,7 +177,7 @@ func (p Protected) Code() string {
 		if len(ps) == 1 {
 			code := utils.Dewhitespace(ps[0].Code())
 			if utils.IsSingleLine(code) {
-				s = fmt.Sprintf("%s", code)
+				s = code
 			} else {
 				s = fmt.Sprintf("procedure %s ...\n", ps[0].Name())
 			}
@@ -210,7 +210,7 @@ func (p Protected) OneLineSummary() string {
 	code := utils.Dewhitespace(string(f[p.codeStart:p.codeEnd]))
 
 	if utils.IsSingleLine(code) {
-		return fmt.Sprintf("%s", code)
+		return code
 	}
 	return fmt.Sprintf("%s ...\n", utils.FirstLine(code))
 }
@@ -221,11 +221,11 @@ func (p Protected) Path() string {
 
 func (p Protected) SortedFuncKeys() []string {
 	uniqueFuncs := map[string]bool{}
-	for id, _ := range p.Funcs {
+	for id := range p.Funcs {
 		uniqueFuncs[id.Key] = true
 	}
 	funcs := []string{}
-	for name, _ := range uniqueFuncs {
+	for name := range uniqueFuncs {
 		funcs = append(funcs, name)
 	}
 	sort.Strings(funcs)
@@ -234,11 +234,11 @@ func (p Protected) SortedFuncKeys() []string {
 
 func (p Protected) SortedProcKeys() []string {
 	uniqueProcs := map[string]bool{}
-	for id, _ := range p.Procs {
+	for id := range p.Procs {
 		uniqueProcs[id.Key] = true
 	}
 	procs := []string{}
-	for name, _ := range uniqueProcs {
+	for name := range uniqueProcs {
 		procs = append(procs, name)
 	}
 	sort.Strings(procs)

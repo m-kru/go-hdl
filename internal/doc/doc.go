@@ -34,7 +34,7 @@ func Doc(args args.DocArgs) {
 
 	for _, sp := range symbolPaths {
 		paths, syms := findSymbol(sp)
-		for i, _ := range paths {
+		for i := range paths {
 			foundSymbols[paths[i]] = syms[i]
 		}
 	}
@@ -70,7 +70,7 @@ func Doc(args args.DocArgs) {
 		}
 	} else {
 		msg := "provided path is ambiguous, found symbols with following paths:"
-		for path, _ := range foundSymbols {
+		for path := range foundSymbols {
 			msg = fmt.Sprintf("%s\n  %s", msg, path)
 		}
 		log.Fatalf("%s", msg)

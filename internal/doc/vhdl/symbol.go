@@ -64,7 +64,7 @@ func (s symbol) DocCode() (string, string) {
 func (s symbol) OneLineSummary() string {
 	code := utils.Dewhitespace(s.Code())
 	if utils.IsSingleLine(code) {
-		return fmt.Sprintf("%s", code)
+		return code
 	}
 	return fmt.Sprintf("%s ...\n", utils.FirstLine(code))
 }

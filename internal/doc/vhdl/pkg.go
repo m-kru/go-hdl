@@ -50,7 +50,7 @@ func (p Package) Doc() string {
 // PkgSortedAliasKeys returns alias keys in alphabetical order.
 func PkgSortedAliasKeys(p Package) []string {
 	vars := []string{}
-	for id, _ := range p.Aliases {
+	for id := range p.Aliases {
 		vars = append(vars, id.Key)
 	}
 	sort.Strings(vars)
@@ -60,7 +60,7 @@ func PkgSortedAliasKeys(p Package) []string {
 // PkgSortedConstKeys returns constant keys in alphabetical order.
 func PkgSortedConstKeys(p Package) []string {
 	consts := []string{}
-	for id, _ := range p.Consts {
+	for id := range p.Consts {
 		consts = append(consts, id.Key)
 	}
 	sort.Strings(consts)
@@ -69,11 +69,11 @@ func PkgSortedConstKeys(p Package) []string {
 
 func (p Package) SortedFuncKeys() []string {
 	uniqueFuncs := map[string]bool{}
-	for id, _ := range p.Funcs {
+	for id := range p.Funcs {
 		uniqueFuncs[id.Key] = true
 	}
 	funcs := []string{}
-	for name, _ := range uniqueFuncs {
+	for name := range uniqueFuncs {
 		funcs = append(funcs, name)
 	}
 	sort.Strings(funcs)
@@ -82,11 +82,11 @@ func (p Package) SortedFuncKeys() []string {
 
 func (p Package) SortedProcKeys() []string {
 	uniqueProcs := map[string]bool{}
-	for id, _ := range p.Procs {
+	for id := range p.Procs {
 		uniqueProcs[id.Key] = true
 	}
 	procs := []string{}
-	for name, _ := range uniqueProcs {
+	for name := range uniqueProcs {
 		procs = append(procs, name)
 	}
 	sort.Strings(procs)
@@ -96,7 +96,7 @@ func (p Package) SortedProcKeys() []string {
 // PkgSortedTypeKeys returns type keys in alphabetical order.
 func PkgSortedTypeKeys(p Package) []string {
 	types := []string{}
-	for id, _ := range p.Types {
+	for id := range p.Types {
 		types = append(types, id.Key)
 	}
 	sort.Strings(types)
@@ -106,7 +106,7 @@ func PkgSortedTypeKeys(p Package) []string {
 // PkgSortedSubtypeKeys returns subtype keys in alphabetical order.
 func PkgSortedSubtypeKeys(p Package) []string {
 	subtypes := []string{}
-	for id, _ := range p.Subtypes {
+	for id := range p.Subtypes {
 		subtypes = append(subtypes, id.Key)
 	}
 	sort.Strings(subtypes)
@@ -116,7 +116,7 @@ func PkgSortedSubtypeKeys(p Package) []string {
 // PkgSortedVariableKeys returns variable keys in alphabetical order.
 func PkgSortedVariableKeys(p Package) []string {
 	vars := []string{}
-	for id, _ := range p.Variables {
+	for id := range p.Variables {
 		vars = append(vars, id.Key)
 	}
 	sort.Strings(vars)
@@ -235,25 +235,25 @@ func (p Package) AddSymbol(s sym.Symbol) error {
 func (p Package) InnerKeys() []string {
 	names := []string{}
 
-	for id, _ := range p.Aliases {
+	for id := range p.Aliases {
 		names = append(names, id.Key)
 	}
-	for id, _ := range p.Consts {
+	for id := range p.Consts {
 		names = append(names, id.Key)
 	}
-	for id, _ := range p.Funcs {
+	for id := range p.Funcs {
 		names = append(names, id.Key)
 	}
-	for id, _ := range p.Procs {
+	for id := range p.Procs {
 		names = append(names, id.Key)
 	}
-	for id, _ := range p.Types {
+	for id := range p.Types {
 		names = append(names, id.Key)
 	}
-	for id, _ := range p.Subtypes {
+	for id := range p.Subtypes {
 		names = append(names, id.Key)
 	}
-	for id, _ := range p.Variables {
+	for id := range p.Variables {
 		names = append(names, id.Key)
 	}
 

@@ -19,7 +19,7 @@ func FuncsCodeSummary(funcs []sym.Symbol) string {
 	if len(funcs) == 1 {
 		code := utils.Dewhitespace(funcs[0].Code())
 		if utils.IsSingleLine(code) {
-			s = fmt.Sprintf("%s", code)
+			s = code
 		} else {
 			s = fmt.Sprintf("function %s ...\n", funcs[0].Name())
 		}

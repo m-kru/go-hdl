@@ -101,7 +101,7 @@ func (r *record) genToRecordDefinition(gens gen.Container, b *strings.Builder) {
 		),
 	)
 
-	for i, _ := range r.fields {
+	for i := range r.fields {
 		width = r.slvToField(i, gens, b, width)
 	}
 
@@ -127,7 +127,7 @@ func (r *record) genToSlvDefinition(gens gen.Container, b *strings.Builder) {
 		),
 	)
 
-	for i, _ := range r.fields {
+	for i := range r.fields {
 		width = r.fieldToSlv(i, gens, b, width)
 	}
 
@@ -334,11 +334,11 @@ func (r *record) genToStrDefinition(gens gen.Container, b *strings.Builder) {
 			paramName, r.name,
 		),
 	)
-	for i, _ := range r.fields {
+	for i := range r.fields {
 		r.fieldToStr(i, gens, true, b)
 	}
 	b.WriteString(" & \")\";\n      end if;\n      return \"(\" &")
-	for i, _ := range r.fields {
+	for i := range r.fields {
 		r.fieldToStr(i, gens, false, b)
 	}
 

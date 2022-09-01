@@ -13,7 +13,7 @@ func ThdlGenArgs(line []byte) []string {
 
 	argsSuffix := strings.Trim(splits[1], " \t")
 	args := strings.Split(argsSuffix, " ")
-	for i, _ := range args {
+	for i := range args {
 		args[i] = strings.Trim(args[i], " \t")
 	}
 	return args

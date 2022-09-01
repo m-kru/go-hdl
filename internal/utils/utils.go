@@ -17,7 +17,7 @@ func ValidLangs() [1]string {
 }
 
 func IsValidLang(lang string) bool {
-	for i, _ := range validLangs {
+	for i := range validLangs {
 		if lang == validLangs[i] {
 			return true
 		}

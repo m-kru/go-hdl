@@ -18,7 +18,7 @@ func ProcsCodeSummary(procs []sym.Symbol) string {
 	if len(procs) == 1 {
 		code := utils.Dewhitespace(procs[0].Code())
 		if utils.IsSingleLine(code) {
-			s = fmt.Sprintf("%s", code)
+			s = code
 		} else {
 			s = fmt.Sprintf("procedure %s ...\n", procs[0].Name())
 		}

@@ -43,7 +43,7 @@ func (lc libraryContainer) AddSymbol(libName string, s sym.Symbol) {
 func LibraryNames() []string {
 	names := []string{}
 
-	for name, _ := range libContainer {
+	for name := range libContainer {
 		names = append(names, name)
 	}
 

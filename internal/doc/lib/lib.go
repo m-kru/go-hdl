@@ -80,7 +80,7 @@ func (l *Library) AddFile(f string) {
 func (l *Library) InnerKeys() []string {
 	keys := []string{}
 
-	for key, _ := range l.symbols {
+	for key := range l.symbols {
 		keys = append(keys, key)
 	}
 

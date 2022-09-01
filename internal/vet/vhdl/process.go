@@ -22,7 +22,7 @@ type processContext struct {
 
 // inSensitivityList return true if signal s is present in the sensitivity list.
 func (pc processContext) inSensitivityList(s string) bool {
-	for i, _ := range pc.sensitivityList {
+	for i := range pc.sensitivityList {
 		if pc.sensitivityList[i] == s {
 			return true
 		}
