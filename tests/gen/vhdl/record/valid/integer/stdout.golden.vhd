@@ -3,32 +3,32 @@ library ieee;
    use ieee.numeric_std.all;
 
 package p is
-   --thdl:gen
+   --hdl:gen
    type t_rec is record
       i : integer;
       n : natural;
       p : positive;
    end record;
 
-   --thdl:start
-   -- Below code was automatically generated with the thdl tool.
+   --hdl:start
+   -- Below code was automatically generated with the hdl tool.
    -- Do not modify it by hand, unless you really know what you do.
-   -- More info on https://github.com/m-kru/go-thdl.
+   -- More info on https://github.com/m-kru/go-hdl.
 
    function to_rec(slv : std_logic_vector(95 downto 0)) return t_rec;
    function to_slv(rec : t_rec) return std_logic_vector;
    function to_str(rec : t_rec; add_names : boolean := false) return string;
 
-   --thdl:end
+   --hdl:end
 
 end package;
 
 package body p is
 
-   --thdl:start
-   -- Below code was automatically generated with the thdl tool.
+   --hdl:start
+   -- Below code was automatically generated with the hdl tool.
    -- Do not modify it by hand, unless you really know what you do.
-   -- More info on https://github.com/m-kru/go-thdl.
+   -- More info on https://github.com/m-kru/go-hdl.
 
    function to_rec(slv : std_logic_vector(95 downto 0)) return t_rec is
       variable rec : t_rec;
@@ -56,6 +56,6 @@ package body p is
       return "(" & to_string(rec.i) & ", " & to_string(rec.n) & ", " & to_string(rec.p) & ")";
    end function;
 
-   --thdl:end
+   --hdl:end
 
 end package body;

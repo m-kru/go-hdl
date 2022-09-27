@@ -2,7 +2,7 @@ package vhdl
 
 import (
 	"fmt"
-	"github.com/m-kru/go-thdl/internal/gen/gen"
+	"github.com/m-kru/go-hdl/internal/gen/gen"
 	"strings"
 )
 

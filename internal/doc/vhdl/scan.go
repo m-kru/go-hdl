@@ -9,11 +9,11 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/m-kru/go-thdl/internal/args"
-	"github.com/m-kru/go-thdl/internal/doc/lib"
-	"github.com/m-kru/go-thdl/internal/doc/sym"
-	"github.com/m-kru/go-thdl/internal/utils"
-	"github.com/m-kru/go-thdl/internal/vhdl/re"
+	"github.com/m-kru/go-hdl/internal/args"
+	"github.com/m-kru/go-hdl/internal/doc/lib"
+	"github.com/m-kru/go-hdl/internal/doc/sym"
+	"github.com/m-kru/go-hdl/internal/utils"
+	"github.com/m-kru/go-hdl/internal/vhdl/re"
 )
 
 var docArgs args.DocArgs

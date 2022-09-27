@@ -3,10 +3,10 @@ library ieee;
    use ieee.numeric_std.all;
 
 package pkg is
-   --thdl:gen
+   --hdl:gen
    type t_enum is (ONE, TWO, THREE);
 
-   --thdl:gen
+   --hdl:gen
    type t_rec is record
       enum : t_enum;
       bi   : bit;
@@ -18,10 +18,10 @@ package pkg is
 
    constant SOME_REC : t_rec := (ONE, '0', false, 'X', "11000011", 123);
 
-   --thdl:start
-   -- Below code was automatically generated with the thdl tool.
+   --hdl:start
+   -- Below code was automatically generated with the hdl tool.
    -- Do not modify it by hand, unless you really know what you do.
-   -- More info on https://github.com/m-kru/go-thdl.
+   -- More info on https://github.com/m-kru/go-hdl.
 
    function to_enum(slv : std_logic_vector(1 downto 0)) return t_enum;
    function to_slv(enum : t_enum) return std_logic_vector;
@@ -31,16 +31,16 @@ package pkg is
    function to_slv(rec : t_rec) return std_logic_vector;
    function to_str(rec : t_rec; add_names : boolean := false) return string;
 
-   --thdl:end
+   --hdl:end
 
 end package;
 
 package body pkg is
 
-   --thdl:start
-   -- Below code was automatically generated with the thdl tool.
+   --hdl:start
+   -- Below code was automatically generated with the hdl tool.
    -- Do not modify it by hand, unless you really know what you do.
-   -- More info on https://github.com/m-kru/go-thdl.
+   -- More info on https://github.com/m-kru/go-hdl.
 
    function to_enum(slv : std_logic_vector(1 downto 0)) return t_enum is
    begin
@@ -113,6 +113,6 @@ package body pkg is
       return "(" & to_str(rec.enum) & ", " & to_string(rec.bi) & ", " & to_string(rec.bool) & ", " & to_string(rec.sl) & ", " & to_string(rec.slv) & ", " & to_string(rec.int) & ")";
    end function;
 
-   --thdl:end
+   --hdl:end
 
 end package body;

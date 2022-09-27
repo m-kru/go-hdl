@@ -1,5 +1,5 @@
---thdl:ignore
+--hdl:ignore
 clk_20_i => clk_40_i
 
-   --thdl:ignore
+   --hdl:ignore
    clk_50 => clk_70

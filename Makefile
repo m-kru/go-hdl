@@ -1,4 +1,4 @@
-PROJECT_NAME=thdl
+PROJECT_NAME=hdl
 
 default: build
 
@@ -23,7 +23,7 @@ help:
 all: lint fmt build
 
 build:
-	go build -v -o $(PROJECT_NAME) ./cmd/thdl
+	go build -v -o $(PROJECT_NAME) ./cmd/hdl
 
 
 # Quality targets

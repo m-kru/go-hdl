@@ -2,7 +2,7 @@ package doc
 
 import (
 	"fmt"
-	"github.com/m-kru/go-thdl/internal/utils"
+	"github.com/m-kru/go-hdl/internal/utils"
 	"log"
 	"strings"
 )

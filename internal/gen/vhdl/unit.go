@@ -1,7 +1,7 @@
 package vhdl
 
 import (
-	"github.com/m-kru/go-thdl/internal/gen/gen"
+	"github.com/m-kru/go-hdl/internal/gen/gen"
 )
 
 // Unit represents VHDL design unit.

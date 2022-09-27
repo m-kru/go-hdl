@@ -2,17 +2,17 @@ library ieee;
    use ieee.std_logic_1164.all;
 
 package p is
-   --thdl:gen
+   --hdl:gen
    type t_enum is (ONE, TWO, THREE);
-   --thdl:gen no-to-str
+   --hdl:gen no-to-str
    type t_rec is record
       e : t_enum;
    end record;
 
-   --thdl:start
-   -- Below code was automatically generated with the thdl tool.
+   --hdl:start
+   -- Below code was automatically generated with the hdl tool.
    -- Do not modify it by hand, unless you really know what you do.
-   -- More info on https://github.com/m-kru/go-thdl.
+   -- More info on https://github.com/m-kru/go-hdl.
 
    function to_enum(slv : std_logic_vector(1 downto 0)) return t_enum;
    function to_slv(enum : t_enum) return std_logic_vector;
@@ -21,16 +21,16 @@ package p is
    function to_rec(slv : std_logic_vector(1 downto 0)) return t_rec;
    function to_slv(rec : t_rec) return std_logic_vector;
 
-   --thdl:end
+   --hdl:end
 
 end package;
 
 package body p is
 
-   --thdl:start
-   -- Below code was automatically generated with the thdl tool.
+   --hdl:start
+   -- Below code was automatically generated with the hdl tool.
    -- Do not modify it by hand, unless you really know what you do.
-   -- More info on https://github.com/m-kru/go-thdl.
+   -- More info on https://github.com/m-kru/go-hdl.
 
    function to_enum(slv : std_logic_vector(1 downto 0)) return t_enum is
    begin
@@ -74,6 +74,6 @@ package body p is
       return slv;
    end function;
 
-   --thdl:end
+   --hdl:end
 
 end package body;

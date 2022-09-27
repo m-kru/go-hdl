@@ -4,26 +4,26 @@ import (
 	"fmt"
 )
 
-var helpMsg string = `Thdl is a tool for easing the work with hardware description languages.
+var helpMsg string = `Hdl is a tool for easing the work with hardware description languages.
 Version: %s
 
 Usage:
 ------
 
-  thdl <command> [arguments]
+  hdl <command> [arguments]
 
 The commands are:
   doc   Show or generate documentation.
   gen   Generate HDL files by processing sources.
   help  Print more information about a specific command.
-  ver   Print thdl version.
+  ver   Print hdl version.
   vet   Check for likely mistakes.
 
 
 Configuration
 -------------
 
-Thdl behavior can be configured using '.thdl.yml' file. This file must be placed
+Hdl behavior can be configured using '.hdl.yml' file. This file must be placed
 in the working directory (usually project's root directory) to be read.
 Below snippet presents example configuration. It shows all currently supported
 settings.

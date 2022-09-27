@@ -1,4 +1,4 @@
-module github.com/m-kru/go-thdl
+module github.com/m-kru/go-hdl
 
 go 1.18
 

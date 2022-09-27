@@ -2,7 +2,7 @@ library ieee;
    use ieee.std_logic_1164.all;
 
 package p1 is
-   --thdl:gen
+   --hdl:gen
    type t_enum is (ZERO, ONE, TWO);
 end package;
 
@@ -13,7 +13,7 @@ library ieee;
    use ieee.std_logic_1164.all;
 
 package P2 is
-   --thdl:gen encoding=one-hot
+   --hdl:gen encoding=one-hot
    type enum is (
       ZERO,
       one, Two,

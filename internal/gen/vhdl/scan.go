@@ -4,10 +4,10 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"github.com/m-kru/go-thdl/internal/gen/gen"
-	"github.com/m-kru/go-thdl/internal/utils"
-	"github.com/m-kru/go-thdl/internal/vhdl"
-	"github.com/m-kru/go-thdl/internal/vhdl/re"
+	"github.com/m-kru/go-hdl/internal/gen/gen"
+	"github.com/m-kru/go-hdl/internal/utils"
+	"github.com/m-kru/go-hdl/internal/vhdl"
+	"github.com/m-kru/go-hdl/internal/vhdl/re"
 	"strconv"
 	"strings"
 )
@@ -51,7 +51,7 @@ func scanFile(fileContent []byte) ([]unit, error) {
 					unit.typ = "package body"
 				}
 			}
-		} else if len(thdlGenLine.FindIndex(sCtx.line)) > 0 {
+		} else if len(hdlGenLine.FindIndex(sCtx.line)) > 0 {
 			gen, err := scanGenerable(&sCtx, unit.gens)
 			if err != nil {
 				return nil, err
@@ -68,7 +68,7 @@ func scanFile(fileContent []byte) ([]unit, error) {
 }
 
 func scanGenerable(sCtx *scanContext, gens gen.Container) (gen.Generable, error) {
-	args := utils.ThdlGenArgs(sCtx.line)
+	args := utils.HdlGenArgs(sCtx.line)
 
 	if !sCtx.scan() {
 		return nil, fmt.Errorf("cannot scan generable, EOF")
@@ -157,8 +157,8 @@ func scanRecordTypeDeclaration(sCtx *scanContext, gens gen.Container, name strin
 
 func parseRecordFieldLine(line []byte, gens gen.Container, r *record) error {
 	args := ""
-	if len(thdlFieldArgs.FindIndex(line)) > 0 {
-		splits := bytes.Split(line, []byte("--thdl:"))
+	if len(hdlFieldArgs.FindIndex(line)) > 0 {
+		splits := bytes.Split(line, []byte("--hdl:"))
 		line = splits[0]
 		args = string(bytes.Trim(splits[1], " \t"))
 	}

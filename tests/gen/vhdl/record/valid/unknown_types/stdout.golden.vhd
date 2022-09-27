@@ -2,20 +2,20 @@ library ieee;
    use ieee.std_logic_1164.all;
 
 package p is
-   --thdl:gen
+   --hdl:gen
    type t_foo is record
-      f : t_field; --thdl: width=7
+      f : t_field; --hdl: width=7
    end record;
 
-   --thdl:gen
+   --hdl:gen
    type t_bar is record
-      f : t_field; --thdl: width=4 to-type=lorem to-slv=ipsum to-str=dolor
+      f : t_field; --hdl: width=4 to-type=lorem to-slv=ipsum to-str=dolor
    end record;
 
-   --thdl:start
-   -- Below code was automatically generated with the thdl tool.
+   --hdl:start
+   -- Below code was automatically generated with the hdl tool.
    -- Do not modify it by hand, unless you really know what you do.
-   -- More info on https://github.com/m-kru/go-thdl.
+   -- More info on https://github.com/m-kru/go-hdl.
 
    function to_foo(slv : std_logic_vector(6 downto 0)) return t_foo;
    function to_slv(foo : t_foo) return std_logic_vector;
@@ -25,16 +25,16 @@ package p is
    function to_slv(bar : t_bar) return std_logic_vector;
    function to_str(bar : t_bar; add_names : boolean := false) return string;
 
-   --thdl:end
+   --hdl:end
 
 end package;
 
 package body p is
 
-   --thdl:start
-   -- Below code was automatically generated with the thdl tool.
+   --hdl:start
+   -- Below code was automatically generated with the hdl tool.
    -- Do not modify it by hand, unless you really know what you do.
-   -- More info on https://github.com/m-kru/go-thdl.
+   -- More info on https://github.com/m-kru/go-hdl.
 
    function to_foo(slv : std_logic_vector(6 downto 0)) return t_foo is
       variable foo : t_foo;
@@ -80,6 +80,6 @@ package body p is
       return "(" & dolor(bar.f) & ")";
    end function;
 
-   --thdl:end
+   --hdl:end
 
 end package body;

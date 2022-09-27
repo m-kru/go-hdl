@@ -1,7 +1,7 @@
 package vhdl
 
 import (
-	"github.com/m-kru/go-thdl/internal/doc/sym"
+	"github.com/m-kru/go-hdl/internal/doc/sym"
 )
 
 type Variable struct {

@@ -1,20 +1,13 @@
-[![Tests](https://github.com/m-kru/go-thdl/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/m-kru/go-thdl/actions?query=main)
+[![Tests](https://github.com/m-kru/go-hdl/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/m-kru/go-hdl/actions?query=main)
 
-# THDL
+# hdl
 
-Thdl is a tool for easing the work with hardware description languages.
-It is (and will always be) based solely on text processing, with no semantic analysis.
-Such an approach draws a clear line between what might be included and what will never be supported.
-The 'THDL' acronym doesn't have any expansion.
-The first 'T' letter might be interpreted as 'text', as the tool is based on text processing.
-However, don't read THDL as "Text Hardware Description Language" and do not treat it as such.
-Part of the first prototype was implemented when I was on a train.
-The 'train' word also starts with 't', so I thought 'thdl' would be a good name.
+Hdl is a tool for easing the work with hardware description languages.
 
 ## Documentation
 
-The documentation is included in the `thdl` binary.
-Simply run `thdl help` or `thdl help {command}` to read about particular command.
+The documentation is included in the `hdl` binary.
+Simply run `hdl help` or `hdl help {command}` to read about particular command.
 
 ## Commands
 
@@ -27,7 +20,7 @@ The commands are:
 
 ### go
 ```
-go install github.com/m-kru/go-thdl/cmd/thdl@latest
+go install github.com/m-kru/go-hdl/cmd/hdl@latest
 ```
 
 Go installation installs to go configured path.
@@ -35,7 +28,7 @@ Go installation installs to go configured path.
 ### Manual
 
 ```
-git clone https://github.com/m-kru/go-thdl.git
+git clone https://github.com/m-kru/go-hdl.git
 make
 make install
 ```

@@ -6,12 +6,12 @@ var genHelpMsg string = `Gen command
 Usage
 -----
 
-  thdl gen [flags] [path/to/file]
+  hdl gen [flags] [path/to/file]
 
 Flags
   -to-stdout  Print to stdout instead of replacing file in place (useful for tests).
 
-If path to file is not provided, thdl will scan all HDL files located in the tree
+If path to file is not provided, hdl will scan all HDL files located in the tree
 of working directory.
 
 
@@ -19,11 +19,11 @@ Description
 -----------
 
 The gen command scans HDL files and generates code based on their content.
-The code generation is triggered by adding '--thdl:gen' tag line before symbol
+The code generation is triggered by adding '--hdl:gen' tag line before symbol
 for which the code should be generated. Note that there is no whitespace
-between '--' and 'thdl:gen'. Inserting a whitespace in between is a good method
+between '--' and 'hdl:gen'. Inserting a whitespace in between is a good method
 to temporarily disable code generation for a particular symbol. Another one is
-adding an empty line between the '--thdl:gen' line and symbol line.
+adding an empty line between the '--hdl:gen' line and symbol line.
 
 The code generation currently supports following kinds of symbols:
 
@@ -31,10 +31,10 @@ The code generation currently supports following kinds of symbols:
     - enumeration type
 
         Example:
-          --thdl:gen
+          --hdl:gen
           type t_status is (SUCCESS, ERROR);
 
-        Thdl will generate following functions:
+        Hdl will generate following functions:
           - function to_status(slv : std_logic_vector(0 downto 0)) return t_status;
           - function to_slv(status : t_status) return std_logic_vector;
           - function to_str(status : t_status) return string;
@@ -46,14 +46,14 @@ The code generation currently supports following kinds of symbols:
     - record type
 
         Example:
-          --thdl:gen
+          --hdl:gen
           type t_data is record
              reverse : boolean;
              int     : integer;
              crc     : std_logic_vector(7 downto 0);
           end record;
 
-        Thdl will generate following functions:
+        Hdl will generate following functions:
           - function to_data(slv : std_logic_vector(40 downto 0)) return t_data;
           - function to_slv(data : t_data) return std_logic_vector;
           - function to_str(data : t_data) return string;
@@ -61,15 +61,15 @@ The code generation currently supports following kinds of symbols:
         Flags:
           - no-to-str  Do not generate to_str function.
 
-        By default thdl will handle all fields of standard types or of types that are also
+        By default hdl will handle all fields of standard types or of types that are also
         marked for generation and are located within the same scope (the scope is currently
         limited to the design unit). To handle foreign types one needs to provide additional
         information via field arguments. Field arguments are provided at the end of the line
-        with particular field. They are prepended with '--thdl:' tag.
+        with particular field. They are prepended with '--hdl:' tag.
         Example:
-          --thdl:gen
+          --hdl:gen
           type t_rec is record
-             field : t_foreign; --thdl: width=N [to-type=name] [to-slv=name] [to-str=name]
+             field : t_foreign; --hdl: width=N [to-type=name] [to-slv=name] [to-str=name]
           end record;
         Width is the only mandatory argument. N must be greater than 0. To-type is the name
         of the function used for the conversion from the std_logic_vector to the t_foreign.
@@ -83,12 +83,12 @@ The code generation currently supports following kinds of symbols:
 Arguments passing
 -----------------
 
-To pass an argument to the 'thdl:gen' or 'thdl:' simply write parameter name
+To pass an argument to the 'hdl:gen' or 'hdl:' simply write parameter name
 followed by the '=' character and actual argument value.
 
 Examples:
   --thd:gen encoding=one-hot
-  record_field : t_external_type; --thdl: width=8
+  record_field : t_external_type; --hdl: width=8
 
 
 Naming symbols

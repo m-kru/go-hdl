@@ -24,11 +24,11 @@ func isPresent(arg string) bool {
 func Parse() Args {
 	fileCfg := FileCfg{}
 	if !isPresent("-no-config") {
-		thdlYml, err := os.ReadFile(".thdl.yml")
+		hdlYml, err := os.ReadFile(".hdl.yml")
 		if err == nil {
-			err := yaml.UnmarshalStrict(thdlYml, &fileCfg)
+			err := yaml.UnmarshalStrict(hdlYml, &fileCfg)
 			if err != nil {
-				log.Fatalf("unmarshalling '.thdl.yml': %v", err)
+				log.Fatalf("unmarshalling '.hdl.yml': %v", err)
 			}
 		}
 	}
@@ -38,7 +38,7 @@ func Parse() Args {
 	setFileCfgArgs(fileCfg, &args)
 
 	if len(os.Args) == 1 {
-		log.Fatalf("missing command, run 'thdl help' for more information")
+		log.Fatalf("missing command, run 'hdl help' for more information")
 	}
 
 	args.Cmd = os.Args[1]
@@ -67,12 +67,12 @@ func Parse() Args {
 		}
 		os.Exit(0)
 	case "ver":
-		fmt.Printf("thdl version %s\n", Version)
+		fmt.Printf("hdl version %s\n", Version)
 		os.Exit(0)
 	case "vet":
 		parseVetArgs(&args)
 	default:
-		log.Fatalf(fmt.Sprintf("invalid command '%s', run 'thdl help' for more information", args.Cmd))
+		log.Fatalf(fmt.Sprintf("invalid command '%s', run 'hdl help' for more information", args.Cmd))
 	}
 
 	return args

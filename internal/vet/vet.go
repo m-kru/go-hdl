@@ -1,9 +1,9 @@
 package vet
 
 import (
-	"github.com/m-kru/go-thdl/internal/args"
-	"github.com/m-kru/go-thdl/internal/utils"
-	"github.com/m-kru/go-thdl/internal/vet/vhdl"
+	"github.com/m-kru/go-hdl/internal/args"
+	"github.com/m-kru/go-hdl/internal/utils"
+	"github.com/m-kru/go-hdl/internal/vet/vhdl"
 	"strings"
 	"sync"
 )

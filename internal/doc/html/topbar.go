@@ -2,7 +2,7 @@ package html
 
 import (
 	"fmt"
-	"github.com/m-kru/go-thdl/internal/doc/vhdl"
+	"github.com/m-kru/go-hdl/internal/doc/vhdl"
 	"strings"
 )
 

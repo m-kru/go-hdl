@@ -1,9 +1,9 @@
 package gen
 
 import (
-	"github.com/m-kru/go-thdl/internal/args"
-	"github.com/m-kru/go-thdl/internal/gen/vhdl"
-	"github.com/m-kru/go-thdl/internal/utils"
+	"github.com/m-kru/go-hdl/internal/args"
+	"github.com/m-kru/go-hdl/internal/gen/vhdl"
+	"github.com/m-kru/go-hdl/internal/utils"
 	"strings"
 	"sync"
 )

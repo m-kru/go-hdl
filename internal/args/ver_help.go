@@ -6,11 +6,11 @@ var verHelpMsg string = `Ver command
 Usage
 -----
 
-  thdl ver
+  hdl ver
 
 
 Description
 -----------
 
-Print thdl version.
+Print hdl version.
 `

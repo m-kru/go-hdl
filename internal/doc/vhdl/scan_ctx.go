@@ -2,7 +2,7 @@ package vhdl
 
 import (
 	"bufio"
-	"github.com/m-kru/go-thdl/internal/vhdl/re"
+	"github.com/m-kru/go-hdl/internal/vhdl/re"
 )
 
 type scanContext struct {

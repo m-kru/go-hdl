@@ -5,11 +5,11 @@ import (
 	"log"
 	"os"
 
-	"github.com/m-kru/go-thdl/internal/args"
-	"github.com/m-kru/go-thdl/internal/doc"
-	"github.com/m-kru/go-thdl/internal/gen"
-	"github.com/m-kru/go-thdl/internal/vet"
-	"github.com/m-kru/go-thdl/internal/vet/rprt"
+	"github.com/m-kru/go-hdl/internal/args"
+	"github.com/m-kru/go-hdl/internal/doc"
+	"github.com/m-kru/go-hdl/internal/gen"
+	"github.com/m-kru/go-hdl/internal/vet"
+	"github.com/m-kru/go-hdl/internal/vet/rprt"
 )
 
 var printDebug bool = false

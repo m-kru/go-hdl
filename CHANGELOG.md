@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - [VHDL, doc] Support alias in package.
 - [VHDL, doc] Bold more standard types.
+### Changed
+- Rename project from `thdl` to `hdl`.
 ### Fixed
 - [VHDL] Ignore directories having \.vhdl? extension in name.
 - [VHDL] Add missing to_str() call for record attributes.

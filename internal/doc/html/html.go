@@ -2,7 +2,7 @@ package html
 
 import (
 	_ "embed"
-	"github.com/m-kru/go-thdl/internal/args"
+	"github.com/m-kru/go-hdl/internal/args"
 	"log"
 	"os"
 )
@@ -22,7 +22,7 @@ func Generate(args args.HTMLArgs) {
 		htmlArgs.Copyright = "&copy; " + htmlArgs.Copyright
 	}
 	if htmlArgs.Title == "" {
-		htmlArgs.Title = "THDL Documentation"
+		htmlArgs.Title = "HDL Documentation"
 	}
 
 	genIndex()

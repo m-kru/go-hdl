@@ -4,10 +4,10 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"github.com/m-kru/go-thdl/internal/args"
-	"github.com/m-kru/go-thdl/internal/gen/gen"
-	"github.com/m-kru/go-thdl/internal/utils"
-	"github.com/m-kru/go-thdl/internal/vhdl/re"
+	"github.com/m-kru/go-hdl/internal/args"
+	"github.com/m-kru/go-hdl/internal/gen/gen"
+	"github.com/m-kru/go-hdl/internal/utils"
+	"github.com/m-kru/go-hdl/internal/vhdl/re"
 	"log"
 	"os"
 	"strings"
@@ -94,17 +94,17 @@ func genNewFileContent(fileContent []byte, units []unit) ([]byte, error) {
 
 func genDesignUnit(u unit, sCtx *scanContext, b *strings.Builder) error {
 	inUnit := false
-	gotoThdlEnd := false
+	gotoHdlEnd := false
 	for {
 		if !sCtx.scan() {
-			if gotoThdlEnd {
-				return fmt.Errorf("'--thdl:end' line not found")
+			if gotoHdlEnd {
+				return fmt.Errorf("'--hdl:end' line not found")
 			}
 			break
 		}
 
-		if gotoThdlEnd {
-			if len(thdlEndLine.FindIndex(sCtx.line)) > 0 {
+		if gotoHdlEnd {
+			if len(hdlEndLine.FindIndex(sCtx.line)) > 0 {
 				break
 			}
 			continue
@@ -117,9 +117,9 @@ func genDesignUnit(u unit, sCtx *scanContext, b *strings.Builder) error {
 		if inUnit {
 			if u.typ == "architecture" {
 			} else if u.typ == "package" {
-				if len(thdlStartLine.FindIndex(sCtx.line)) > 0 {
+				if len(hdlStartLine.FindIndex(sCtx.line)) > 0 {
 					genPackage(u.gens, false, false, b)
-					gotoThdlEnd = true
+					gotoHdlEnd = true
 					continue
 				} else if len(re.EndPackage.FindIndex(sCtx.line)) > 0 ||
 					(len(re.End.FindIndex(sCtx.line)) > 0 && bytes.Contains(bytes.ToLower(sCtx.line), []byte(strings.ToLower(u.name)))) {
@@ -129,9 +129,9 @@ func genDesignUnit(u unit, sCtx *scanContext, b *strings.Builder) error {
 					break
 				}
 			} else if u.typ == "package body" {
-				if len(thdlStartLine.FindIndex(sCtx.line)) > 0 {
+				if len(hdlStartLine.FindIndex(sCtx.line)) > 0 {
 					genPackage(u.gens, true, false, b)
-					gotoThdlEnd = true
+					gotoHdlEnd = true
 					continue
 				} else if len(re.EndPackageBody.FindIndex(sCtx.line)) > 0 ||
 					(len(re.End.FindIndex(sCtx.line)) > 0 && bytes.Contains(bytes.ToLower(sCtx.line), []byte(strings.ToLower(u.name)))) {

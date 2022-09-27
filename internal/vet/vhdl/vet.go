@@ -8,12 +8,12 @@ import (
 	"regexp"
 	"sync"
 
-	"github.com/m-kru/go-thdl/internal/utils"
-	"github.com/m-kru/go-thdl/internal/vet/rprt"
+	"github.com/m-kru/go-hdl/internal/utils"
+	"github.com/m-kru/go-hdl/internal/vet/rprt"
 )
 
-var ignoreNextLineRegExp *regexp.Regexp = regexp.MustCompile(`^\s*--thdl:ignore`)
-var ignoreThisLineRegExp *regexp.Regexp = regexp.MustCompile(`--thdl:ignore\s*$`)
+var ignoreNextLineRegExp *regexp.Regexp = regexp.MustCompile(`^\s*--hdl:ignore`)
+var ignoreThisLineRegExp *regexp.Regexp = regexp.MustCompile(`--hdl:ignore\s*$`)
 var commentLineRegExp *regexp.Regexp = regexp.MustCompile(`^\s*--`)
 
 func Vet(filepaths []string, wg *sync.WaitGroup) {

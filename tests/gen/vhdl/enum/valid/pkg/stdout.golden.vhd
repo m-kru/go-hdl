@@ -2,28 +2,28 @@ library ieee;
    use ieee.std_logic_1164.all;
 
 package p1 is
-   --thdl:gen
+   --hdl:gen
    type t_enum is (ZERO, ONE, TWO);
 
-   --thdl:start
-   -- Below code was automatically generated with the thdl tool.
+   --hdl:start
+   -- Below code was automatically generated with the hdl tool.
    -- Do not modify it by hand, unless you really know what you do.
-   -- More info on https://github.com/m-kru/go-thdl.
+   -- More info on https://github.com/m-kru/go-hdl.
 
    function to_enum(slv : std_logic_vector(1 downto 0)) return t_enum;
    function to_slv(enum : t_enum) return std_logic_vector;
    function to_str(enum : t_enum) return string;
 
-   --thdl:end
+   --hdl:end
 
 end package;
 
 package body p1 is
 
-   --thdl:start
-   -- Below code was automatically generated with the thdl tool.
+   --hdl:start
+   -- Below code was automatically generated with the hdl tool.
    -- Do not modify it by hand, unless you really know what you do.
-   -- More info on https://github.com/m-kru/go-thdl.
+   -- More info on https://github.com/m-kru/go-hdl.
 
    function to_enum(slv : std_logic_vector(1 downto 0)) return t_enum is
    begin
@@ -53,7 +53,7 @@ package body p1 is
       end case;
    end function;
 
-   --thdl:end
+   --hdl:end
 
 end package body;
 
@@ -61,32 +61,32 @@ library ieee;
    use ieee.std_logic_1164.all;
 
 package P2 is
-   --thdl:gen encoding=one-hot
+   --hdl:gen encoding=one-hot
    type enum is (
       ZERO,
       one, Two,
       THREE
    );
 
-   --thdl:start
-   -- Below code was automatically generated with the thdl tool.
+   --hdl:start
+   -- Below code was automatically generated with the hdl tool.
    -- Do not modify it by hand, unless you really know what you do.
-   -- More info on https://github.com/m-kru/go-thdl.
+   -- More info on https://github.com/m-kru/go-hdl.
 
    function to_enum(slv : std_logic_vector(3 downto 0)) return enum;
    function to_slv(e : enum) return std_logic_vector;
    function to_str(e : enum) return string;
 
-   --thdl:end
+   --hdl:end
 
 end package;
 
 package body p2 is
 
-   --thdl:start
-   -- Below code was automatically generated with the thdl tool.
+   --hdl:start
+   -- Below code was automatically generated with the hdl tool.
    -- Do not modify it by hand, unless you really know what you do.
-   -- More info on https://github.com/m-kru/go-thdl.
+   -- More info on https://github.com/m-kru/go-hdl.
 
    function to_enum(slv : std_logic_vector(3 downto 0)) return enum is
    begin
@@ -119,6 +119,6 @@ package body p2 is
       end case;
    end function;
 
-   --thdl:end
+   --hdl:end
 
 end P2;

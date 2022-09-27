@@ -6,12 +6,12 @@ var vetHelpMsg string = `Vet command
 Usage
 -----
 
-  thdl vet [flags] [path/to/file]
+  hdl vet [flags] [path/to/file]
 
 Flags:
-  -no-config  Don't read .thdl.yml config file.
+  -no-config  Don't read .hdl.yml config file.
 
-If path to file is not provided, thdl will vet all HDL files located in the tree
+If path to file is not provided, hdl will vet all HDL files located in the tree
 of working directory.
 
 Description
@@ -25,7 +25,7 @@ is actually checked by given scope. Currently following scopes exist:
 - process - checks mistakes related with process coding,
 - reset - checks mistakes related with reset ports mappings and reset if conditions.
 
-Thdl by default ignores some files, as checking them makes no sense.
+Hdl by default ignores some files, as checking them makes no sense.
 If the file path matches one of the ignored patterns, then it won't be checked.
 Ignored file paths:
 - *_rfs.vhd - Xilinx VHDL encrypted files.
@@ -66,13 +66,13 @@ The process scope is capable of checking following mistakes:
 Reset scope
 -----------
 
-Note: As thdl is solely based on the text processing and knows nothing about the semantic context,
+Note: As hdl is solely based on the text processing and knows nothing about the semantic context,
 it imposes some requirements on the port and signal names. Some may find these requirements
 stupid and unacceptable. However, they seem to be quite sane if one looks from the lexical point of view.
 For example, resets are often associated with some functionality. Let's assume we have reset signal
 for resetting some crossbar on a Wishbone bus. To indicate the functionality such signal can be named
 {functionality}_{reset} (for example 'wb_rst') or {reset}_{functionality} (for example 'rst_wb').
-The thdl reuquires from engineers to use the first form. Why is {reset}_{functionality} wrong?
+The hdl reuquires from engineers to use the first form. Why is {reset}_{functionality} wrong?
 Because in this case the "reset" part is a verb, such name would be good for procedure or function.
 In {functionality}_{reset} the "reset" part is a noun. This order is the valid choice when you realize
 that port or signal name is actually a nomina propria. The second requirement is that if 'p' or 'n'
@@ -156,16 +156,16 @@ The reset scope is capable of checking following mistakes:
 Ignoring lines
 --------------
 
-There are two ways to ignore a particular line from being analyzed by thdl.
+There are two ways to ignore a particular line from being analyzed by hdl.
 The first one is to procede the line with following comment line:
-  --thdl:ignore
+  --hdl:ignore
 Example:
-  --thdl:ignore
+  --hdl:ignore
   clk_20_i => clk_40_i
-The second is to end line with '--thdl:ignore'.
+The second is to end line with '--hdl:ignore'.
 Example:
-  clk_20_i => clk_40_i --thdl:ignore
+  clk_20_i => clk_40_i --hdl:ignore
 Single line comment token is of course language dependent.
 Please note, that there is no space between the single line comment token
-and 'thdl:ignore' annotation.
+and 'hdl:ignore' annotation.
 `

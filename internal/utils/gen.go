@@ -4,9 +4,9 @@ import (
 	"strings"
 )
 
-// thdlGenArgs parses line containing 'thdl:gen' and returns its arguments.
-func ThdlGenArgs(line []byte) []string {
-	splits := strings.Split(string(line), "thdl:gen")
+// hdlGenArgs parses line containing 'hdl:gen' and returns its arguments.
+func HdlGenArgs(line []byte) []string {
+	splits := strings.Split(string(line), "hdl:gen")
 	if splits[1] == "" {
 		return nil
 	}

@@ -2,7 +2,7 @@ library ieee;
    use ieee.std_logic_1164.all;
 
 package p is
-   --thdl:gen
+   --hdl:gen
    type t_rec is record
       slv : std_logic_vector(0 downto 0);
       suv : std_ulogic_vector(1 downto 0);
@@ -10,25 +10,25 @@ package p is
       su  : unsigned(3 downto 0);
    end record;
 
-   --thdl:start
-   -- Below code was automatically generated with the thdl tool.
+   --hdl:start
+   -- Below code was automatically generated with the hdl tool.
    -- Do not modify it by hand, unless you really know what you do.
-   -- More info on https://github.com/m-kru/go-thdl.
+   -- More info on https://github.com/m-kru/go-hdl.
 
    function to_rec(slv : std_logic_vector(9 downto 0)) return t_rec;
    function to_slv(rec : t_rec) return std_logic_vector;
    function to_str(rec : t_rec; add_names : boolean := false) return string;
 
-   --thdl:end
+   --hdl:end
 
 end package;
 
 package body p is
 
-   --thdl:start
-   -- Below code was automatically generated with the thdl tool.
+   --hdl:start
+   -- Below code was automatically generated with the hdl tool.
    -- Do not modify it by hand, unless you really know what you do.
-   -- More info on https://github.com/m-kru/go-thdl.
+   -- More info on https://github.com/m-kru/go-hdl.
 
    function to_rec(slv : std_logic_vector(9 downto 0)) return t_rec is
       variable rec : t_rec;
@@ -58,6 +58,6 @@ package body p is
       return "(" & to_string(rec.slv) & ", " & to_str(rec.suv) & ", " & to_string(rec.si) & ", " & to_string(rec.su) & ")";
    end function;
 
-   --thdl:end
+   --hdl:end
 
 end package body;

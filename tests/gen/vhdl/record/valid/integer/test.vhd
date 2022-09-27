@@ -3,7 +3,7 @@ library ieee;
    use ieee.numeric_std.all;
 
 package p is
-   --thdl:gen
+   --hdl:gen
    type t_rec is record
       i : integer;
       n : natural;

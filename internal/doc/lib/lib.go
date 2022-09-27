@@ -1,8 +1,8 @@
 package lib
 
 import (
-	"github.com/m-kru/go-thdl/internal/doc/sym"
-	"github.com/m-kru/go-thdl/internal/utils"
+	"github.com/m-kru/go-hdl/internal/doc/sym"
+	"github.com/m-kru/go-hdl/internal/utils"
 	"log"
 	"os"
 	"strings"

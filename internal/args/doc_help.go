@@ -6,12 +6,12 @@ var docHelpMsg string = `Doc command
 Usage
 -----
 
-  thdl doc [flags] symbolPath
+  hdl doc [flags] symbolPath
 
 Flags:
   -debug      Print debug messages.
   -no-bold    Don't print language keywords in bold.
-  -no-config  Don't read .thdl.yml config file.
+  -no-config  Don't read .hdl.yml config file.
   -fusesoc    Infer libraries from FuseSoc .core files.
   -html       Generate documentation in HTML format.
 
@@ -76,13 +76,13 @@ name. If symbols with the same name exist at different levels,  resolve
 ambiguity by adding '.' at the end. For example, let's assume there is "foo"
 library, "foo" primarySymbol, "foo" secondarySymbol, and "foo" tertiarySymbol.
 To see the documentation of "foo" library type:
-  thdl doc foo.
+  hdl doc foo.
 To see the documentation of "foo" primarySymbol type:
-  thdl doc foo.foo.
+  hdl doc foo.foo.
 To see the documentation of "foo" secondarySymbol type:
-  thdl doc foo.foo.foo.
+  hdl doc foo.foo.foo.
 To see the documentation of "foo" tertiarySymbol type:
-  thdl doc foo.foo.foo.foo
+  hdl doc foo.foo.foo.foo
 
 
 Library documentation

@@ -29,7 +29,7 @@ type FileCfg struct {
 func (fc FileCfg) String() string {
 	s := strings.Builder{}
 
-	s.WriteString(".thdl.yml file configuration\n")
+	s.WriteString(".hdl.yml file configuration\n")
 	s.WriteString("  Ignore:\n")
 	for _, i := range fc.Ignore {
 		s.WriteString(fmt.Sprintf("    - %s\n", i))
