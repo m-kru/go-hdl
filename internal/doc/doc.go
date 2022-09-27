@@ -54,9 +54,9 @@ func Doc(args args.DocArgs) {
 					fmt.Printf("\n%s\n", fp)
 					prevFilepath = fp
 				}
-				fmt.Printf("\n")
+				fmt.Print("\n")
 				doc, code := s.DocCode()
-				fmt.Printf(utils.Deindent(doc))
+				fmt.Print(utils.Deindent(doc))
 				if !args.NoBold {
 					code = utils.BoldCodeTerminal(path.language, code)
 				}
@@ -65,7 +65,7 @@ func Doc(args args.DocArgs) {
 						fmt.Println()
 					}
 				}
-				fmt.Printf(utils.Deindent(code))
+				fmt.Print(utils.Deindent(code))
 			}
 		}
 	} else {

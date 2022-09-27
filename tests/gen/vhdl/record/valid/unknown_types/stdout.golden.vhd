@@ -53,9 +53,9 @@ package body p is
    function to_str(foo : t_foo; add_names : boolean := false) return string is
    begin
       if add_names then
-         return "(" & "f => " & (foo.f) & ")";
+         return "(" & "f => " & to_str(foo.f) & ")";
       end if;
-      return "(" & (foo.f) & ")";
+      return "(" & to_str(foo.f) & ")";
    end function;
 
    function to_bar(slv : std_logic_vector(3 downto 0)) return t_bar is

@@ -34,10 +34,7 @@ type ID struct {
 // SortByLineNum sorts Symbol slice by line number in increasing order.
 func SortByLineNum(s []Symbol) {
 	sortFunc := func(i, j int) bool {
-		if s[i].LineNum() < s[j].LineNum() {
-			return true
-		}
-		return false
+		return s[i].LineNum() < s[j].LineNum()
 	}
 
 	sort.Slice(s, sortFunc)
@@ -62,10 +59,7 @@ func SortByName(s []Symbol) {
 // SortByName sorts Symbol slice by filepath in increasing order.
 func SortByFilepath(s []Symbol) {
 	sortFunc := func(i, j int) bool {
-		if s[i].Filepath() < s[j].Filepath() {
-			return true
-		}
-		return false
+		return s[i].Filepath() < s[j].Filepath()
 	}
 
 	sort.Slice(s, sortFunc)

@@ -55,15 +55,15 @@ func Parse() Args {
 			printHelp()
 			os.Exit(1)
 		} else if os.Args[2] == "doc" {
-			fmt.Printf(docHelpMsg)
+			fmt.Print(docHelpMsg)
 		} else if os.Args[2] == "gen" {
-			fmt.Printf(genHelpMsg)
+			fmt.Print(genHelpMsg)
 		} else if os.Args[2] == "help" {
-			fmt.Printf(helpHelpMsg)
+			fmt.Print(helpHelpMsg)
 		} else if os.Args[2] == "ver" {
-			fmt.Printf(verHelpMsg)
+			fmt.Print(verHelpMsg)
 		} else if os.Args[2] == "vet" {
-			fmt.Printf(vetHelpMsg)
+			fmt.Print(vetHelpMsg)
 		}
 		os.Exit(0)
 	case "ver":

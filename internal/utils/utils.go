@@ -71,10 +71,7 @@ func GetVHDLFilePaths() []string {
 // In such case there is no point in analyzing its content.
 func IsIgnoredVHDLFile(filepath string) bool {
 	// Ignore Xilinx encrypted files.
-	if strings.HasSuffix(filepath, "_rfs.vhd") {
-		return true
-	}
-	return false
+	return strings.HasSuffix(filepath, "_rfs.vhd")
 }
 
 func IsTooGeneralPath(path string) bool {

@@ -370,7 +370,7 @@ func (r *record) fieldToStr(idx int, gens gen.Container, withName bool, b *strin
 			if toStr == "" {
 				toStr = "to_str"
 			}
-			b.WriteString(fmt.Sprintf(" %s(%s.%s)", f.toStr, paramName, f.name))
+			b.WriteString(fmt.Sprintf(" %s(%s.%s)", toStr, paramName, f.name))
 		} else {
 			panic("should never happen")
 		}

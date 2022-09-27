@@ -6,11 +6,7 @@ import (
 
 // toTypeFuncName returns name for the function converting std_logic_vector to particular type.
 func toTypeFuncName(typeName string) string {
-	name := typeName
-	if strings.HasPrefix(name, "t_") {
-		name = name[2:]
-	}
-	return "to_" + name
+	return "to_" + strings.TrimPrefix(typeName, "t_")
 }
 
 // funcParamName returns the name of the parameter that should be used when particular

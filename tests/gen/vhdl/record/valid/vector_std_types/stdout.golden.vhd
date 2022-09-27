@@ -53,9 +53,9 @@ package body p is
    function to_str(rec : t_rec; add_names : boolean := false) return string is
    begin
       if add_names then
-         return "(" & "slv => " & to_string(rec.slv) & ", " & "suv => " & (rec.suv) & ", " & "si => " & to_string(rec.si) & ", " & "su => " & to_string(rec.su) & ")";
+         return "(" & "slv => " & to_string(rec.slv) & ", " & "suv => " & to_str(rec.suv) & ", " & "si => " & to_string(rec.si) & ", " & "su => " & to_string(rec.su) & ")";
       end if;
-      return "(" & to_string(rec.slv) & ", " & (rec.suv) & ", " & to_string(rec.si) & ", " & to_string(rec.su) & ")";
+      return "(" & to_string(rec.slv) & ", " & to_str(rec.suv) & ", " & to_string(rec.si) & ", " & to_string(rec.su) & ")";
    end function;
 
    --thdl:end

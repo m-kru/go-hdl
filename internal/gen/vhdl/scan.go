@@ -43,7 +43,7 @@ func scanFile(fileContent []byte) ([]unit, error) {
 			unit.gens = gen.Container{}
 		} else if sm := re.PackageBodyDeclaration.FindSubmatchIndex(sCtx.line); len(sm) > 0 {
 			name := string(sCtx.line[sm[2]:sm[3]])
-			if strings.ToLower(name) == strings.ToLower(unit.name) {
+			if strings.EqualFold(name, unit.name) {
 				if len(unit.gens) > 0 {
 					appendUnit()
 					unit.name = name

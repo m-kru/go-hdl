@@ -5,11 +5,7 @@ import (
 )
 
 func IsSingleLine(s string) bool {
-	if strings.Count(s, "\n") > 1 {
-		return false
-	}
-
-	return true
+	return strings.Count(s, "\n") <= 1
 }
 
 // FirstLine returns first line from the string s without '\n' rune.

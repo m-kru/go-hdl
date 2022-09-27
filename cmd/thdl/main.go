@@ -22,7 +22,7 @@ func (l Logger) Write(p []byte) (int, error) {
 		print = printDebug
 	}
 	if print {
-		fmt.Fprintf(os.Stderr, string(p))
+		fmt.Fprint(os.Stderr, string(p))
 	}
 	return len(p), nil
 }
