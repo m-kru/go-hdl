@@ -4,13 +4,12 @@ default: build
 
 help:
 	@echo "Build targets:"
-	@echo "  all      Run fmt vet build."
+	@echo "  all      Run lint fmt build."
 	@echo "  build    Build binary."
 	@echo "  default  Run build."
 	@echo "Quality targets:"
-	@echo "  fmt       Format files with go fmt."
-	@echo "  vet       Examine go sources with go vet."
-	@echo "  errcheck  Examine go sources with errcheck."
+	@echo "  fmt   Format files with go fmt."
+	@echo "  lint  Lint files with golangci-lint."
 	@echo "Test targets:"
 	@echo "  test      Run go test."
 	@echo "  test-gen  Run gen command tests."
@@ -21,7 +20,7 @@ help:
 
 
 # Build targets
-all: fmt vet build
+all: lint fmt build
 
 build:
 	go build -v -o $(PROJECT_NAME) ./cmd/thdl
@@ -31,11 +30,8 @@ build:
 fmt:
 	go fmt ./...
 
-vet:
-	go vet ./...
-
-errcheck:
-	errcheck -verbose ./...
+lint:
+	golangci-lint run
 
 
 # Test targets

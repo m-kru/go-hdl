@@ -7,44 +7,34 @@ on:
     branches: [ main ]
 
 jobs:
-  vet:
+  lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
         with:
-          go-version: '^1.17.1'
+          go-version: '^1.18.1'
+      - uses: golangci/golangci-lint-action@v3
       - run: go version
-      - run: make vet
+      - run: make lint
 
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
         with:
-          go-version: '^1.17.1'
+          go-version: '^1.18.1'
       - run: go version
       - run: make test
-
-  errcheck:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
-        with:
-          go-version: '^1.17.1'
-      - run: go version
-      - run: go install github.com/kisielk/errcheck@latest
-      - run: make errcheck
 
   Gen-Tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
         with:
-          go-version: '^1.17.1'
+          go-version: '^1.18.1'
       - run: go version
       - run: make build
       - run: make test-gen
@@ -52,10 +42,10 @@ jobs:
   Vet-Tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
         with:
-          go-version: '^1.17.1'
+          go-version: '^1.18.1'
       - run: go version
       - run: make build
       - run: make test-vet
