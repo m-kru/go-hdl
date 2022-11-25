@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rename project from `thdl` to `hdl`.
 ### Fixed
 - [VHDL] Ignore directories having \.vhdl? extension in name.
-- [VHDL, gen] Add missing `to_str()`` call for record attributes.
+- [VHDL, gen] Add missing `to_str()` call for record attributes.
 - [VHDL] Fix reading .hdl.yml config file when no extra arguments are provided.
 
 ## [0.5.0] 2022-06-22
