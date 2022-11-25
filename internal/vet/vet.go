@@ -24,6 +24,7 @@ func Vet(args args.VetArgs) {
 		}
 	} else {
 		vhdlFiles = utils.GetVHDLFilePaths()
+		vhdlFiles = vetArgs.FilterIgnored(vhdlFiles)
 	}
 
 	wg.Add(1)

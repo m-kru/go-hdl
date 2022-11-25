@@ -10,7 +10,7 @@ import (
 // isPresent returns true if given argument is present in the argument list.
 func isPresent(arg string) bool {
 	if len(os.Args) <= 2 {
-		return true
+		return false
 	} else {
 		for _, a := range os.Args[2:] {
 			if a == arg {
