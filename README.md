@@ -12,9 +12,11 @@ Simply run `hdl help` or `hdl help {command}` to read about particular command.
 ## Commands
 
 The commands are:
-* `doc` - show or generate documentation,
-* `gen` - generate code by processing sources,
-* `vet` - check for likely mistakes.
+* `doc`  - show or generate documentation,
+* `gen`  - generate code by processing sources,
+* `help` - print more information about a specific command,
+* `ver`  - print hdl version,
+* `vet`  - check for likely mistakes.
 
 ## Installation
 
