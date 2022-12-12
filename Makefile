@@ -1,7 +1,9 @@
 PROJECT_NAME=hdl
 
+.PHONY: default
 default: build
 
+.PHONY: help
 help:
 	@echo "Build targets:"
 	@echo "  all      Run lint fmt build."
@@ -20,38 +22,46 @@ help:
 
 
 # Build targets
+.PHONY: all
 all: lint fmt build
 
+.PHONY: build
 build:
 	go build -v -o $(PROJECT_NAME) ./cmd/hdl
 
 
 # Quality targets
+.PHONY: fmt
 fmt:
 	go fmt ./...
 
+.PHONY: lint
 lint:
 	golangci-lint run
 
 
 # Test targets
+.PHONY: test
 test:
 	go test ./...
 
+.PHONY: test-gen
 test-gen:
 	@./scripts/test-gen.sh
-	
+
+.PHONY: test-vet
 test-vet:
 	@./scripts/test-vet.sh
 
+.PHONY: test-all
 test-all: test test-gen test-vet
 
 
 # Installation targets
+.PHONY: install
 install:
 	cp $(PROJECT_NAME) /usr/bin
 
+.PHONY: uninstall
 uninstall:
 	rm /usr/bin/$(PROJECT_NAME)
-
-.PHONY: all build test test-vet test-all test-gen install uninstall
